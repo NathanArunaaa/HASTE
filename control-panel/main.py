@@ -72,7 +72,7 @@ exit_button = tk.Button(root, text="Exit Fullscreen", font=("Arial", 18), comman
 exit_button.pack(pady=10)
 
 local_ip = get_local_ip()
-ip_label = tk.Label(root, text=f"Web Interface: http://{local_ip}", font=("Arial", 14), bg="black", fg="white")
+ip_label = tk.Label(root, text=f"Web Interface: http://{local_ip}:5000", font=("Arial", 14), bg="black", fg="white")
 ip_label.pack(pady=10)
 
 root.bind("<Escape>", exit_fullscreen)
