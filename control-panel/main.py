@@ -10,6 +10,8 @@ root = tk.Tk()
 root.title("Machine Control Panel")
 root.attributes("-fullscreen", True)  
 root.configure(bg="black")
+root.config(cursor="none")  
+
 
 title_label = tk.Label(root, text="Machine Control Panel", font=("Arial", 24), bg="black", fg="white")
 title_label.pack(pady=20)
