@@ -7,18 +7,29 @@ import threading
 import os
 
 from web_interface.app import start_flask
-
+from functions import (
+    open_input_dialog_event, 
+    change_appearance_mode_event, 
+    change_scaling_event, 
+    sidebar_button_event, 
+    sys_shutdown, 
+    sys_restart, 
+    get_local_ip
+)
 
 customtkinter.set_appearance_mode("light")  
 customtkinter.set_default_color_theme("blue") 
-
+blue_color = "#1f6aa5"
 
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
         self.title("")
+        self.config(cursor="none")
+
         self.attributes("-fullscreen", True)
+        self.config(cursor="none")
         self.change_scaling_event("130%")
 
         # configure grid layout (4x4)
@@ -33,29 +44,33 @@ class App(customtkinter.CTk):
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="AMSS ", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover=False, command=self.sidebar_button_event)
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover_color="#3b8ed0", command=self.sidebar_button_event)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration", hover=False, command=self.sidebar_button_event)
+        self.sidebar_button_1.configure(cursor="none")  
+
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration",hover_color="#3b8ed0", command=self.sidebar_button_event)
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
+        self.sidebar_button_2.configure(cursor="none") 
         
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover=False, command=self.sidebar_button_event)
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=self.sidebar_button_event)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
+        self.sidebar_button_3.configure(cursor="none") 
         
-        
-        self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="System Restart", hover=False, command=self.sys_restart)
+        self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="System Restart", hover_color="#3b8ed0", command=self.sys_restart)
         self.sidebar_button_4.grid(row=5, column=0, padx=20, pady=(10, 10))
+        self.sidebar_button_4.configure(cursor="none") 
         
-        self.sidebar_button_5 = customtkinter.CTkButton(self.sidebar_frame, text="Shut Down", hover=False, command=self.sys_shutdown)
+        self.sidebar_button_5 = customtkinter.CTkButton(self.sidebar_frame, text="Shut Down", hover_color="#3b8ed0", command=self.sys_shutdown)
         self.sidebar_button_5.grid(row=6, column=0, padx=20, pady=(10, 10))
+        self.sidebar_button_5.configure(cursor="none") 
         
-        local_ip = App.get_local_ip()  
+        local_ip = get_local_ip() 
         self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text=f"{local_ip}:5000", anchor="w")
         self.appearance_mode_label.grid(row=7, column=0, padx=20, pady=(10, 20))
        
         self.textbox = customtkinter.CTkTextbox(self, width=250)
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
-        
+        self.textbox.configure(cursor="none") 
 
         self.tabview = customtkinter.CTkTabview(self, width=250)
         self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
@@ -64,7 +79,8 @@ class App(customtkinter.CTk):
         self.tabview.add("Tab 3")
         self.tabview.tab("CTkTabview").grid_columnconfigure(0, weight=1) 
         self.tabview.tab("Tab 2").grid_columnconfigure(0, weight=1)
-
+        self.tabview.configure(cursor="none") 
+        
         self.optionmenu_1 = customtkinter.CTkOptionMenu(self.tabview.tab("CTkTabview"), dynamic_resizing=False,
                                                         values=["Value 1", "Value 2", "Value Long Long Long"])
         self.optionmenu_1.grid(row=0, column=0, padx=20, pady=(20, 10))
@@ -119,39 +135,23 @@ class App(customtkinter.CTk):
         
         
 
-
-
     def open_input_dialog_event(self):
-        dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
-        print("CTkInputDialog:", dialog.get_input())
+        open_input_dialog_event()
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
-        customtkinter.set_appearance_mode(new_appearance_mode)
+        change_appearance_mode_event(new_appearance_mode)
 
     def change_scaling_event(self, new_scaling: str):
-        new_scaling_float = int(new_scaling.replace("%", "")) / 100
-        customtkinter.set_widget_scaling(new_scaling_float)
+        change_scaling_event(new_scaling)
 
     def sidebar_button_event(self):
-        print("sidebar_button click")
-    
+        sidebar_button_event()
+
     def sys_shutdown(self):
-        os.system('sudo shutdown -h now')
-    
+        sys_shutdown()
+
     def sys_restart(self):
-        os.system('sudo reboot')
-        
-   
-    def get_local_ip():
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        try:
-           s.connect(('10.254.254.254', 1))  
-           ip = s.getsockname()[0]
-        except Exception:
-           ip = '127.0.0.1'
-        finally:
-           s.close()
-        return ip
+        sys_restart()
         
 
 
