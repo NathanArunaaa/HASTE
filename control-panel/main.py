@@ -19,6 +19,7 @@ class App(customtkinter.CTk):
 
         self.title("")
         self.attributes("-fullscreen", True)
+        self.change_scaling_event("130%")
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
@@ -145,7 +146,6 @@ class App(customtkinter.CTk):
         self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
         self.seg_button_1.set("Value 2")
         
-        self.change_scaling_event("130%")
         
 
 
