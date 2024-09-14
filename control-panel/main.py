@@ -33,20 +33,20 @@ class App(customtkinter.CTk):
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="AMSS ", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", command=self.sidebar_button_event)
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover=False, command=self.sidebar_button_event)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
         
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration", command=self.sidebar_button_event)
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration", hover=False, command=self.sidebar_button_event)
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", command=self.sidebar_button_event)
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover=False, command=self.sidebar_button_event)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
         
         
-        self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="System Restart", command=self.sys_restart)
+        self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="System Restart", hover=False, command=self.sys_restart)
         self.sidebar_button_4.grid(row=5, column=0, padx=20, pady=(10, 10))
         
-        self.sidebar_button_5 = customtkinter.CTkButton(self.sidebar_frame, text="Shut Down", command=self.sys_shutdown)
+        self.sidebar_button_5 = customtkinter.CTkButton(self.sidebar_frame, text="Shut Down", hover=False, command=self.sys_shutdown)
         self.sidebar_button_5.grid(row=6, column=0, padx=20, pady=(10, 10))
         
         local_ip = App.get_local_ip()  
@@ -113,7 +113,7 @@ class App(customtkinter.CTk):
         self.slider_2.configure(command=self.progressbar_3.set)
         self.progressbar_1.configure(mode="indeterminnate")
         self.progressbar_1.start()
-        self.textbox.insert("0.0", "CTkTextbox\n\n" + "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
+        self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" +  "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
         self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
         self.seg_button_1.set("Value 2")
         
