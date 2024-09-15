@@ -2,29 +2,22 @@
 import os
 import socket
 import customtkinter
-import pyaudio
+import pygame
 import numpy as np
 
-def play_buzzer_sound(frequency=1000, duration=0.1):
-    sample_rate = 44100  
-    amplitude = 0.5  
-
+def play_buzzer_sound(frequency=440, duration=0.1, sample_rate=44100):
+    """Generate a buzzer sound wave."""
     t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
-    samples = amplitude * np.sin(2 * np.pi * frequency * t)
-    samples = (samples * 32767).astype(np.int16)  
+    wave = 32767 * 0.5 * (np.sin(2 * np.pi * frequency * t))
+    wave = wave.astype(np.int16)
+    return wave
 
-    p = pyaudio.PyAudio()
-
-    stream = p.open(format=pyaudio.paInt16,
-                    channels=1,
-                    rate=sample_rate,
-                    output=True)
+def play_buzzer():
+    """Play a buzzer sound."""
+    wave = play_buzzer_sound()
     
-    stream.write(samples.tobytes())
-
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
+    sound = pygame.mixer.Sound(buffer=wave)
+    sound.play()
     
 def open_input_dialog_event():
     dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
