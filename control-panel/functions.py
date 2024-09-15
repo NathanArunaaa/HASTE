@@ -4,7 +4,7 @@ import customtkinter
 import simpleaudio as sa
 import numpy as np
 
-def play_buzzer(frequency=600, duration=0.1, sample_rate=44100):
+def play_buzzer(frequency=750, duration=0.1, sample_rate=44100):
     t = np.linspace(0, duration, int(sample_rate * duration), False)
     wave = 32767 * 0.5 * np.sin(2 * np.pi * frequency * t)
     wave = wave.astype(np.int16)
