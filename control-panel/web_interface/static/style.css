@@ -1,21 +1,65 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    text-align: center;
-    padding: 50px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
 }
 
 h1 {
-    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
-button {
-    padding: 10px 20px;
-    margin: 10px;
-    font-size: 16px;
-    cursor: pointer;
+.carousel-container {
+    display: flex;
+    align-items: center;
+    position: relative;
 }
 
-button:hover {
-    background-color: #ddd;
+.carousel {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-images {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.carousel-image {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: opacity 0.5s ease, filter 0.5s ease;
+    filter: blur(5px);
+    z-index: 1;
+}
+
+.carousel-image.active {
+    opacity: 1;
+    filter: blur(0px);
+    z-index: 10;
+}
+
+.slider {
+    writing-mode: bt-lr; 
+    -webkit-appearance: slider-vertical; 
+    height: 400px; 
+    margin-left: 20px;
 }

@@ -3,11 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Machine Control Panel</title>
+    <title>Web Machine Control</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Welcome to the Machine Control Panel Web Interface</h1>
-   
+    <h1>Web Machine Control</h1>
+
+    <div class="carousel-container">
+        <div class="carousel">
+            <div class="carousel-images">
+                <img src="{{ url_for('static', filename='images/image1.jpg') }}" class="carousel-image" id="image1" alt="Image 1">
+                <img src="{{ url_for('static', filename='images/image2.jpg') }}" class="carousel-image" id="image2" alt="Image 2">
+                <img src="{{ url_for('static', filename='images/image3.jpg') }}" class="carousel-image" id="image3" alt="Image 3">
+                <img src="{{ url_for('static', filename='images/image4.jpg') }}" class="carousel-image" id="image4" alt="Image 4">
+            </div>
+        </div>
+        <input type="range" class="slider" min="1" max="4" value="1" id="carouselSlider">
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
