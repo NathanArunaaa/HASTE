@@ -4,6 +4,7 @@ import customtkinter
 
 import threading
 import sys
+import traceback
 
 from web_interface.app import start_flask
 from functions import (
@@ -26,7 +27,6 @@ class TextWidgetStream:
         self.text_widget = text_widget
 
     def write(self, message):
-        
         self.text_widget.after(0, self._write, message)
     
     def _write(self, message):
@@ -34,8 +34,7 @@ class TextWidgetStream:
         self.text_widget.yview("end")  
 
     def flush(self):
-        pass  
-
+        pass
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -87,6 +86,7 @@ class App(customtkinter.CTk):
 
         sys.stdout = TextWidgetStream(self.textbox)
         sys.stderr = TextWidgetStream(self.textbox)
+
         
         self.tabview = customtkinter.CTkTabview(self, width=250)
         self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
@@ -169,11 +169,16 @@ class App(customtkinter.CTk):
             sys_shutdown()
 
     def sys_restart(self):
-        
+
+        play_buzzer_sound()
         if tkinter.messagebox.askyesno("Restart Confirmation", "Are you sure you want to restart the system?"):
             sys_restart()
         
-    
+    def handle_exception(self, exc_type, exc_value, exc_traceback):
+        formatted_exception = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+        sys.stderr.write(formatted_exception)
+        self.textbox.insert("end", formatted_exception)
+        self.textbox.yview("end")  
         
 
 
@@ -184,3 +189,4 @@ if __name__ == "__main__":
     flask_thread.start()
     app = App()
     app.mainloop()
+
