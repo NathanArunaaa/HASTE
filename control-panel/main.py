@@ -91,23 +91,23 @@ class App(customtkinter.CTk):
         
         self.tabview = customtkinter.CTkTabview(self, fg_color="white", width=250)
         self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
-        self.tabview.add("CTkTabview")
-        self.tabview.add("Tab 2")
-        self.tabview.add("Tab 3")
-        self.tabview.tab("CTkTabview").grid_columnconfigure(0, weight=1) 
-        self.tabview.tab("Tab 2").grid_columnconfigure(0, weight=1)
+        self.tabview.add("Blade")
+        self.tabview.add("Sensors")
+        self.tabview.add("Steppers")
+       
         self.tabview.configure(cursor="none") 
         
-        self.optionmenu_1 = customtkinter.CTkOptionMenu(self.tabview.tab("CTkTabview"), dynamic_resizing=False,
-                                                        values=["Value 1", "Value 2", "Value Long Long Long"])
-        self.optionmenu_1.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.combobox_1 = customtkinter.CTkComboBox(self.tabview.tab("CTkTabview"),
-                                                    values=["Value 1", "Value 2", "Value Long....."])
-        self.combobox_1.grid(row=1, column=0, padx=20, pady=(10, 10))
-        self.string_input_button = customtkinter.CTkButton(self.tabview.tab("CTkTabview"), text="Open CTkInputDialog",
-                                                           command=self.open_input_dialog_event)
-        self.string_input_button.grid(row=2, column=0, padx=20, pady=(10, 10))
-        self.label_tab_2 = customtkinter.CTkLabel(self.tabview.tab("Tab 2"), text="CTkLabel on Tab 2")
+        self.blade_health = customtkinter.CTkLabel(self.tabview.tab("Blade"), text="Blade Health:")
+        self.blade_health.grid(row=0, column=0, padx=20, pady=20)
+        self.blade_cylce = customtkinter.CTkLabel(self.tabview.tab("Blade"), text="Blade Cylces: 182")
+        self.blade_cylce.grid(row=1, column=0, padx=20, pady=20)
+        self.blade_progressbar_1 = customtkinter.CTkProgressBar(self.tabview.tab("Blade"))
+        self.blade_progressbar_1.grid(row=2, column=0, padx=20, pady=20)
+        
+        self.label_tab_2 = customtkinter.CTkLabel(self.tabview.tab("Sensors"), text="Sensor info here")
+        self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
+        
+        self.label_tab_2 = customtkinter.CTkLabel(self.tabview.tab("Steppers"), text="Stepper pos here")
         self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
 
       
@@ -129,26 +129,25 @@ class App(customtkinter.CTk):
         self.progressbar_3 = customtkinter.CTkProgressBar(self.slider_progressbar_frame, orientation="vertical")
         self.progressbar_3.grid(row=0, column=2, rowspan=5, padx=(10, 20), pady=(10, 10), sticky="ns")
 
-        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="CTkScrollableFrame")
+        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="System Variables")
         self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
         self.scrollable_frame_switches = []
-        for i in range(5):
-            switch = customtkinter.CTkSwitch(master=self.scrollable_frame, text=f"CTkSwitch {i}")
+        for i in range(4):
+            switch = customtkinter.CTkSwitch(master=self.scrollable_frame, text=f"system setting {i}")
             switch.grid(row=i, column=0, padx=10, pady=(0, 20))
             self.scrollable_frame_switches.append(switch)
 
         
       
-        self.optionmenu_1.set("CTkOptionmenu")
-        self.combobox_1.set("CTkComboBox")
+      
         self.slider_1.configure(command=self.progressbar_2.set)
         self.slider_2.configure(command=self.progressbar_3.set)
         self.progressbar_1.configure(mode="indeterminnate")
         self.progressbar_1.start()
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" +  "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.\n\n" * 20)
-        self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
-        self.seg_button_1.set("Value 2")
+        self.seg_button_1.configure(values=["CAM-1", "CAM-2", "Microscope"])
+        self.seg_button_1.set("CAM-1")
         
     def buzzer_thread(self):
         buzzer_thread = threading.Thread(target=play_buzzer)
