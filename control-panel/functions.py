@@ -5,7 +5,7 @@ import customtkinter
 import pyaudio
 import numpy as np
 
-def play_buzzer_sound(frequency=1000, duration=0.05):
+def play_buzzer_sound(frequency=1000, duration=0.1):
     sample_rate = 44100  
     amplitude = 0.5  
 

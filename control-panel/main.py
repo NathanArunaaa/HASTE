@@ -16,7 +16,7 @@ from functions import (
     sys_restart, 
     get_local_ip,
     play_buzzer_sound,
-    testing
+    
 )
 
 customtkinter.set_appearance_mode("light")  
@@ -46,15 +46,15 @@ class App(customtkinter.CTk):
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="AMSS ", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover_color="#3b8ed0", command=self.testing)
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover_color="#3b8ed0", command=play_buzzer_sound)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
         self.sidebar_button_1.configure(cursor="none")  
 
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration",hover_color="#3b8ed0", command=self.testing)
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration",hover_color="#3b8ed0", command=play_buzzer_sound)
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         self.sidebar_button_2.configure(cursor="none") 
         
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=self.testing)
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=play_buzzer_sound)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
         self.sidebar_button_3.configure(cursor="none") 
         
@@ -155,12 +155,11 @@ class App(customtkinter.CTk):
             sys_shutdown()
 
     def sys_restart(self):
-        play_buzzer_sound
+        
         if tkinter.messagebox.askyesno("Restart Confirmation", "Are you sure you want to restart the system?"):
             sys_restart()
         
-    def testing(self):
-        testing()
+    
         
 
 
