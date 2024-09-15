@@ -2,9 +2,8 @@ import tkinter
 import tkinter.messagebox
 import customtkinter
 
-import socket
 import threading
-import os
+import sys
 
 from web_interface.app import start_flask
 from functions import (
@@ -21,7 +20,21 @@ from functions import (
 
 customtkinter.set_appearance_mode("light")  
 customtkinter.set_default_color_theme("blue") 
-blue_color = "#1f6aa5"
+
+class TextWidgetStream:
+    def __init__(self, text_widget):
+        self.text_widget = text_widget
+
+    def write(self, message):
+        
+        self.text_widget.after(0, self._write, message)
+    
+    def _write(self, message):
+        self.text_widget.insert("end", message)
+        self.text_widget.yview("end")  
+
+    def flush(self):
+        pass  
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -34,12 +47,10 @@ class App(customtkinter.CTk):
         self.config(cursor="none")
         self.change_scaling_event("130%")
 
-        # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure((2, 3), weight=0)
         self.grid_rowconfigure((0, 1, 2), weight=1)
 
-        # create sidebar frame with widgets
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
@@ -74,6 +85,9 @@ class App(customtkinter.CTk):
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.textbox.configure(cursor="none") 
 
+        sys.stdout = TextWidgetStream(self.textbox)
+        sys.stderr = TextWidgetStream(self.textbox)
+        
         self.tabview = customtkinter.CTkTabview(self, width=250)
         self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.tabview.add("CTkTabview")
