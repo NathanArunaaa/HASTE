@@ -4,15 +4,13 @@ import customtkinter
 import simpleaudio as sa
 import numpy as np
 
-def play_buzzer_simpleaudio(frequency=440, duration=0.1, sample_rate=44100):
+def play_buzzer(frequency=600, duration=0.1, sample_rate=44100):
     t = np.linspace(0, duration, int(sample_rate * duration), False)
     wave = 32767 * 0.5 * np.sin(2 * np.pi * frequency * t)
     wave = wave.astype(np.int16)
 
-    # Convert to stereo
     audio_data = np.column_stack([wave, wave])
 
-    # Play the sound
     sound = sa.play_buffer(audio_data, 2, 2, sample_rate)
     sound.wait_done()
 
@@ -36,9 +34,6 @@ def sys_shutdown():
 def sys_restart():
     os.system('sudo reboot')
 
-def testing():
-    play_buzzer_simpleaudio()
-    print('test')
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

@@ -15,7 +15,7 @@ from functions import (
     sys_shutdown, 
     sys_restart, 
     get_local_ip,
-    play_buzzer_simpleaudio
+    play_buzzer
     
 )
 
@@ -151,7 +151,7 @@ class App(customtkinter.CTk):
         self.seg_button_1.set("Value 2")
         
     def buzzer_thread(self):
-        buzzer_thread = threading.Thread(target=play_buzzer_simpleaudio)
+        buzzer_thread = threading.Thread(target=play_buzzer)
         buzzer_thread.daemon = True
         buzzer_thread.start()  
 
