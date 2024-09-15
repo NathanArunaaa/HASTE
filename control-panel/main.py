@@ -57,15 +57,15 @@ class App(customtkinter.CTk):
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="AMSS ", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover_color="#3b8ed0", command=play_buzzer_simpleaudio)
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover_color="#3b8ed0", command=self.buzzer_thread)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
         self.sidebar_button_1.configure(cursor="none")  
 
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration",hover_color="#3b8ed0", command=play_buzzer_simpleaudio)
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration",hover_color="#3b8ed0", command=self.buzzer_thread)
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         self.sidebar_button_2.configure(cursor="none") 
         
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=play_buzzer_simpleaudio)
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=self.buzzer_thread)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
         self.sidebar_button_3.configure(cursor="none") 
         
@@ -150,7 +150,10 @@ class App(customtkinter.CTk):
         self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
         self.seg_button_1.set("Value 2")
         
-        
+    def buzzer_thread(self):
+        buzzer_thread = threading.Thread(target=play_buzzer_simpleaudio)
+        buzzer_thread.daemon = True
+        buzzer_thread.start()  
 
     def open_input_dialog_event(self):
         open_input_dialog_event()
@@ -165,12 +168,12 @@ class App(customtkinter.CTk):
         sidebar_button_event()
 
     def sys_shutdown(self):
-        play_buzzer_simpleaudio()
+        self.buzzer_thread()
         if tkinter.messagebox.askyesno("Shutdown Confirmation", "Are you sure you want to shut down the system?"):
             sys_shutdown()
 
     def sys_restart(self):
-        play_buzzer_simpleaudio()
+        self.buzzer_thread()
         if tkinter.messagebox.askyesno("Restart Confirmation", "Are you sure you want to restart the system?"):
             sys_restart()
         
