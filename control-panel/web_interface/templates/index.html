@@ -1,26 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Machine Control</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <title>Result web viewer</title>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css'>
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat&amp;display=swap"rel="stylesheet'>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Web Machine Control</h1>
 
-    <div class="carousel-container">
-        <div class="carousel">
-            <div class="carousel-images">
-                <img src="{{ url_for('static', filename='images/image1.jpg') }}" class="carousel-image" id="image1" alt="Image 1">
-                <img src="{{ url_for('static', filename='images/image2.jpg') }}" class="carousel-image" id="image2" alt="Image 2">
-                <img src="{{ url_for('static', filename='images/image3.jpg') }}" class="carousel-image" id="image3" alt="Image 3">
-                <img src="{{ url_for('static', filename='images/image4.jpg') }}" class="carousel-image" id="image4" alt="Image 4">
-            </div>
+<div class="app">
+  <div class="cardList">
+    <button class="cardList__btn btn btn--left">
+      <div class="icon">
+        <svg>
+            <h1 xlink:href="#arrow-left">←</h1>
+        </svg>
+      </div>
+    </button>
+
+    <div class="cards__wrapper">
+      <div class="card {% if loop.first %}current--card{% elif loop.index == 2 %}next--card{% else %}previous--card{% endif %}">
+        <div class="card__image">
+          <img src="{{ url_for('static', filename=card.image) }}" alt="{{ card.name }}" />
         </div>
-        <input type="range" class="slider" min="1" max="4" value="1" id="carouselSlider">
+      </div>
     </div>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <button class="cardList__btn btn btn--right">
+      <div class="icon">
+        <svg>
+            <h1 xlink:href="#arrow-right">→</h1>
+        </svg>
+      </div>
+    </button>
+  </div>
+
+  <div class="infoList">
+    <div class="info__wrapper">
+      <div class="info {% if loop.first %}current--info{% elif loop.index == 2 %}next--info{% else %}previous--info{% endif %}">
+        <h1 class="text name">{{ card.name }}</h1>
+        <h4 class="text location">{{ card.location }}</h4>
+        <p class="text description">{{ card.description }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="app__bg">
+    <div class="app__bg__image {% if loop.first %}current--image{% elif loop.index == 2 %}next--image{% else %}previous--image{% endif %}">
+      <img src="{{ url_for('static', filename=card.image) }}" alt="{{ card.name }}" />
+    </div>
+  
+  </div>
+</div>
+
+<!-- JS -->
+<script src='https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/3.3.3/gsap.min.js'></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
 </body>
 </html>

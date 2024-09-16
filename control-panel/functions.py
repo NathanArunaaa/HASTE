@@ -46,4 +46,3 @@ def get_local_ip():
         s.close()
     return ip
 
-# Test the buzzer
