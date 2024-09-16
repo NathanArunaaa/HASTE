@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Result web viewer</title>
   <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.1/css/all.min.css'>
-  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat&amp;display=swap"rel="stylesheet'>
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat&amp;display=swap' rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -20,11 +20,13 @@
     </button>
 
     <div class="cards__wrapper">
-      <div class="card {% if loop.first %}current--card{% elif loop.index == 2 %}next--card{% else %}previous--card{% endif %}">
-        <div class="card__image">
-          <img src="{{ url_for('static', filename=card.image) }}" alt="{{ card.name }}" />
+      {% for card in cards %}
+        <div class="card {% if loop.first %}current--card{% elif loop.index == 2 %}next--card{% else %}previous--card{% endif %}">
+          <div class="card__image">
+            <img src="{{ url_for('static', filename=card.image) }}" alt="{{ card.name }}" />
+          </div>
         </div>
-      </div>
+      {% endfor %}
     </div>
 
     <button class="cardList__btn btn btn--right">
@@ -38,19 +40,22 @@
 
   <div class="infoList">
     <div class="info__wrapper">
-      <div class="info {% if loop.first %}current--info{% elif loop.index == 2 %}next--info{% else %}previous--info{% endif %}">
-        <h1 class="text name">{{ card.name }}</h1>
-        <h4 class="text location">{{ card.location }}</h4>
-        <p class="text description">{{ card.description }}</p>
-      </div>
+      {% for card in cards %}
+        <div class="info {% if loop.first %}current--info{% elif loop.index == 2 %}next--info{% else %}previous--info{% endif %}">
+          <h1 class="text name">{{ card.name }}</h1>
+          <h4 class="text location">{{ card.location }}</h4>
+          <p class="text description">{{ card.description }}</p>
+        </div>
+      {% endfor %}
     </div>
   </div>
 
   <div class="app__bg">
-    <div class="app__bg__image {% if loop.first %}current--image{% elif loop.index == 2 %}next--image{% else %}previous--image{% endif %}">
-      <img src="{{ url_for('static', filename=card.image) }}" alt="{{ card.name }}" />
-    </div>
-  
+    {% for card in cards %}
+      <div class="app__bg__image {% if loop.first %}current--image{% elif loop.index == 2 %}next--image{% else %}previous--image{% endif %}">
+        <img src="{{ url_for('static', filename=card.image) }}" alt="{{ card.name }}" />
+      </div>
+    {% endfor %}
   </div>
 </div>
 
