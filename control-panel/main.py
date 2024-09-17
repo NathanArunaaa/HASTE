@@ -90,7 +90,7 @@ class App(customtkinter.CTk):
         self.video_label = customtkinter.CTkLabel(self.video_frame, text="")
         self.video_label.grid(row=0, column=0, padx=20, pady=20)
 
-        self.cap = cv2.VideoCapture(0)  # Capture video from the default camera
+        self.cap = cv2.VideoCapture(1)  # Capture video from the default camera
         self.update_video_feed()
 
         # Textbox for Console Logs
@@ -137,7 +137,7 @@ class App(customtkinter.CTk):
             self.scrollable_frame_switches.append(switch)
 
         # Console Output
-        self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" +  "Lorem ipsum dolor sit amet, consetetur sadipscing elitr...\n\n" * 20)
+        self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
         self.seg_button_1 = customtkinter.CTkSegmentedButton(self.sidebar_frame)
         self.seg_button_1.configure(values=["CAM-1", "CAM-2", "Microscope"])
         self.seg_button_1.grid(row=0, column=0, padx=20, pady=(20, 10))
