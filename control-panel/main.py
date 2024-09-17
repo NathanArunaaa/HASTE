@@ -90,7 +90,7 @@ class App(customtkinter.CTk):
         self.video_label = customtkinter.CTkLabel(self.video_frame, text="")
         self.video_label.grid(row=0, column=0, padx=20, pady=20)
 
-        self.cap = cv2.VideoCapture(1)  # Capture video from the default camera
+        self.cap = cv2.VideoCapture(0)  # Capture video from the default camera
         self.update_video_feed()
 
         # Textbox for Console Logs
