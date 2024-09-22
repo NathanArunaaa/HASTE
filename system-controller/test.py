@@ -1,36 +1,18 @@
 import serial
 import time
-import random  # Simulate sensor data
 
-# Open the serial connection on Pi 2 (Slave)
-ser = serial.Serial('/dev/serial0', 9600, timeout=1)  # Adjust the port as needed
+# Open the serial connection on Pi 1 (Master)
+ser = serial.Serial('/dev/serial0', 9600, timeout=1)
 ser.flush()
 
-def read_sensor_data():
-    """Simulates sensor data reading (replace this with actual sensor code)"""
-    sensor_data = random.uniform(20.0, 30.0)  # Simulated sensor reading
-    return sensor_data
+def send_command(command):
+    """Sends a command to Pi 2"""
+    command_with_newline = command + "\n"  # Ensure there's a newline character
+    ser.write(command_with_newline.encode('utf-8'))  # Properly encode to UTF-8
+    print(f"Sent: {command_with_newline.strip()}")
 
-def process_command(command):
-    """Processes received commands and sends back data"""
-    if command == "start_sensors":
-        sensor_value = read_sensor_data()
-        response = f"Sensor data: {sensor_value:.2f} °C\n"
-        ser.write(response.encode('utf-8'))
-        print(f"Sent: {response.strip()}")
-    else:
-        ser.write("Unknown command\n".encode('utf-8'))
-        print("Unknown command received")
-
+# Main loop to send a command
 while True:
-    if ser.in_waiting > 0:
-        raw_data = ser.readline()
-        print(f"Raw Data: {raw_data}")
-        
-        try:
-            command = raw_data.decode('utf-8').rstrip()
-            print(f"Received command: {command}")
-            process_command(command)
-        except UnicodeDecodeError as e:
-            print(f"Error decoding command: {e}")
-            print(f"Raw data (hex): {raw_data.hex()}")
+    command = "start_sensors"  # Command to send
+    send_command(command)
+    time.sleep(5)  # Wait before sending the next command
