@@ -3,18 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cancer Detection App</title>
+    <title>Cancer Detection</title>
 </head>
 <body>
     <h1>Upload an Image</h1>
-    
-    <form action="{{ url_for('upload_image') }}" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept="image/*" required>
-        <button type="submit">Upload</button>
+    <form action="{{ url_for('predict') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Predict</button>
     </form>
-
-    {% if result %}
-    <h2>{{ result }}</h2>
-    {% endif %}
 </body>
 </html>
