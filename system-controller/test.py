@@ -33,4 +33,4 @@ while True:
             process_command(command)
         except UnicodeDecodeError as e:
             print(f"Error decoding command: {e}")
-            print(f"Raw data (hex): {raw_data.hex()}")  # Print hex representation
+            print(f"Raw data (hex): {raw_data.hex()}")
