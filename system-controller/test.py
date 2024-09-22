@@ -3,7 +3,7 @@ import time
 import random  # Simulate sensor data
 
 # Open the serial connection on Pi 2 (Slave)
-ser = serial.Serial('/dev/ttyAMA0', 9600, timeout=1)  # Change to /dev/serial0 if that's correct
+ser = serial.Serial('/dev/serial0', 9600, timeout=1)  # Change to /dev/serial0 if that's correct
 ser.flush()
 
 def read_sensor_data():
