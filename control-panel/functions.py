@@ -14,16 +14,10 @@ def play_buzzer(frequency=750, duration=0.1, sample_rate=44100):
     sound = sa.play_buffer(audio_data, 2, 2, sample_rate)
     sound.wait_done()
 
-def open_input_dialog_event():
-    dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
-    print("CTkInputDialog:", dialog.get_input())
-
 def change_scaling_event(new_scaling: str):
     new_scaling_float = int(new_scaling.replace("%", "")) / 100
     customtkinter.set_widget_scaling(new_scaling_float)
 
-def sidebar_button_event():
-    print("sidebar_button click")
 
 def sys_shutdown():
     os.system('sudo shutdown -h now')

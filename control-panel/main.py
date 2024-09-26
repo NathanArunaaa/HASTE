@@ -4,10 +4,11 @@ import threading
 import sys
 import cv2
 from PIL import Image, ImageTk
+from tkinter import messagebox
+import os
 
 from web_interface.app import start_flask
 from functions import (
-    open_input_dialog_event, 
     change_scaling_event, 
     sys_shutdown, 
     sys_restart, 
@@ -39,7 +40,8 @@ class App(customtkinter.CTk):
         #------inits------- 
         self.title("")
         self.config(cursor="none")
-        self.cap = cv2.VideoCapture(0)  
+        self.cap = cv2.VideoCapture(0) 
+         
 
         self.attributes("-fullscreen", True)
         self.config(cursor="none")
@@ -117,7 +119,7 @@ class App(customtkinter.CTk):
         
         #------Tabs-------
         self.tabview = customtkinter.CTkTabview(self, fg_color="white", width=250)
-        self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(0, 0), sticky="nsew")
         self.tabview.add("Blade")
         self.tabview.add("Sensors")
         self.tabview.add("Steppers")
@@ -135,8 +137,21 @@ class App(customtkinter.CTk):
         self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
         
         #------Steppers-------
-        self.label_tab_2 = customtkinter.CTkLabel(self.tabview.tab("Steppers"), text="Stepper pos here")
-        self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
+        self.up_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="↑", width=40)
+        self.up_button.grid(row=0, column=1, padx=20, pady=20)
+
+        self.left_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="←", width=40)
+        self.left_button.grid(row=1, column=0, padx=20, pady=20)
+        
+        self.left_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="O", width=40)
+        self.left_button.grid(row=1, column=1, padx=20, pady=20)
+
+        self.right_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="→", width=40)
+        self.right_button.grid(row=1, column=2, padx=20, pady=20)
+
+        self.down_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="↓", width=40)
+        self.down_button.grid(row=2, column=1, padx=20, pady=10)
+        
         
         #------Switch buttons-------
         self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="Active Indicators")
@@ -160,19 +175,24 @@ class App(customtkinter.CTk):
         buzzer_thread = threading.Thread(target=play_buzzer)
         buzzer_thread.daemon = True
         buzzer_thread.start()  
+        
+    def show_confirmation_dialog(self, action):
+        response = messagebox.askyesno("Confirm Action", f"Are you sure you want to {action}?")
+        return response
 
-    def open_input_dialog_event(self):
-        open_input_dialog_event()
+ 
 
    
     def change_scaling_event(self, new_scaling: str):
         change_scaling_event(new_scaling)
 
     def sys_shutdown(self):
-        sys_shutdown()
-
+        if self.show_confirmation_dialog("Shut Down"):
+           sys_shutdown()
+           
     def sys_restart(self):
-        sys_restart()
+        if self.show_confirmation_dialog("Restart"):
+           sys_restart()
 
     def update_video_feed(self):
         ret, frame = self.cap.read()
@@ -188,9 +208,11 @@ class App(customtkinter.CTk):
     def on_closing(self, event=0):
         self.cap.release()  
         self.destroy()
-
+    
+ 
 
 if __name__ == "__main__":
+    print(os.getcwd())
     app = App()
     flask_thread = threading.Thread(target=start_flask)
     flask_thread.daemon = True

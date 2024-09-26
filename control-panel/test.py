@@ -2,13 +2,12 @@ import serial
 import time
 import random
 
-# Open the serial connection on Pi 2 (Slave)
 ser = serial.Serial('/dev/serial0', 9600, timeout=1)
 ser.flush()
 
 def read_sensor_data():
     """Simulates sensor data reading (replace with actual sensor code)"""
-    sensor_data = random.uniform(20.0, 30.0)  # Simulated sensor reading
+    sensor_data = random.uniform(20.0, 30.0)  
     return sensor_data
 
 def process_command(command):
@@ -16,10 +15,10 @@ def process_command(command):
     if command == "start_sensors":
         sensor_value = read_sensor_data()
         response = f"Sensor data: {sensor_value:.2f} °C"
-        ser.write(response.encode('utf-8'))  # Send the response
+        ser.write(response.encode('utf-8'))  
         print(f"Sent: {response}")
     else:
-        ser.write("Unknown command\n".encode('utf-8'))  # Send unknown command response
+        ser.write("Unknown command\n".encode('utf-8'))  
 
 while True:
     if ser.in_waiting > 0:
