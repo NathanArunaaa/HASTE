@@ -99,13 +99,19 @@ class App(customtkinter.CTk):
         self.video_feeds_frame.grid_rowconfigure(4, weight=1)
         self.textbox = customtkinter.CTkTextbox(self, width=250)
 
-        self.cam_buttons = customtkinter.CTkSegmentedButton(self.video_feeds_frame)
-        self.cam_buttons.grid(row=0, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
+        self.cam_buttons = customtkinter.CTkSegmentedButton(
+            self.video_feeds_frame, 
+            values=["CAM-1", "CAM-2", "Microscope"], 
+            command=self.on_camera_change 
+        )
+        self.cam_buttons.grid(row=0, column=0, padx=20, pady=10)
         
         self.video_frame = customtkinter.CTkFrame(self.video_feeds_frame, fg_color="white")
         self.video_frame.grid(row=1, column=0, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.video_label = customtkinter.CTkLabel(self.video_frame, text="")
         self.video_label.grid(row=0, column=0, padx=20, pady=20) 
+        
+    
 
         self.update_video_feed()
 
@@ -137,20 +143,20 @@ class App(customtkinter.CTk):
         self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
         
         #------Steppers-------
-        self.up_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="↑", width=40)
-        self.up_button.grid(row=0, column=1, padx=20, pady=20)
+        self.up_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="↑", width=20)
+        self.up_button.grid(row=0, column=1, padx=10, pady=10)
 
-        self.left_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="←", width=40)
-        self.left_button.grid(row=1, column=0, padx=20, pady=20)
+        self.left_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="←", width=20)
+        self.left_button.grid(row=1, column=0, padx=10, pady=10)
         
-        self.left_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="O", width=40)
-        self.left_button.grid(row=1, column=1, padx=20, pady=20)
+        self.left_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="O", width=20)
+        self.left_button.grid(row=1, column=1, padx=10, pady=10)
 
-        self.right_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="→", width=40)
-        self.right_button.grid(row=1, column=2, padx=20, pady=20)
+        self.right_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="→", width=20)
+        self.right_button.grid(row=1, column=2, padx=10, pady=10)
 
-        self.down_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="↓", width=40)
-        self.down_button.grid(row=2, column=1, padx=20, pady=10)
+        self.down_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="↓", width=20)
+        self.down_button.grid(row=2, column=1, padx=10, pady=10)
         
         
         #------Switch buttons-------
@@ -166,7 +172,6 @@ class App(customtkinter.CTk):
             
         #------Default values-------
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
-        self.cam_buttons.configure(values=["Microscope", "CAM-1", "CAM-2"])
         self.cam_buttons.set("Microscope")
         
   
@@ -179,9 +184,24 @@ class App(customtkinter.CTk):
     def show_confirmation_dialog(self, action):
         response = messagebox.askyesno("Confirm Action", f"Are you sure you want to {action}?")
         return response
+    
 
- 
+    def on_camera_change(self, event):
+        selected_camera = self.cam_buttons.get()
+        print(f"Selected camera: {selected_camera}")  
+        camera_index = 0  
 
+        if selected_camera == "CAM-1":
+            camera_index = 0  
+        elif selected_camera == "CAM-2":
+            camera_index = 1  
+        elif selected_camera == "Microscope":
+            camera_index = 2 
+        
+        self.cap.release() 
+        self.cap = cv2.VideoCapture(camera_index)  
+        if not self.cap.isOpened():
+            messagebox.showerror("Error", f"Unable to access camera: {camera_index}")
    
     def change_scaling_event(self, new_scaling: str):
         change_scaling_event(new_scaling)
