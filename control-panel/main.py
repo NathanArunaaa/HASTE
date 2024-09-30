@@ -38,7 +38,7 @@ class App(customtkinter.CTk):
         super().__init__()
 
         #------inits------- 
-        self.title("")
+        self.title("HASTE CONTROL PANEL")
         self.config(cursor="none")
         self.cap = cv2.VideoCapture(0) 
          
@@ -56,7 +56,7 @@ class App(customtkinter.CTk):
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(5, weight=1)
 
-        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="AMSS ", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="HASTE", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover_color="#3b8ed0", command=self.buzzer_thread)
