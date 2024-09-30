@@ -1,1 +1,1 @@
-# Science-Fair-2025
+# HASTE: Histology Automation for Swift Tissue Evaluation
