@@ -101,7 +101,7 @@ class App(customtkinter.CTk):
 
         self.cam_buttons = customtkinter.CTkSegmentedButton(
             self.video_feeds_frame, 
-            values=["CAM-1", "CAM-2", "Microscope"], 
+            values=["Microscope", "CAM-1", "CAM-2"],
             command=self.on_camera_change 
         )
         self.cam_buttons.grid(row=0, column=0, padx=20, pady=10)
@@ -237,5 +237,4 @@ if __name__ == "__main__":
     flask_thread = threading.Thread(target=start_flask)
     flask_thread.daemon = True
     flask_thread.start()
-
     app.mainloop()
