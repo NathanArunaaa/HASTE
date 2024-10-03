@@ -191,11 +191,11 @@ class App(customtkinter.CTk):
         print(f"Selected camera: {selected_camera}")  
         camera_index = 0  
 
-        if selected_camera == "CAM-1":
+        if selected_camera == "Microscope":
             camera_index = 0  
+        elif selected_camera == "CAM-1":
+            camera_index = 1
         elif selected_camera == "CAM-2":
-            camera_index = 1  
-        elif selected_camera == "Microscope":
             camera_index = 2 
         
         self.cap.release() 
