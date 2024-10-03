@@ -6,12 +6,10 @@ ser = serial.Serial('/dev/serial0', 9600, timeout=1)
 ser.flush()
 
 def read_sensor_data():
-    """Simulates sensor data reading (replace with actual sensor code)"""
     sensor_data = random.uniform(20.0, 30.0)  
     return sensor_data
 
 def process_command(command):
-    """Processes received commands and sends back data"""
     if command == "start_sensors":
         sensor_value = read_sensor_data()
         response = f"Sensor data: {sensor_value:.2f} °C"
