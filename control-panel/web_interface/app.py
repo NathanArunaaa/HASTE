@@ -6,7 +6,7 @@ app = Flask(__name__)
 def home():
     cards = [
         {
-            'image': 'images/image1.jpg',  # Only specify the path relative to the 'static' folder
+            'image': 'images/image1.jpg', 
             'name': 'Slide 1',
             'location': 'Captured at: 11:58:18 ',
             'description': 'Perform AI analysis on your data'
