@@ -36,6 +36,8 @@ class TextWidgetStream:
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
+        
+        self.sample_loaded = False
 
         #------inits------- 
         self.title("HASTE CONTROL PANEL")
@@ -44,7 +46,7 @@ class App(customtkinter.CTk):
          
 
         self.attributes("-fullscreen", True)
-        self.config(cursor="none")
+       #self.config(cursor="none")
         self.change_scaling_event("130%")
 
         self.grid_columnconfigure(1, weight=1)
@@ -59,25 +61,25 @@ class App(customtkinter.CTk):
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="HASTE", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
-        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover_color="#3b8ed0", command=self.buzzer_thread)
+        self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover_color="#3b8ed0", command=self.open_config_menu)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        self.sidebar_button_1.configure(cursor="none")
+        #self.sidebar_button_1.configure(cursor="none")
 
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration", hover_color="#3b8ed0", command=self.buzzer_thread)
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
-        self.sidebar_button_2.configure(cursor="none")
+        #self.sidebar_button_2.configure(cursor="none")
 
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=self.buzzer_thread)
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=self.handle_sample_loading)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
-        self.sidebar_button_3.configure(cursor="none")
+        #self.sidebar_button_3.configure(cursor="none")
         
         self.sidebar_button_6 = customtkinter.CTkButton(self.sidebar_frame, text="Flush System", hover_color="#3b8ed0", )
         self.sidebar_button_6.grid(row=4, column=0, padx=20, pady=10)
-        self.sidebar_button_6.configure(cursor="none")
+        #self.sidebar_button_6.configure(cursor="none")
 
         self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="System Restart", hover_color="#3b8ed0", command=self.sys_restart)
         self.sidebar_button_4.grid(row=6, column=0, padx=20, pady=(10, 10))
-        self.sidebar_button_4.configure(cursor="none")
+        #self.sidebar_button_4.configure(cursor="none")
 
         self.sidebar_button_5 = customtkinter.CTkButton(self.sidebar_frame, text="Shut Down", hover_color="#3b8ed0", command=self.sys_shutdown)
         self.sidebar_button_5.grid(row=7 , column=0, padx=20, pady=(10, 10))
@@ -174,18 +176,71 @@ class App(customtkinter.CTk):
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
         self.cam_buttons.set("Microscope")
         
-  
-    #------Functions-------
-    def buzzer_thread(self):
+    #------Config menus-------
+    def open_config_menu(self):
+        config_window = customtkinter.CTkToplevel(self)
+        config_window.title("Configuration Menu")
+        config_window.geometry("700x400")  
+
+        config_window.attributes("-topmost", True)
+
+        label = customtkinter.CTkLabel(config_window, text="Configure Machine Settings", font=("Arial", 16))
+        label.pack(pady=20)
+
+        scale = customtkinter.CTkSlider(config_window, from_=0, to=100, width=300)
+        scale.pack(pady=20)
+
+        apply_button = customtkinter.CTkButton(config_window, text="Apply Settings", command=lambda: print("Settings Applied"))
+        apply_button.pack(pady=20)
+
+        close_button = customtkinter.CTkButton(config_window, text="Close", command=config_window.destroy)
+        close_button.pack(pady=20)
+
         buzzer_thread = threading.Thread(target=play_buzzer)
         buzzer_thread.daemon = True
-        buzzer_thread.start()  
+        buzzer_thread.start()
         
-    def show_confirmation_dialog(self, action):
-        response = messagebox.askyesno("Confirm Action", f"Are you sure you want to {action}?")
-        return response
+        
+    
+    def open_loading_menu(self):
+        loading_window = customtkinter.CTkToplevel(self)
+        loading_window.title("Load Sample")
+        loading_window.geometry("500x200")
+        loading_window.attributes("-topmost", True)
+
+        label = customtkinter.CTkLabel(loading_window, text="Ensure The Sample Is Properly Secured Before Continuing", font=("Arial", 14))
+        label.pack(pady=20)
+
+        done_button = customtkinter.CTkButton(loading_window, text="Done", command=lambda: self.finish_loading_sample(loading_window))
+        done_button.pack(pady=20)
+
+        buzzer_thread = threading.Thread(target=play_buzzer)
+        buzzer_thread.daemon = True
+        buzzer_thread.start()
+
     
 
+    
+    
+    #------Functions-------
+
+
+    #------Sample Loading-------
+    def handle_sample_loading(self):
+        if not self.sample_loaded:
+            self.open_loading_menu()
+        else:
+            self.sidebar_button_3.configure(text="Load Sample")
+            self.sample_loaded = False
+            print("Sample Unloaded")
+            
+    def finish_loading_sample(self, loading_window):
+        loading_window.destroy()  
+        self.sidebar_button_3.configure(text="Unload Sample") 
+        self.sample_loaded = True 
+        
+        
+    #------Video-------
     def on_camera_change(self, event):
         selected_camera = self.cam_buttons.get()
         print(f"Selected camera: {selected_camera}")  
@@ -203,17 +258,6 @@ class App(customtkinter.CTk):
         if not self.cap.isOpened():
             messagebox.showerror("Error", f"Unable to access camera: {camera_index}")
    
-    def change_scaling_event(self, new_scaling: str):
-        change_scaling_event(new_scaling)
-
-    def sys_shutdown(self):
-        if self.show_confirmation_dialog("Shut Down"):
-           sys_shutdown()
-           
-    def sys_restart(self):
-        if self.show_confirmation_dialog("Restart"):
-           sys_restart()
-
     def update_video_feed(self):
         ret, frame = self.cap.read()
         if ret:
@@ -224,6 +268,36 @@ class App(customtkinter.CTk):
             self.video_label.imgtk = imgtk  
 
         self.after(10, self.update_video_feed)
+                 
+    def buzzer_thread(self):
+        buzzer_thread = threading.Thread(target=play_buzzer)
+        buzzer_thread.daemon = True
+        buzzer_thread.start()  
+        
+    def show_confirmation_dialog(self, action):
+        response = messagebox.askyesno("Confirm Action", f"Are you sure you want to {action}?")
+        return response
+    
+    
+    def apply_settings(self, speed, max_value):
+        print(f"Speed set to: {speed}")
+        print(f"Max Value set to: {max_value}")
+  
+   
+   
+    def change_scaling_event(self, new_scaling: str):
+        change_scaling_event(new_scaling)
+
+
+    def sys_shutdown(self):
+        if self.show_confirmation_dialog("Shut Down"):
+           sys_shutdown()
+     
+           
+    def sys_restart(self):
+        if self.show_confirmation_dialog("Restart"):
+           sys_restart()
+
 
     def on_closing(self, event=0):
         self.cap.release()  
