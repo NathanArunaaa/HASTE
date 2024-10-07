@@ -187,6 +187,10 @@ class App(customtkinter.CTk):
         label = customtkinter.CTkLabel(config_window, text="Configure Machine Settings", font=("Arial", 16))
         label.pack(pady=20)
 
+        if not self.sample_loaded:
+           no_sample_label = customtkinter.CTkLabel(config_window, text="Warning: No sample loaded!", font=("Arial", 14), fg_color="red")
+           no_sample_label.pack(pady=10)
+
         scale = customtkinter.CTkSlider(config_window, from_=0, to=100, width=300)
         scale.pack(pady=20)
 
@@ -199,6 +203,7 @@ class App(customtkinter.CTk):
         buzzer_thread = threading.Thread(target=play_buzzer)
         buzzer_thread.daemon = True
         buzzer_thread.start()
+
         
         
     
