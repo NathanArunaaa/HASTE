@@ -8,8 +8,7 @@ from tkinter import messagebox
 import os
 import serial
 
-ser = serial.Serial('/dev/serial0', 9600, timeout=1)
-ser.flush()
+
 
 from web_interface.app import start_flask
 from functions import (
@@ -44,6 +43,8 @@ class App(customtkinter.CTk):
         self.sample_loaded = False
 
         #------inits------- 
+        ser = serial.Serial('/dev/serial0', 9600, timeout=1)
+        ser.flush()
         self.title("HASTE CONTROL PANEL")
         self.config(cursor="none")
         self.cap = cv2.VideoCapture(0) 
@@ -69,7 +70,7 @@ class App(customtkinter.CTk):
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
         self.sidebar_button_1.configure(cursor="none")
 
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration", hover_color="#3b8ed0", command=self.send_command())
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration", hover_color="#3b8ed0", command=self.send_command("YOUR_COMMAND_STRING"))
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         self.sidebar_button_2.configure(cursor="none")
 
@@ -318,10 +319,34 @@ class App(customtkinter.CTk):
   
    
 
-    def send_command():
-       command_with_newline = "test"  
-       ser.write(command_with_newline.encode('utf-8'))  
-       print(f"Sent: {command_with_newline.strip()}")
+    def send_command(self, command):
+        try:
+            # Check if the serial port is open
+            if self.ser.is_open:
+                print(f"Sending command: {command}")
+
+                # Convert the command to bytes if it's a string
+                if isinstance(command, str):
+                    command_bytes = command.encode('utf-8')  # Convert string to bytes
+
+                # Write the command to the UART port
+                self.ser.write(command_bytes)
+
+                # Optionally read a response from the serial device
+                response = self.ser.readline().decode('utf-8').strip()
+                print(f"Response from device: {response}")
+
+                # Handle the response (you can update UI elements, process the response, etc.)
+
+            else:
+                print("Serial port is not open.")
+        except serial.SerialException as e:
+            print(f"Error sending command over UART: {e}")
+
+    def close_connection(self):
+        if self.ser.is_open:
+            self.ser.close()
+            print("Serial connection closed.")
 
     def change_scaling_event(self, new_scaling: str):
         change_scaling_event(new_scaling)
