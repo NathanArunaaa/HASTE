@@ -43,8 +43,8 @@ class App(customtkinter.CTk):
         self.sample_loaded = False
 
         #------inits------- 
-        ser = serial.Serial('/dev/serial0', 9600, timeout=1)
-        ser.flush()
+        self.ser = serial.Serial('/dev/serial0', 9600, timeout=1)
+        self.ser.flush()
         self.title("HASTE CONTROL PANEL")
         self.config(cursor="none")
         self.cap = cv2.VideoCapture(0) 
