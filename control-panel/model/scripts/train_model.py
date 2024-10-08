@@ -68,7 +68,6 @@ history = model.fit(
     callbacks=[early_stopping]
 )
 
-# Save the model
 model.save('cancer_detection_model.h5')
 
 print("Model training complete and saved as 'cancer_detection_model.h5'")
