@@ -246,7 +246,6 @@ class App(customtkinter.CTk):
         buzzer_thread.start()
 
     
-    
     #------Functions-------
 
 
