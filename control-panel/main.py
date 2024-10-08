@@ -222,11 +222,13 @@ class App(customtkinter.CTk):
 
         start_button = customtkinter.CTkButton(config_window, text="Start", command=lambda: print(f"Starting analysis with {int(scale.get())} microns"))
         start_button.grid(row=3, column=0, padx=20, pady=10)
-
-    def update_micron_value(self, value, label):
-        label.configure(text=f"Selected value: {int(value)} microns")
-
         
+        buzzer_thread = threading.Thread(target=play_buzzer)
+        buzzer_thread.daemon = True
+        buzzer_thread.start()
+
+   
+
         
     
     def open_loading_menu(self):
@@ -297,6 +299,9 @@ class App(customtkinter.CTk):
         buzzer_thread = threading.Thread(target=play_buzzer)
         buzzer_thread.daemon = True
         buzzer_thread.start()  
+        
+    def update_micron_value(self, value, label):
+        label.configure(text=f"Selected value: {int(value)} microns")
         
     def show_confirmation_dialog(self, action):
         response = messagebox.askyesno("Confirm Action", f"Are you sure you want to {action}?")
