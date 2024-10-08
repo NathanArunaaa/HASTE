@@ -6,6 +6,10 @@ import cv2
 from PIL import Image, ImageTk
 from tkinter import messagebox
 import os
+import serial
+
+ser = serial.Serial('/dev/serial0', 9600, timeout=1)
+ser.flush()
 
 from web_interface.app import start_flask
 from functions import (
@@ -65,7 +69,7 @@ class App(customtkinter.CTk):
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
         self.sidebar_button_1.configure(cursor="none")
 
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration", hover_color="#3b8ed0", command=self.buzzer_thread)
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration", hover_color="#3b8ed0", command=self.send_command("test"))
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         self.sidebar_button_2.configure(cursor="none")
 
@@ -313,7 +317,12 @@ class App(customtkinter.CTk):
         print(f"Max Value set to: {max_value}")
   
    
-   
+
+    def send_command(command):
+       command_with_newline = command + "\n"  
+       ser.write(command_with_newline.encode('utf-8'))  
+       print(f"Sent: {command_with_newline.strip()}")
+
     def change_scaling_event(self, new_scaling: str):
         change_scaling_event(new_scaling)
 
