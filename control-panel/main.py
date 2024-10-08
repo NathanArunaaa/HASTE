@@ -175,34 +175,56 @@ class App(customtkinter.CTk):
         #------Default values-------
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
         self.cam_buttons.set("Microscope")
-        
+ 
     #------Config menus-------
     def open_config_menu(self):
         config_window = customtkinter.CTkToplevel(self)
-        config_window.title("Configuration Menu")
-        config_window.geometry("700x400")  
-
+        config_window.title("Configuration Analysis Settings")
+        config_window.geometry("700x400")
+    
         config_window.attributes("-topmost", True)
+        config_window.grid_rowconfigure(0, weight=1)
+        config_window.grid_rowconfigure(1, weight=1)
+        config_window.grid_columnconfigure(0, weight=1)
+        config_window.grid_columnconfigure(1, weight=1)
 
-        label = customtkinter.CTkLabel(config_window, text="Configure Machine Settings", font=("Arial", 16))
-        label.pack(pady=20)
+        label = customtkinter.CTkLabel(config_window, text="Sample Analysis Settings", font=("Arial", 14))
+        label.grid(row=0, column=0, padx=20, pady=10)
 
         if not self.sample_loaded:
-           no_sample_label = customtkinter.CTkLabel(config_window, text="Warning: No sample loaded!", font=("Arial", 14), fg_color="red")
-           no_sample_label.pack(pady=10)
+            no_sample_label = customtkinter.CTkLabel(config_window, text="Warning: No sample loaded!", font=("Arial", 12), text_color="red")
+            no_sample_label.grid(row=1, column=0, padx=20, pady=10)
 
-        scale = customtkinter.CTkSlider(config_window, from_=0, to=100, width=300)
-        scale.pack(pady=20)
+        micron_value_label = customtkinter.CTkLabel(config_window, text="Selected value: 50 microns", font=("Arial", 14))
+        micron_value_label.grid(row=3, column=1, padx=20, pady=10)
 
-        apply_button = customtkinter.CTkButton(config_window, text="Apply Settings", command=lambda: print("Settings Applied"))
-        apply_button.pack(pady=20)
+        scale = customtkinter.CTkSlider(config_window, from_=1, to=100, width=300, command=lambda value: self.update_micron_value(value, micron_value_label))
+        scale.grid(row=2, column=1, padx=20, pady=10)
 
-        close_button = customtkinter.CTkButton(config_window, text="Close", command=config_window.destroy)
-        close_button.pack(pady=20)
+        preset_options = ["Tissue Type 1", "Tissue Type 2", "Tissue Type 3", "Tissue Type 4"]
+        self.preset_combobox = customtkinter.CTkComboBox(config_window, values=preset_options)
+        self.preset_combobox.set("Select a Preset")  
+        self.preset_combobox.grid(row=2, column=0, padx=20, pady=10)
 
-        buzzer_thread = threading.Thread(target=play_buzzer)
-        buzzer_thread.daemon = True
-        buzzer_thread.start()
+        def apply_preset():
+            selected_preset = self.preset_combobox.get()
+            print(f"Selected preset: {selected_preset}")
+            if selected_preset == "Low Resolution":
+                print("Applying low resolution settings...")
+            elif selected_preset == "Medium Resolution":
+                print("Applying medium resolution settings...")
+            elif selected_preset == "High Resolution":
+                print("Applying high resolution settings...")
+            else:
+                print("Applying custom settings...")
+        close_button = customtkinter.CTkButton(config_window, text="Cancel", command=config_window.destroy)
+        close_button.grid(row=4, column=0, padx=20, pady=10)
+
+        start_button = customtkinter.CTkButton(config_window, text="Start", command=lambda: print(f"Starting analysis with {int(scale.get())} microns"))
+        start_button.grid(row=3, column=0, padx=20, pady=10)
+
+    def update_micron_value(self, value, label):
+        label.configure(text=f"Selected value: {int(value)} microns")
 
         
         
@@ -222,8 +244,6 @@ class App(customtkinter.CTk):
         buzzer_thread = threading.Thread(target=play_buzzer)
         buzzer_thread.daemon = True
         buzzer_thread.start()
-
-    
 
     
     
