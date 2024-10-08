@@ -319,7 +319,7 @@ class App(customtkinter.CTk):
    
 
     def send_command():
-       command_with_newline = "test" + "\n"  
+       command_with_newline = "test"  
        ser.write(command_with_newline.encode('utf-8'))  
        print(f"Sent: {command_with_newline.strip()}")
 
