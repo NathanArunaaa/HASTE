@@ -31,7 +31,6 @@ while True:
         try:
             command = raw_data.decode('utf-8', errors='ignore').rstrip()
 
-            
             if is_valid_command(command):
                 print(f"Received valid command: {command}")
                 process_command(command)
