@@ -10,7 +10,8 @@ from functions import (
 def initialize_serial_connection():
     try:
         ser = serial.Serial('/dev/serial0', 9600, timeout=1)
-        ser.flush()
+        ser.flush()  # Flush any initial junk data
+        print("Serial port opened successfully.")
         return ser
     except serial.SerialException as e:
         print(f"Error initializing serial port: {e}")
