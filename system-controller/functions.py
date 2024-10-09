@@ -25,9 +25,8 @@ def step_motor(direction, steps):
 
 def sample_extend():
     try:
-       
         print("Goin up...")
-        step_motor(CW, 400)  
+        step_motor(CCW, 20000)  
         
 
     except KeyboardInterrupt:
@@ -35,5 +34,5 @@ def sample_extend():
 
     finally:
         GPIO.cleanup()
-          
+
 sample_extend()

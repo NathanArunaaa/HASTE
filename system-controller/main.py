@@ -10,7 +10,7 @@ def read_sensor_data():
     return sensor_data
 
 def process_command(command):
-    if command == "start_sensors":
+    if command == "EXTEND_SAMPLE":
         sensor_value = read_sensor_data()
         response = f"Sensor data: {sensor_value:.2f} °C"
         ser.write(response.encode('utf-8'))  

@@ -237,6 +237,7 @@ class App(customtkinter.CTk):
         
     
     def open_loading_menu(self):
+        self.send_command("EXTEND_SAMPLE")
         loading_window = customtkinter.CTkToplevel(self)
         loading_window.title("Load Sample")
         loading_window.geometry("500x200")
@@ -266,6 +267,7 @@ class App(customtkinter.CTk):
             print("Sample Unloaded")
             
     def finish_loading_sample(self, loading_window):
+        self.send_command("RETRACT_SAMPLE")
         loading_window.destroy()  
         self.sidebar_button_3.configure(text="Unload Sample") 
         self.sample_loaded = True 
