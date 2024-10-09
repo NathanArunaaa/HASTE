@@ -16,23 +16,16 @@ def initialize_serial_connection():
         print(f"Error initializing serial port: {e}")
         exit(1)
 
-def clean_command(raw_command):
-    return ''.join(c for c in raw_command if c.isprintable())
-
 def process_command(ser, command):
-    # Define the commands
-    command_map = {
-        "lrp": sample_extend,  # Assuming lrp means "extend sample"
-        "sllp": sample_retract  # Assuming sllp means "retract sample"
-    }
-
-    # Execute command if it exists in the command map
-    if command in command_map:
-        command_map[command]()  # Call the associated function
-        response = f"Executed: {command}"
+    if command == "EXTEND_SAMPLE":
+        sample_extend()
+        response = "Extended sample"
+    elif command == "RETRACT_SAMPLE":
+        sample_retract()
+        response = "Retracted sample"
     else:
         response = "Unknown command"
-    
+
     # Send response back over serial
     ser.write(f"{response}\n".encode('utf-8'))
     print(f"Sent: {response}")
@@ -44,14 +37,14 @@ def listen_for_commands(ser):
                 raw_data = ser.readline()
                 print(f"Raw Data: {raw_data}")
 
+                # Decode raw data as UTF-8 and remove trailing whitespace/newline
                 command = raw_data.decode('utf-8', errors='ignore').rstrip()
-                cleaned_command = clean_command(command)
-                print(f"Received cleaned command: {cleaned_command}")
+                print(f"Received command: {command}")
 
-                if cleaned_command:
-                    process_command(ser, cleaned_command)
+                if command:  # Check if command is not empty
+                    process_command(ser, command)
                 else:
-                    print("No valid command found after cleaning")
+                    print("No valid command received")
 
             time.sleep(0.5)
 
