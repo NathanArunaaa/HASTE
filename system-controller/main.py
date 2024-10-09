@@ -2,13 +2,16 @@ import serial
 import time
 import random
 
+# Initialize serial connection
 ser = serial.Serial('/dev/serial0', 9600, timeout=1)
 ser.flush()
 
+# Simulate sensor data
 def read_sensor_data():
     sensor_data = random.uniform(20.0, 30.0)
     return sensor_data
 
+# Process valid commands only
 def process_command(command):
     if command == "start_sensors":
         sensor_value = read_sensor_data()
@@ -19,15 +22,27 @@ def process_command(command):
         ser.write("Unknown command\n".encode('utf-8'))
         print(f"Received unknown command: {command}")
 
+# Validate command by checking structure and length
+def is_valid_command(command):
+    expected_command = "start_sensors"
+    return len(command) == len(expected_command) and command == expected_command
+
 while True:
     if ser.in_waiting > 0:
-        raw_data = ser.readline()
+        raw_data = ser.readline()  # Read raw data from serial
         print(f"Raw Data: {raw_data}")
 
         try:
-            command = raw_data.decode('utf-8', errors='ignore').rstrip()  
-            print(f"Received command: {command}")
-            process_command(command)
+            # Decode the command while ignoring errors (noise)
+            command = raw_data.decode('utf-8', errors='ignore').rstrip()
+
+            # Check if the command is valid
+            if is_valid_command(command):
+                print(f"Received valid command: {command}")
+                process_command(command)
+            else:
+                print(f"Ignoring invalid command: {command}")
+                
         except UnicodeDecodeError as e:
             print(f"Error decoding command: {e}")
             print(f"Raw data (hex): {raw_data.hex()}")
