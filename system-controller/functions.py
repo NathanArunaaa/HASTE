@@ -6,7 +6,7 @@ DIR_PIN = 20
 STEP_PIN = 21  
 CW = 1 
 CCW = 0  
-STEP_DELAY = 0.001  
+STEP_DELAY = 0.000000000001  
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(DIR_PIN, GPIO.OUT)
@@ -47,4 +47,4 @@ def sample_retract():
     finally:
         GPIO.cleanup()
 
-sample_extend()
+sample_retract()
