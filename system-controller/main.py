@@ -23,7 +23,7 @@ def clean_command(raw_command):
 # Function to process commands
 def process_command(ser, command):
     if command == "EXTEND_SAMPLE":
-        sample_retract()
+        sample_extend()
         response = "extended sample"
         ser.write(response.encode('utf-8'))  
         print(f"Sent: {response}")
