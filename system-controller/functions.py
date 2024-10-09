@@ -35,4 +35,16 @@ def sample_extend():
     finally:
         GPIO.cleanup()
 
+def sample_retract():
+    try:
+        print("Goin up...")
+        step_motor(CCW, 20000)  
+        
+
+    except KeyboardInterrupt:
+        print("Program interrupted")
+
+    finally:
+        GPIO.cleanup()
+
 sample_extend()
