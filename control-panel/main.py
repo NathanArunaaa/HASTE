@@ -323,24 +323,36 @@ class App(customtkinter.CTk):
     
 
     def send_command(self, command):
+        # Start a new thread for sending command
+        threading.Thread(target=self._send_command_thread, args=(command,)).start()
+
+    def _send_command_thread(self, command):
+        # This function runs in a separate thread to send a command and handle its response.
         try:
+            if not self.ser.is_open:
+                self.ser.open()
+            
+            # Send command
+            print(f"Sending command: {command}")
+            self.ser.write(command.encode('utf-8'))
+
+            # Optional: Read response from serial device
+            response = self.ser.readline().decode('utf-8').strip()  # Assuming the device sends a response
+            print(f"Received response: {response}")
+
+            # Display response in the textbox (console log)
+            if response:
+                sys.stdout.write(response + '\n')
+        
+        except Exception as e:
+            print(f"Error sending command: {e}")
+            sys.stdout.write(f"Error sending command: {e}\n")
+        
+        finally:
+            # Optional: Close the serial connection if you want to close it here
             if self.ser.is_open:
-                print(f"Sending command: {command}")
-
-                if isinstance(command, str):
-                    command_bytes = command.encode('utf-8')
-
-                self.ser.write(command_bytes)
-
-                response = self.ser.readline().decode('utf-8').strip()
-                print(f"Response from device: {response}")
-
-
-            else:
-                print("Serial port is not open.")
-        except serial.SerialException as e:
-            print(f"Error sending command over UART: {e}")
-
+                self.ser.close()
+                
     def close_connection(self):
         if self.ser.is_open:
             self.ser.close()
