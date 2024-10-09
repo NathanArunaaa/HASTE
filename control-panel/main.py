@@ -320,6 +320,7 @@ class App(customtkinter.CTk):
         print(f"Max Value set to: {max_value}")
   
    
+    
 
     def send_command(self, command):
         try:

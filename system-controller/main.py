@@ -1,9 +1,14 @@
-import serial
 import time
 import random
+import serial
 
-ser = serial.Serial('/dev/serial0', 9600, timeout=1)
-ser.flush()
+# Ensure the serial connection is initialized
+try:
+    ser = serial.Serial('/dev/serial0', 9600, timeout=1)
+    ser.flush()
+except serial.SerialException as e:
+    print(f"Error initializing serial port: {e}")
+    exit(1)
 
 from functions import (
     sample_extend,
@@ -21,20 +26,21 @@ def process_command(command):
         ser.write(response.encode('utf-8'))  
         print(f"Sent: {response}")
     elif command == "RETRACT_SAMPLE":
-        sample_retract()  # Assuming this should be sample_retract, not sample_extend
+        sample_retract()
         response = "retracted sample"
         ser.write(response.encode('utf-8'))  
         print(f"Sent: {response}")
     else:
-        ser.write("Unknown command\n".encode('utf-8'))
+        response = "Unknown command"
+        ser.write(f"{response}\n".encode('utf-8'))
         print(f"Received unknown command: {command}")
 
 while True:
-    if ser.in_waiting > 0:
-        raw_data = ser.readline()
-        print(f"Raw Data: {raw_data}")
+    try:
+        if ser.in_waiting > 0:
+            raw_data = ser.readline()
+            print(f"Raw Data: {raw_data}")
 
-        try:
             # First try decoding with UTF-8 and ignore errors
             command = raw_data.decode('utf-8', errors='ignore').rstrip()
 
@@ -47,9 +53,13 @@ while True:
             else:
                 print("No valid command found after cleaning")
 
-        except UnicodeDecodeError as e:
-            print(f"Error decoding command: {e}")
-            print(f"Raw data (hex): {raw_data.hex()}")
-        
-        # Small delay to prevent CPU hogging
-        time.sleep(1)
+        time.sleep(0.5)  # Adjust this delay to prevent CPU overuse
+
+    except UnicodeDecodeError as e:
+        print(f"Error decoding command: {e}")
+        print(f"Raw data (hex): {raw_data.hex()}")
+    except serial.SerialException as e:
+        print(f"Serial communication error: {e}")
+        time.sleep(2)  # Wait before retrying
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
