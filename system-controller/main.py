@@ -5,14 +5,21 @@ import random
 ser = serial.Serial('/dev/serial0', 9600, timeout=1)
 ser.flush()
 
-def read_sensor_data():
-    sensor_data = random.uniform(20.0, 30.0)
-    return sensor_data
+from functions import (
+    sample_extend,
+    sample_retract
+)
+
 
 def process_command(command):
     if command == "EXTEND_SAMPLE":
-        sensor_value = read_sensor_data()
-        response = f"Sensor data: {sensor_value:.2f} °C"
+        sample_extend()
+        response = "extended sample"
+        ser.write(response.encode('utf-8'))  
+        print(f"Sent: {response}")
+    if command == "RETRACT_SAMPLE":
+        sample_extend()
+        response = "retracted sample"
         ser.write(response.encode('utf-8'))  
         print(f"Sent: {response}")
     else:
