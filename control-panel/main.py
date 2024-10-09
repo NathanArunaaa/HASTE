@@ -321,22 +321,17 @@ class App(customtkinter.CTk):
 
     def send_command(self, command):
         try:
-            # Check if the serial port is open
             if self.ser.is_open:
                 print(f"Sending command: {command}")
 
-                # Convert the command to bytes if it's a string
                 if isinstance(command, str):
-                    command_bytes = command.encode('utf-8')  # Convert string to bytes
+                    command_bytes = command.encode('utf-8')
 
-                # Write the command to the UART port
                 self.ser.write(command_bytes)
 
-                # Optionally read a response from the serial device
                 response = self.ser.readline().decode('utf-8').strip()
                 print(f"Response from device: {response}")
 
-                # Handle the response (you can update UI elements, process the response, etc.)
 
             else:
                 print("Serial port is not open.")
