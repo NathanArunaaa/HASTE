@@ -48,7 +48,7 @@ class App(customtkinter.CTk):
          
 
         self.attributes("-fullscreen", True)
-        self.config(cursor="none")
+        #self.config(cursor="none")
         self.change_scaling_event("130%")
 
         self.grid_columnconfigure(1, weight=1)
@@ -65,29 +65,27 @@ class App(customtkinter.CTk):
 
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover_color="#3b8ed0", command=self.open_config_menu)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        self.sidebar_button_1.configure(cursor="none")
+        #self.sidebar_button_1.configure(cursor="none")
 
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration", hover_color="#3b8ed0")
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
-        self.sidebar_button_2.configure(cursor="none")
+        #self.sidebar_button_2.configure(cursor="none")
 
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=self.handle_sample_loading)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
-        self.sidebar_button_3.configure(cursor="none")
+        #self.sidebar_button_3.configure(cursor="none")
         
         self.sidebar_button_6 = customtkinter.CTkButton(self.sidebar_frame, text="Flush System", hover_color="#3b8ed0", command=lambda: self.send_command("start_sensors"))
         self.sidebar_button_6.grid(row=4, column=0, padx=20, pady=10)
-        self.sidebar_button_6.configure(cursor="none")
+        #self.sidebar_button_6.configure(cursor="none")
 
         self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="System Restart", hover_color="#3b8ed0", command=self.sys_restart)
         self.sidebar_button_4.grid(row=6, column=0, padx=20, pady=(10, 10))
-        self.sidebar_button_4.configure(cursor="none")
+        #self.sidebar_button_4.configure(cursor="none")
 
         self.sidebar_button_5 = customtkinter.CTkButton(self.sidebar_frame, text="Shut Down", hover_color="#3b8ed0", command=self.sys_shutdown)
         self.sidebar_button_5.grid(row=7 , column=0, padx=20, pady=(10, 10))
-        self.sidebar_button_5.configure(cursor="none")
-        
-      
+        #self.sidebar_button_5.configure(cursor="none")
         
 
         local_ip = get_local_ip() 
@@ -181,13 +179,13 @@ class App(customtkinter.CTk):
     #------Config menus-------
     def open_config_menu(self):
         config_window = customtkinter.CTkToplevel(self)
+
         config_window.title("Configuration Analysis Settings")
         config_window.geometry("700x400")
+        config_window.attributes("-fullscreen", True)
     
         config_window.attributes("-topmost", True)
-        config_window.grid_rowconfigure(0, weight=1)
         config_window.grid_rowconfigure(1, weight=1)
-        config_window.grid_columnconfigure(0, weight=1)
         config_window.grid_columnconfigure(1, weight=1)
 
         label = customtkinter.CTkLabel(config_window, text="Sample Analysis Settings", font=("Arial", 14))
@@ -208,6 +206,13 @@ class App(customtkinter.CTk):
         self.preset_combobox.set("Select a Preset")  
         self.preset_combobox.grid(row=2, column=0, padx=20, pady=10)
 
+      
+        start_button = customtkinter.CTkButton(config_window, text="Start", command=lambda: print(f"Starting analysis with {int(scale.get())} microns"))
+        start_button.grid(row=3, column=0, padx=20, pady=10)
+        
+        close_button = customtkinter.CTkButton(config_window, text="Cancel", command=config_window.destroy)
+        close_button.grid(row=4, column=0, padx=20, pady=10)
+
         def apply_preset():
             selected_preset = self.preset_combobox.get()
             print(f"Selected preset: {selected_preset}")
@@ -219,12 +224,6 @@ class App(customtkinter.CTk):
                 print("Applying high resolution settings...")
             else:
                 print("Applying custom settings...")
-        close_button = customtkinter.CTkButton(config_window, text="Cancel", command=config_window.destroy)
-        close_button.grid(row=4, column=0, padx=20, pady=10)
-
-        start_button = customtkinter.CTkButton(config_window, text="Start", command=lambda: print(f"Starting analysis with {int(scale.get())} microns"))
-        start_button.grid(row=3, column=0, padx=20, pady=10)
-        
         buzzer_thread = threading.Thread(target=play_buzzer)
         buzzer_thread.daemon = True
         buzzer_thread.start()
