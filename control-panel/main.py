@@ -6,7 +6,6 @@ import cv2
 from PIL import Image, ImageTk
 from tkinter import messagebox
 import os
-import serial
 
 
 
@@ -42,8 +41,7 @@ class App(customtkinter.CTk):
         
         self.sample_loaded = False
 
-        #------inits------- 
-        self.ser = serial.Serial('/dev/serial0', 9600, timeout=1)
+        #------inits-------     
         self.title("HASTE CONTROL PANEL")
         self.config(cursor="none")
         self.cap = cv2.VideoCapture(0) 
@@ -69,7 +67,7 @@ class App(customtkinter.CTk):
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
         self.sidebar_button_1.configure(cursor="none")
 
-        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration", hover_color="#3b8ed0", command=lambda: self.send_command("TEST_DATA"))
+        self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration", hover_color="#3b8ed0")
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         self.sidebar_button_2.configure(cursor="none")
 
@@ -317,45 +315,7 @@ class App(customtkinter.CTk):
     def apply_settings(self, speed, max_value):
         print(f"Speed set to: {speed}")
         print(f"Max Value set to: {max_value}")
-  
-   
-    
 
-    def send_command(self, command):
-        # Start a new thread for sending command
-        threading.Thread(target=self._send_command_thread, args=(command,)).start()
-
-    def _send_command_thread(self, command):
-        # This function runs in a separate thread to send a command and handle its response.
-        try:
-            if not self.ser.is_open:
-                self.ser.open()
-            
-            # Send command
-            print(f"Sending command: {command}")
-            self.ser.write(command.encode('utf-8'))
-
-            # Optional: Read response from serial device
-            response = self.ser.readline().decode('utf-8').strip()  # Assuming the device sends a response
-            print(f"Received response: {response}")
-
-            # Display response in the textbox (console log)
-            if response:
-                sys.stdout.write(response + '\n')
-        
-        except Exception as e:
-            print(f"Error sending command: {e}")
-            sys.stdout.write(f"Error sending command: {e}\n")
-        
-        finally:
-            # Optional: Close the serial connection if you want to close it here
-            if self.ser.is_open:
-                self.ser.close()
-                
-    def close_connection(self):
-        if self.ser.is_open:
-            self.ser.close()
-            print("Serial connection closed.")
 
     def change_scaling_event(self, new_scaling: str):
         change_scaling_event(new_scaling)
