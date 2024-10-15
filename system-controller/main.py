@@ -22,7 +22,8 @@ try:
         if not data:  # If no data, exit the loop
             print("No data received, closing connection.")
             break
-        command = data.decode('utf-8')  # Decode the received data
+        
+        command = data.decode('utf-8').strip()  # Decode and strip whitespace from the received data
         print(f"Received command: {command}")
 
         # Process the received command
