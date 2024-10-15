@@ -28,7 +28,7 @@ try:
         # Process the received command
         if command == "EXTEND_SAMPLE":
             sample_extend()  # Call the sample extending function
-        elif command == "retract_sample":
+        elif command == "RETRACT_SAMPLE":
             sample_retract()
         else:
             print(f"Unknown command: {command}")
