@@ -257,7 +257,7 @@ class App(customtkinter.CTk):
     
     #------Functions-------
 
-    def send_command(command):
+    def send_command(self, command):
     # Replace with your Raspberry Pi's IP address
       server_ip = '192.168.1.20'
       port = 5000  # Ensure this matches your server's listening port
