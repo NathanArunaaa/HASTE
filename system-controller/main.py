@@ -6,14 +6,16 @@ from functions import sample_extend, sample_retract
 GPIO.setmode(GPIO.BCM)
 # Example: GPIO.setup(pin_number, GPIO.OUT)
 
-# Create server socket
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(('0.0.0.0', 5000))  # Listen on all interfaces
-server_socket.listen(1)
-
-print("Waiting for a connection...")
 
 while True:
+# Create server socket
+ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ server_socket.bind(('0.0.0.0', 5000))  # Listen on all interfaces
+ server_socket.listen(1)
+
+ print("Waiting for a connection...")
+
+
  try:
     connection, address = server_socket.accept()
     print(f"Connected to {address}")
