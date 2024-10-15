@@ -19,6 +19,9 @@ try:
 
     while True:
         data = connection.recv(1024)  # Receive data from the client
+        if not data:  # If no data, exit the loop
+            print("No data received, closing connection.")
+            break
         
         command = data.decode('utf-8').strip()  # Decode and strip whitespace from the received data
         print(f"Received command: {command}")
