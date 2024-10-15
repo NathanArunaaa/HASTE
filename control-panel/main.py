@@ -3,6 +3,7 @@ import customtkinter
 import threading
 import sys
 import cv2
+import socket 
 from PIL import Image, ImageTk
 from tkinter import messagebox
 import os
@@ -20,6 +21,9 @@ from functions import (
 
 customtkinter.set_appearance_mode("light")  
 customtkinter.set_default_color_theme("blue") 
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect(('192.168.x.x', 5000)) 
 
 class TextWidgetStream:
     def __init__(self, text_widget):
@@ -45,7 +49,7 @@ class App(customtkinter.CTk):
         self.title("HASTE CONTROL PANEL")
         self.config(cursor="none")
         self.cap = cv2.VideoCapture(0) 
-         
+        
 
         self.attributes("-fullscreen", True)
         #self.config(cursor="none")
@@ -71,7 +75,7 @@ class App(customtkinter.CTk):
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         #self.sidebar_button_2.configure(cursor="none")
 
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=self.handle_sample_loading)
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=lambda: self.send_command("EXTEND_SAMPLE") )
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
         #self.sidebar_button_3.configure(cursor="none")
         
@@ -252,6 +256,8 @@ class App(customtkinter.CTk):
     
     #------Functions-------
 
+    def send_command(self, command):
+       client_socket.send(command.encode('utf-8'))
 
     #------Sample Loading-------
     def handle_sample_loading(self):
