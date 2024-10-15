@@ -257,15 +257,20 @@ class App(customtkinter.CTk):
     
     #------Functions-------
 
-    def send_command(self, command):
-        # Create a socket connection to the control panel
+    def send_command(command):
+    # Replace with your Raspberry Pi's IP address
+      server_ip = '192.168.1.20'
+      port = 5000  # Ensure this matches your server's listening port
+
+      with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
         try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.connect((CONTROL_PANEL_IP, CONTROL_PANEL_PORT))
-                s.sendall(command.encode('utf-8'))
-                print(f"Command sent: {command}")
+            client_socket.connect((server_ip, port))  # Connect to the server
+            client_socket.sendall(command.encode('utf-8'))  # Send the command
+            print(f"Sent command: {command}")
+        except ConnectionRefusedError:
+            print("Connection failed. Is the server running?")
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to send command: {str(e)}")
+            print(f"An error occurred: {e}")
 
 
     #------Sample Loading-------
