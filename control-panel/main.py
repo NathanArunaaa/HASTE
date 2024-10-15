@@ -22,8 +22,9 @@ from functions import (
 customtkinter.set_appearance_mode("light")  
 customtkinter.set_default_color_theme("blue") 
 
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect(('192.168.x.x', 5000)) 
+CONTROL_PANEL_IP = '192.168.1.10'
+CONTROL_PANEL_PORT = 5000
+
 
 class TextWidgetStream:
     def __init__(self, text_widget):
@@ -75,7 +76,7 @@ class App(customtkinter.CTk):
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         #self.sidebar_button_2.configure(cursor="none")
 
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=lambda: self.send_command("EXTEND_SAMPLE") )
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", ccommand=lambda: self.send_command("EEXTEND_SAMPLE"))
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
         #self.sidebar_button_3.configure(cursor="none")
         
@@ -257,7 +258,15 @@ class App(customtkinter.CTk):
     #------Functions-------
 
     def send_command(self, command):
-       client_socket.send(command.encode('utf-8'))
+        # Create a socket connection to the control panel
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((CONTROL_PANEL_IP, CONTROL_PANEL_PORT))
+                s.sendall(command.encode('utf-8'))
+                print(f"Command sent: {command}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to send command: {str(e)}")
+
 
     #------Sample Loading-------
     def handle_sample_loading(self):
