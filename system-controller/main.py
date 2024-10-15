@@ -1,40 +1,40 @@
 import socket
 import RPi.GPIO as GPIO
-import time
+from functions import sample_extend, sample_retract
 
-from functions import (
-    sample_extend,
-    sample_retract
-)
-
-# GPIO setup (replace with your actual GPIO pin numbers and setup)
-GPIO.setmode(GPIO.BCM)  # or GPIO.BOARD
+# GPIO setup
+GPIO.setmode(GPIO.BCM)
 # Example: GPIO.setup(pin_number, GPIO.OUT)
 
 # Create server socket
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind(('0.0.0.0', 5000))  # Bind to all interfaces on port 5000
+server_socket.bind(('0.0.0.0', 5000))  # Listen on all interfaces
 server_socket.listen(1)
 
 print("Waiting for a connection...")
-connection, address = server_socket.accept()
-print(f"Connected to {address}")
 
 try:
+    connection, address = server_socket.accept()
+    print(f"Connected to {address}")
+
     while True:
         data = connection.recv(1024)  # Receive data from the client
         if not data:  # If no data, exit the loop
+            print("No data received, closing connection.")
             break
         command = data.decode('utf-8')  # Decode the received data
         print(f"Received command: {command}")
 
         # Process the received command
-        if command == "load_sample":  # Match the command from the sender
+        if command == "EXTEND_SAMPLE":
             sample_extend()  # Call the sample extending function
-        elif command == "retract_sample":  # Handle sample retraction
+        elif command == "retract_sample":
             sample_retract()
         else:
             print(f"Unknown command: {command}")
+
+except Exception as e:
+    print(f"An error occurred: {e}")
 
 finally:
     connection.close()  # Close the connection
