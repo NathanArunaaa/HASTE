@@ -13,7 +13,8 @@ server_socket.listen(1)
 
 print("Waiting for a connection...")
 
-try:
+while True:
+ try:
     connection, address = server_socket.accept()
     print(f"Connected to {address}")
 
@@ -40,10 +41,10 @@ try:
         except Exception as process_error:
             print(f"Error processing command: {process_error}")
 
-except Exception as e:
+ except Exception as e:
     print(f"An error occurred: {e}")
 
-finally:
+ finally:
     print("Closing connection...")
     connection.close()  # Close the connection
     GPIO.cleanup()  # Clean up GPIO settings
