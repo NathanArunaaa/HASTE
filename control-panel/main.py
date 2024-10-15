@@ -76,7 +76,7 @@ class App(customtkinter.CTk):
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
         #self.sidebar_button_2.configure(cursor="none")
 
-        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=lambda: self.send_command("EXTEND_SAMPLE"))
+        self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=self.open_loading_menu)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
         #self.sidebar_button_3.configure(cursor="none")
         
@@ -247,7 +247,7 @@ class App(customtkinter.CTk):
         label = customtkinter.CTkLabel(loading_window, text="Ensure The Sample Is Properly Secured Before Continuing", font=("Arial", 14))
         label.pack(pady=20)
 
-        done_button = customtkinter.CTkButton(loading_window, text="Done", command=lambda: self.finish_loading_sample(loading_window))
+        done_button = customtkinter.CTkButton(loading_window, text="Done", command=lambda: self.send_command("RETRACT_SAMPLE"))
         done_button.pack(pady=20)
 
         buzzer_thread = threading.Thread(target=play_buzzer)
@@ -258,7 +258,6 @@ class App(customtkinter.CTk):
     #------Functions-------
 
     def send_command(self, command):
-    # Replace with your Raspberry Pi's IP address
       server_ip = '192.168.1.20'
       port = 5000  # Ensure this matches your server's listening port
 
