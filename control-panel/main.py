@@ -7,7 +7,7 @@ import socket
 from PIL import Image, ImageTk
 from tkinter import messagebox
 import os
-
+import time
 
 
 from web_interface.app import start_flask
@@ -80,7 +80,7 @@ class App(customtkinter.CTk):
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
         #self.sidebar_button_3.configure(cursor="none")
         
-        self.sidebar_button_6 = customtkinter.CTkButton(self.sidebar_frame, text="Flush System", hover_color="#3b8ed0", command=lambda: self.send_command("start_sensors"))
+        self.sidebar_button_6 = customtkinter.CTkButton(self.sidebar_frame, text="Flush System", hover_color="#3b8ed0")
         self.sidebar_button_6.grid(row=4, column=0, padx=20, pady=10)
         #self.sidebar_button_6.configure(cursor="none")
 
@@ -238,33 +238,58 @@ class App(customtkinter.CTk):
         
     
     def open_loading_menu(self):
-        self.send_command("EXTEND_SAMPLE")
+        command_thread = threading.Thread(target=lambda: self.send_command("EXTEND_SAMPLE"))
+        command_thread.daemon = True
+        command_thread.start()
+
         loading_window = customtkinter.CTkToplevel(self)
         loading_window.title("Load Sample")
         loading_window.geometry("500x200")
         loading_window.attributes("-topmost", True)
+        loading_window.attributes("-fullscreen", True)
 
-        label = customtkinter.CTkLabel(loading_window, text="Ensure The Sample Is Properly Secured Before Continuing", font=("Arial", 14))
+        label = customtkinter.CTkLabel(loading_window, text="Ensure The Sample Is Properly Secured Before Continuing", font=("Arial", 30), width=500)
         label.pack(pady=20)
 
-        done_button = customtkinter.CTkButton(loading_window, text="Done", command=lambda: self.send_command("RETRACT_SAMPLE"))
+        loader_label = customtkinter.CTkLabel(loading_window, text="Chuck Elevating...", font=("Arial", 20))
+        loader_label.pack(pady=10)
+        
+        def on_done():
+            command_thread = threading.Thread(target=lambda: self.send_command("RETRACT_SAMPLE"))
+            command_thread.daemon = True
+            command_thread.start() 
+            loading_window.destroy() 
+
+        done_button = customtkinter.CTkButton(loading_window,text="Done", command=on_done)
         done_button.pack(pady=20)
+        done_button.pack_forget()  
+
+        def remove_loader_and_show_done():
+            time.sleep(10)  
+            loader_label.pack_forget()  
+            done_button.pack(pady=20)  
+
+        timer_thread = threading.Thread(target=remove_loader_and_show_done)
+        timer_thread.daemon = True
+        timer_thread.start()
 
         buzzer_thread = threading.Thread(target=play_buzzer)
         buzzer_thread.daemon = True
         buzzer_thread.start()
+
+       
 
     
     #------Functions-------
 
     def send_command(self, command):
       server_ip = '192.168.1.20'
-      port = 5000  # Ensure this matches your server's listening port
+      port = 5000  
 
       with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
         try:
-            client_socket.connect((server_ip, port))  # Connect to the server
-            client_socket.sendall(command.encode('utf-8'))  # Send the command
+            client_socket.connect((server_ip, port))  
+            client_socket.sendall(command.encode('utf-8'))  
             print(f"Sent command: {command}")
         except ConnectionRefusedError:
             print("Connection failed. Is the server running?")
