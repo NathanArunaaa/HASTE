@@ -190,8 +190,8 @@ class App(customtkinter.CTk):
         config_window.attributes("-fullscreen", True)
     
         config_window.attributes("-topmost", True)
-        config_window.grid_rowconfigure(1, weight=1)
-        config_window.grid_columnconfigure(1, weight=1)
+        config_window.grid_rowconfigure(5, weight=5)
+        config_window.grid_columnconfigure(5, weight=5)
 
         label = customtkinter.CTkLabel(config_window, text="Sample Analysis Settings", font=("Arial", 14))
         label.grid(row=0, column=0, padx=20, pady=10)
@@ -199,8 +199,14 @@ class App(customtkinter.CTk):
         if not self.sample_loaded:
             no_sample_label = customtkinter.CTkLabel(config_window, text="Warning: No sample loaded!", font=("Arial", 12), text_color="red")
             no_sample_label.grid(row=1, column=0, padx=20, pady=10)
+            
+        section_value_label = customtkinter.CTkLabel(config_window, text="Selected value: 10 section(s)", font=("Arial", 14))
+        section_value_label.grid(row=1, column=1, padx=20, pady=10)
 
-        micron_value_label = customtkinter.CTkLabel(config_window, text="Selected value: 50 microns", font=("Arial", 14))
+        section_slider = customtkinter.CTkSlider(config_window, from_=1, to=20, width=300, command=lambda value: self.update_section_value(value, section_value_label))
+        section_slider.grid(row=0, column=1, padx=20, pady=10)
+
+        micron_value_label = customtkinter.CTkLabel(config_window, text="Selected value: 50 micron(s)", font=("Arial", 14))
         micron_value_label.grid(row=3, column=1, padx=20, pady=10)
 
         scale = customtkinter.CTkSlider(config_window, from_=1, to=100, width=300, command=lambda value: self.update_micron_value(value, micron_value_label))
@@ -221,12 +227,12 @@ class App(customtkinter.CTk):
         def apply_preset():
             selected_preset = self.preset_combobox.get()
             print(f"Selected preset: {selected_preset}")
-            if selected_preset == "Low Resolution":
-                print("Applying low resolution settings...")
-            elif selected_preset == "Medium Resolution":
-                print("Applying medium resolution settings...")
-            elif selected_preset == "High Resolution":
-                print("Applying high resolution settings...")
+            if selected_preset == "Tissue Type 1":
+                print("Applying settings...")
+            elif selected_preset == "Tissue Type 2":
+                print("Applying settings...")
+            elif selected_preset == "Tissue Type 3":
+                print("Applying  settings...")
             else:
                 print("Applying custom settings...")
         buzzer_thread = threading.Thread(target=play_buzzer)
@@ -357,7 +363,10 @@ class App(customtkinter.CTk):
         buzzer_thread.start()  
         
     def update_micron_value(self, value, label):
-        label.configure(text=f"Selected value: {int(value)} microns")
+        label.configure(text=f"Selected value: {int(value)} micron(s)")
+        
+    def update_section_value(self, value, label):
+        label.configure(text=f"Selected value: {int(value)} section(s)")
         
     def show_confirmation_dialog(self, action):
         response = messagebox.askyesno("Confirm Action", f"Are you sure you want to {action}?")
