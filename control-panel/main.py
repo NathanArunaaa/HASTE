@@ -248,26 +248,33 @@ class App(customtkinter.CTk):
         loading_window.attributes("-topmost", True)
         loading_window.attributes("-fullscreen", True)
 
-        label = customtkinter.CTkLabel(loading_window, text="Ensure The Sample Is Properly Secured Before Continuing", font=("Arial", 30), width=500)
-        label.pack(pady=20)
+    # Set the whole window background to white
+        loading_window.configure(bg="white")
 
-        loader_label = customtkinter.CTkLabel(loading_window, text="Chuck Elevating...", font=("Arial", 20))
-        loader_label.pack(pady=10)
-        
+    
+        content_frame = customtkinter.CTkFrame(loading_window, fg_color="white")
+        content_frame.pack(expand=True)  
+
+        label = customtkinter.CTkLabel(content_frame, text="Ensure The Sample Is Properly Secured Before Continuing", font=("Arial", 30))
+        label.pack(pady=(20, 10))  
+
+        loader_label = customtkinter.CTkLabel(content_frame, text="Chuck Elevating...", font=("Arial", 20))
+        loader_label.pack(pady=(0, 10)) 
+
         def on_done():
             command_thread = threading.Thread(target=lambda: self.send_command("RETRACT_SAMPLE"))
             command_thread.daemon = True
-            command_thread.start() 
-            loading_window.destroy() 
+            command_thread.start()
+            loading_window.destroy()
 
-        done_button = customtkinter.CTkButton(loading_window,text="Done", command=on_done)
-        done_button.pack(pady=20)
-        done_button.pack_forget()  
+        done_button = customtkinter.CTkButton(content_frame, text="Done", command=on_done)
+        done_button.pack(pady=(10, 20))  
+        done_button.pack_forget() 
 
         def remove_loader_and_show_done():
-            time.sleep(10)  
+            time.sleep(4)
             loader_label.pack_forget()  
-            done_button.pack(pady=20)  
+            done_button.pack(pady=(10, 20))  
 
         timer_thread = threading.Thread(target=remove_loader_and_show_done)
         timer_thread.daemon = True
@@ -276,6 +283,8 @@ class App(customtkinter.CTk):
         buzzer_thread = threading.Thread(target=play_buzzer)
         buzzer_thread.daemon = True
         buzzer_thread.start()
+
+
 
        
 
