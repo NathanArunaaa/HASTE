@@ -65,7 +65,7 @@ class App(customtkinter.CTk):
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(5, weight=1)
 
-        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="HASTE", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="H . A . S . T . E", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover_color="#3b8ed0", command=self.open_config_menu)
@@ -80,7 +80,7 @@ class App(customtkinter.CTk):
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
         #self.sidebar_button_3.configure(cursor="none")
         
-        self.sidebar_button_6 = customtkinter.CTkButton(self.sidebar_frame, text="Flush System", hover_color="#3b8ed0")
+        self.sidebar_button_6 = customtkinter.CTkButton(self.sidebar_frame, text="Flush System", hover_color="#3b8ed0", command=self.open_flush_menu)
         self.sidebar_button_6.grid(row=4, column=0, padx=20, pady=10)
         #self.sidebar_button_6.configure(cursor="none")
 
@@ -119,7 +119,6 @@ class App(customtkinter.CTk):
         self.video_label.grid(row=0, column=0, padx=20, pady=20) 
         
     
-
         self.update_video_feed()
 
 
@@ -249,16 +248,13 @@ class App(customtkinter.CTk):
         command_thread.start()
 
         loading_window = customtkinter.CTkToplevel(self)
-        loading_window.title("Load Sample")
+        loading_window.title("Flush System")
         loading_window.geometry("500x200")
         loading_window.attributes("-topmost", True)
         loading_window.attributes("-fullscreen", True)
 
-    # Set the whole window background to white
-        loading_window.configure(bg="white")
-
     
-        content_frame = customtkinter.CTkFrame(loading_window, fg_color="white")
+        content_frame = customtkinter.CTkFrame(loading_window, fg_color="#ebebeb")
         content_frame.pack(expand=True)  
 
         label = customtkinter.CTkLabel(content_frame, text="Ensure The Sample Is Properly Secured Before Continuing", font=("Arial", 30))
@@ -271,6 +267,52 @@ class App(customtkinter.CTk):
             command_thread = threading.Thread(target=lambda: self.send_command("RETRACT_SAMPLE"))
             command_thread.daemon = True
             command_thread.start()
+            self.sample_loaded = True
+            loading_window.destroy()
+
+        done_button = customtkinter.CTkButton(content_frame, text="Continue", command=on_done)
+        done_button.pack(pady=(10, 20))  
+        done_button.pack_forget() 
+
+        def remove_loader_and_show_done():
+            time.sleep(4)
+            loader_label.pack_forget()  
+            done_button.pack(pady=(10, 20))  
+
+        timer_thread = threading.Thread(target=remove_loader_and_show_done)
+        timer_thread.daemon = True
+        timer_thread.start()
+
+        buzzer_thread = threading.Thread(target=play_buzzer)
+        buzzer_thread.daemon = True
+        buzzer_thread.start()
+        
+        
+        
+    def open_flush_menu(self):
+        command_thread = threading.Thread(target=lambda: self.send_command(""))
+        command_thread.daemon = True
+        command_thread.start()
+
+        loading_window = customtkinter.CTkToplevel(self)
+        loading_window.title("Load Sample")
+        loading_window.geometry("500x200")
+        loading_window.attributes("-topmost", True)
+        loading_window.attributes("-fullscreen", True)
+
+    
+        content_frame = customtkinter.CTkFrame(loading_window, fg_color="#ebebeb")
+        content_frame.pack(expand=True)  
+
+       
+        loader_label = customtkinter.CTkLabel(content_frame, text="System is Flushing...", font=("Arial", 20))
+        loader_label.pack(pady=(20, 10)) 
+
+        def on_done():
+            command_thread = threading.Thread(target=lambda: self.send_command(""))
+            command_thread.daemon = True
+            command_thread.start()
+            self.sample_loaded = True
             loading_window.destroy()
 
         done_button = customtkinter.CTkButton(content_frame, text="Done", command=on_done)
