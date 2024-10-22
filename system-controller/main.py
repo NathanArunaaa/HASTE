@@ -20,7 +20,7 @@ while True:
                 data = connection.recv(1024)  
                 if not data:  
                     print("No data received, closing connection.")
-                    break  
+                    continue  
                 
                 command = data.decode('utf-8').strip()  
                 print(f"Received command: {command}")
