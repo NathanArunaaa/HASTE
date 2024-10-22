@@ -9,6 +9,7 @@ CCW = 0
 STEP_DELAY = 0.000000000001  
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False) 
+
 GPIO.setup(DIR_PIN, GPIO.OUT)
 GPIO.setup(STEP_PIN, GPIO.OUT)
 
@@ -33,7 +34,7 @@ def sample_extend():
         print("Program interrupted")
 
     finally:
-        GPIO.cleanup()
+        print("done")
 
 def sample_retract():
     try:
@@ -44,5 +45,5 @@ def sample_retract():
         print("Program interrupted")
 
     finally:
-        GPIO.cleanup()
+        print("done")
 
