@@ -6,7 +6,7 @@ DIR_PIN = 20
 STEP_PIN = 21  
 CW = 1 
 CCW = 0  
-STEP_DELAY = 0.00001  
+STEP_DELAY = 0.001  
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False) 
 
