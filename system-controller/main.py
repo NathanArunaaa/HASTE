@@ -1,7 +1,10 @@
 import socket
 import RPi.GPIO as GPIO
-from functions import sample_extend, sample_retract
 
+from functions import (
+    sample_extend, 
+    sample_retract
+)
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False) 
 
