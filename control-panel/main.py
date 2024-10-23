@@ -275,7 +275,7 @@ class App(customtkinter.CTk):
         done_button.pack_forget() 
 
         def remove_loader_and_show_done():
-            time.sleep(4)
+            time.sleep(5)
             loader_label.pack_forget()  
             done_button.pack(pady=(10, 20))  
 
