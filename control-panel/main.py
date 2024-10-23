@@ -257,7 +257,7 @@ class App(customtkinter.CTk):
         content_frame = customtkinter.CTkFrame(loading_window, fg_color="#ebebeb")
         content_frame.pack(expand=True)  
 
-        label = customtkinter.CTkLabel(content_frame, text="Ensure The Sample Is Properly Secured Before Continuing", font=("Arial", 30))
+        label = customtkinter.CTkLabel(content_frame, text="Ensure The Sample Is Properly Secured Before Continuing", font=("Arial", 26))
         label.pack(pady=(20, 10))  
 
         loader_label = customtkinter.CTkLabel(content_frame, text="Chuck Elevating...", font=("Arial", 20))
