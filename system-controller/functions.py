@@ -27,7 +27,7 @@ def step_motor(direction, steps):
 def sample_extend():
     try:
         print("Goin up...")
-        step_motor(CCW, 48000)  
+        step_motor(CCW, 100000)  
         
 
     except KeyboardInterrupt:
@@ -39,7 +39,7 @@ def sample_extend():
 def sample_retract():
     try:
         print("Goin down...")
-        step_motor(CW, 48000)  
+        step_motor(CW, 100000)  
         
     except KeyboardInterrupt:
         print("Program interrupted")
