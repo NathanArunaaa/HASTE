@@ -48,7 +48,7 @@ def sample_extend():
     """
     try:
         print("Extending...")
-        step_motor(CCW, 5000)  # Adjust step count for your needs
+        step_motor(CCW, 100000)  # Adjust step count for your needs
     except KeyboardInterrupt:
         print("Process interrupted")
     finally:
@@ -60,7 +60,7 @@ def sample_retract():
     """
     try:
         print("Retracting...")
-        step_motor(CW, 5000)  # Adjust step count for your needs
+        step_motor(CW, 100000)  # Adjust step count for your needs
     except KeyboardInterrupt:
         print("Process interrupted")
     finally:
