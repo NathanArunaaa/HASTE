@@ -6,7 +6,7 @@ DIR_PIN = 20
 STEP_PIN = 21  
 CW = 1 
 CCW = 0  
-STEP_DELAY = 0.001  
+STEP_DELAY = 0.000000000001  
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False) 
 
@@ -27,9 +27,7 @@ def step_motor(direction, steps):
 def sample_extend():
     try:
         print("Goin up...")
-        step_motor(CCW, 5000)
-        step_motor(CCW, 500)  
-  
+        step_motor(CCW, 30000)  
         
 
     except KeyboardInterrupt:
@@ -41,7 +39,7 @@ def sample_extend():
 def sample_retract():
     try:
         print("Goin down...")
-        step_motor(CCW, 5000)  
+        step_motor(CW, 30000)  
         
     except KeyboardInterrupt:
         print("Program interrupted")
