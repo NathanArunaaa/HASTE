@@ -40,9 +40,9 @@ while True:
 
             except Exception as process_error:
                 print(f"Error processing command: {process_error}")
-                break  # Ensure the inner loop exits on error
+                break  #
 
-        connection.close()  # Close connection after handling
+        connection.close()  
 
     except Exception as e:
         print(f"An error occurred: {e}")

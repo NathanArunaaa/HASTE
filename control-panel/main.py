@@ -187,8 +187,8 @@ class App(customtkinter.CTk):
         config_window.title("Configuration Analysis Settings")
         config_window.geometry("700x400")
         config_window.attributes("-fullscreen", True)
-    
         config_window.attributes("-topmost", True)
+
         config_window.grid_rowconfigure(5, weight=5)
         config_window.grid_columnconfigure(5, weight=5)
 
@@ -198,17 +198,19 @@ class App(customtkinter.CTk):
         if not self.sample_loaded:
             no_sample_label = customtkinter.CTkLabel(config_window, text="Warning: No sample loaded!", font=("Arial", 12), text_color="red")
             no_sample_label.grid(row=1, column=0, padx=20, pady=10)
-            
+
         section_value_label = customtkinter.CTkLabel(config_window, text="Selected value: 10 section(s)", font=("Arial", 14))
         section_value_label.grid(row=1, column=1, padx=20, pady=10)
 
-        section_slider = customtkinter.CTkSlider(config_window, from_=1, to=20, width=300, command=lambda value: self.update_section_value(value, section_value_label))
+        section_slider = customtkinter.CTkSlider(
+            config_window, from_=1, to=20, width=300,
+            command=lambda value: self.update_section_value(value, section_value_label))
         section_slider.grid(row=0, column=1, padx=20, pady=10)
 
         micron_value_label = customtkinter.CTkLabel(config_window, text="Selected value: 50 micron(s)", font=("Arial", 14))
         micron_value_label.grid(row=3, column=1, padx=20, pady=10)
 
-        scale = customtkinter.CTkSlider(config_window, from_=1, to=100, width=300, command=lambda value: self.update_micron_value(value, micron_value_label))
+        scale = customtkinter.CTkSlider(config_window, from_=1, to=100, width=300,command=lambda value: self.update_micron_value(value, micron_value_label))
         scale.grid(row=2, column=1, padx=20, pady=10)
 
         preset_options = ["Tissue Type 1", "Tissue Type 2", "Tissue Type 3", "Tissue Type 4"]
@@ -216,10 +218,9 @@ class App(customtkinter.CTk):
         self.preset_combobox.set("Select a Preset")  
         self.preset_combobox.grid(row=2, column=0, padx=20, pady=10)
 
-      
-        start_button = customtkinter.CTkButton(config_window, text="Start", command=lambda: print(f"Starting analysis with {int(scale.get())} microns"))
+        start_button = customtkinter.CTkButton(config_window, text="Start",command=lambda: print(f"Starting analysis with {int(scale.get())} microns"))
         start_button.grid(row=3, column=0, padx=20, pady=10)
-        
+
         close_button = customtkinter.CTkButton(config_window, text="Cancel", command=config_window.destroy)
         close_button.grid(row=4, column=0, padx=20, pady=10)
 
@@ -231,12 +232,42 @@ class App(customtkinter.CTk):
             elif selected_preset == "Tissue Type 2":
                 print("Applying settings...")
             elif selected_preset == "Tissue Type 3":
-                print("Applying  settings...")
+                print("Applying settings...")
             else:
                 print("Applying custom settings...")
+
         buzzer_thread = threading.Thread(target=play_buzzer)
         buzzer_thread.daemon = True
         buzzer_thread.start()
+
+        input_value = customtkinter.StringVar()  
+
+        input_entry = customtkinter.CTkEntry(config_window, textvariable=input_value, justify="right", width=100, font=("Arial", 18))
+        input_entry.grid(row=0, column=2, padx=20, pady=10, sticky="e")
+
+        def on_number_click(num):
+            current = input_value.get()
+            input_value.set(current + str(num))
+
+        def clear_input():
+            input_value.set("")
+
+        number_pad = customtkinter.CTkFrame(config_window)
+        number_pad.grid(row=1, column=2, rowspan=5, padx=20, pady=10, sticky="nsew")
+
+        buttons = [
+            ('1', 0, 0), ('2', 0, 1), ('3', 0, 2),
+            ('4', 1, 0), ('5', 1, 1), ('6', 1, 2),
+            ('7', 2, 0), ('8', 2, 1), ('9', 2, 2),
+            ('0', 3, 1), ('C', 3, 0), ('-', 3, 2)
+        ]
+
+        for (text, row, col) in buttons:
+            if text == 'C':
+                btn = customtkinter.CTkButton(number_pad, text=text, command=clear_input, width=50)
+            else:
+                btn = customtkinter.CTkButton(number_pad, text=text, command=lambda t=text: on_number_click(t), width=50)
+            btn.grid(row=row, column=col, padx=5, pady=5)
 
    
 
@@ -267,7 +298,15 @@ class App(customtkinter.CTk):
             command_thread = threading.Thread(target=lambda: self.send_command("RETRACT_SAMPLE"))
             command_thread.daemon = True
             command_thread.start()
-            self.sample_loaded = True
+            
+            if not self.sample_loaded:
+               self.sample_loaded = True
+               self.sidebar_button_3.configure(text="Unload Sample")
+
+            else:
+                self.sample_loaded = False
+                self.sidebar_button_3.configure(text="Load Sample")
+
             loading_window.destroy()
 
         done_button = customtkinter.CTkButton(content_frame, text="Continue", command=on_done)
