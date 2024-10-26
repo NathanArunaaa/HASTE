@@ -302,10 +302,12 @@ class App(customtkinter.CTk):
             if not self.sample_loaded:
                self.sample_loaded = True
                self.sidebar_button_3.configure(text="Unload Sample")
+               self.sidebar_button_3.configure(text_color="red")
 
             else:
                 self.sample_loaded = False
                 self.sidebar_button_3.configure(text="Load Sample")
+                self.sidebar_button_3.configure(text_color="white")
 
             loading_window.destroy()
 
