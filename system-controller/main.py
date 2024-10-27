@@ -24,8 +24,7 @@ while True:
                 data = connection.recv(1024)  
                 if not data:
                     print("Connection closed by client.")
-                    break  # Exit the inner loop on disconnection
-
+                    break  
                 command = data.decode('utf-8').strip()
                 print(f"Received command: {command}")
 
@@ -40,7 +39,7 @@ while True:
 
             except Exception as process_error:
                 print(f"Error processing command: {process_error}")
-                break  #
+                break  
 
         connection.close()  
 
