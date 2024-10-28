@@ -41,7 +41,7 @@ while True:
                     cut_sections(3)
                 elif command == "SYSTEM_CALIBRATION":
                     print("Retracting sample...")
-                    home_motor(20, 21, 23, CCW)
+                    home_motor()
                 else:
                     print(f"Unknown command: {command}")
 
