@@ -39,10 +39,11 @@ def step_motor(dir_pin, step_pin, direction, steps):
 def cut_sections(num_sections):
 
     try:
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 30000)
         for section in range(num_sections):
             print(f"Cutting section {section + 1}...")
 
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 37000)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 15000)
             step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS)
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
 
