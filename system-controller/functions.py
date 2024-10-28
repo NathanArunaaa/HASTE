@@ -34,34 +34,7 @@ GPIO.setup(Y_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(X_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
 
 
-def home_motor():
 
-    print("Starting homing procedure...")
-
-    print("Lifting slightly...")
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 100)
-
-    print("Lowering slowly to find the limit switch...")
-    GPIO.output(Y_DIR_PIN, CCW)
-
-    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  
-        GPIO.output(Y_STEP_PIN, GPIO.HIGH)
-        time.sleep(HOMING_STEP_DELAY)
-        GPIO.output(Y_STEP_PIN, GPIO.LOW)
-        time.sleep(HOMING_STEP_DELAY)
-
-    print("Limit switch hit! Backing off slightly...")
-
-    for _ in range(3):  
-        print("Fine-tuning position...")
-
-        GPIO.output(Y_DIR_PIN, CW)
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10, delay=HOMING_STEP_DELAY)
-
-        GPIO.output(Y_DIR_PIN, CCW)
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10, delay=HOMING_STEP_DELAY)
-
-    print("Homing complete. Motor zeroed.")
 
 # ------Motion Handlers-------
 def step_motor(dir_pin, step_pin, direction, steps):
@@ -73,6 +46,33 @@ def step_motor(dir_pin, step_pin, direction, steps):
         GPIO.output(step_pin, GPIO.LOW)
         time.sleep(STEP_DELAY)
 
+
+def home_motor():
+    """
+    Home the motor by:
+    1. Lifting slightly (CW).
+    2. Lowering slowly (CCW) until the limit switch is hit.
+    """
+    print("Starting homing procedure...")
+
+    # Step 1: Lift slightly (CW) to ensure it’s not already pressing the limit switch.
+    print("Lifting slightly...")
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 50, delay=0.01)  # Lift slightly
+
+    # Step 2: Lower slowly (CCW) until the limit switch is hit.
+    print("Lowering slowly to find the limit switch...")
+    GPIO.output(Y_DIR_PIN, CCW)  # Set direction to CCW (down)
+
+    while GPIO.input(Y_LIMIT_PIN) == GPIO.HIGH:  # While switch is not pressed
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1, delay=HOMING_STEP_DELAY)
+
+    print("Limit switch hit! Backing off slightly...")
+
+    # Step 3: Back off slightly (CW) for stability.
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10, delay=0.01)
+
+    print("Homing complete. Motor zeroed.")
+    
 def cut_sections(num_sections):
 
     try:
