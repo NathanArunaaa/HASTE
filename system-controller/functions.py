@@ -36,13 +36,13 @@ def step_motor(dir_pin, step_pin, direction, steps):
         GPIO.output(step_pin, GPIO.LOW)
         time.sleep(STEP_DELAY)
 
-def cut_sections(num_sections, y_steps_per_section):
+def cut_sections(num_sections):
 
     try:
         for section in range(num_sections):
             print(f"Cutting section {section + 1}...")
 
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, y_steps_per_section)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 37000)
             step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS)
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
 
