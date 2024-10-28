@@ -4,7 +4,8 @@ import RPi.GPIO as GPIO
 from functions import (
     sample_extend, 
     sample_retract,
-    cut_sections
+    cut_sections,
+    home_motor
 )
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False) 
