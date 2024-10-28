@@ -8,12 +8,16 @@ Y_STEP_PIN = 21
 X_DIR_PIN = 27  
 X_STEP_PIN = 4
 
+Y_LIMIT_PIN = 23  
+X_LIMIT_PIN = 18
 
 # ------Inits-------
 CW = 1   
 CCW = 0  
 
-STEP_DELAY = 0.00000000000001  
+STEP_DELAY = 0.00000000000001 
+HOMING_STEP_DELAY = 0.01  
+
 BLADE_RETRACT_STEPS = 2000  
 BLADE_ADVANCE_STEPS = 2000   
 
@@ -25,6 +29,33 @@ GPIO.setup(Y_DIR_PIN, GPIO.OUT)
 GPIO.setup(Y_STEP_PIN, GPIO.OUT)
 GPIO.setup(X_DIR_PIN, GPIO.OUT)
 GPIO.setup(X_STEP_PIN, GPIO.OUT)
+
+GPIO.setup(Y_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
+GPIO.setup(X_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
+
+
+def home_motor(dir_pin, step_pin, limit_pin, direction):
+
+    print(f"Homing motor on pin {limit_pin}...")
+
+    GPIO.output(dir_pin, direction)
+    
+    while GPIO.input(limit_pin) == GPIO.HIGH:
+        GPIO.output(step_pin, GPIO.HIGH)
+        time.sleep(HOMING_STEP_DELAY)
+        GPIO.output(step_pin, GPIO.LOW)
+        time.sleep(HOMING_STEP_DELAY)
+
+    print("Limit switch hit! Backing off slightly...")
+    
+    GPIO.output(dir_pin, CW if direction == CCW else CCW)
+    for _ in range(10): 
+        GPIO.output(step_pin, GPIO.HIGH)
+        time.sleep(HOMING_STEP_DELAY)
+        GPIO.output(step_pin, GPIO.LOW)
+        time.sleep(HOMING_STEP_DELAY)
+
+    print("Homing complete. Motor zeroed.")
 
 # ------Motion Handlers-------
 def step_motor(dir_pin, step_pin, direction, steps):
