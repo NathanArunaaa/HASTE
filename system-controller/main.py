@@ -3,7 +3,8 @@ import RPi.GPIO as GPIO
 
 from functions import (
     sample_extend, 
-    sample_retract
+    sample_retract,
+    cut_sections
 )
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False) 
@@ -34,6 +35,9 @@ while True:
                 elif command == "RETRACT_SAMPLE":
                     print("Retracting sample...")
                     sample_retract()
+                elif command == "SECTION_SAMPLE":
+                    print("Retracting sample...")
+                    cut_sections(2, 0.0005)
                 else:
                     print(f"Unknown command: {command}")
 

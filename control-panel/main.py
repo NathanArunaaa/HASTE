@@ -218,7 +218,7 @@ class App(customtkinter.CTk):
         self.preset_combobox.set("Select a Preset")  
         self.preset_combobox.grid(row=2, column=0, padx=20, pady=10)
 
-        start_button = customtkinter.CTkButton(config_window, text="Start",command=lambda: print(f"Starting analysis with {int(scale.get())} microns"))
+        start_button = customtkinter.CTkButton(config_window, text="Start",command=lambda: self.send_command("SECTION_SAMPLE"))
         start_button.grid(row=3, column=0, padx=20, pady=10)
 
         close_button = customtkinter.CTkButton(config_window, text="Cancel", command=config_window.destroy)

@@ -5,8 +5,8 @@ import time
 Y_DIR_PIN = 20  
 Y_STEP_PIN = 21 
 
-X_DIR_PIN = 19  
-X_STEP_PIN = 27 
+X_DIR_PIN = 27  
+X_STEP_PIN = 4
 
 
 # ------Inits-------
