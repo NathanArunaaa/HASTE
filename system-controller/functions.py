@@ -9,7 +9,7 @@ X_DIR_PIN = 27
 X_STEP_PIN = 4
 
 Y_LIMIT_PIN = 23  
-X_LIMIT_PIN = 18
+X_LIMIT_PIN = 17
 
 # ------Inits-------
 CW = 1   
@@ -48,30 +48,25 @@ def step_motor(dir_pin, step_pin, direction, steps):
 
 
 def home_motor():
-    """
-    Home the motor by:
-    1. Lifting slightly (CW).
-    2. Lowering slowly (CCW) until the limit switch is hit.
-    """
-    print("Starting homing procedure...")
+   
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  
+    GPIO.output(Y_DIR_PIN, CW) 
 
-    # Step 1: Lift slightly (CW) to ensure it’s not already pressing the limit switch.
-    print("Lifting slightly...")
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  # Lift slightly
+    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10)
 
-    # Step 2: Lower slowly (CCW) until the limit switch is hit.
-    print("Lowering slowly to find the limit switch...")
-    GPIO.output(Y_DIR_PIN, CW)  # Set direction to CCW (down)
-
-    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  # While switch is not pressed
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10, )
-
-    print("Limit switch hit! Backing off slightly...")
-
-    # Step 3: Back off slightly (CW) for stability.
     step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
+    print("Homing Y complete. Motor zeroed.")
 
-    print("Homing complete. Motor zeroed.")
+
+    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
+    GPIO.output(X_DIR_PIN, CW) 
+
+    while GPIO.input(X_LIMIT_PIN) == GPIO.LOW:  
+        step_motor(X_DIR_PIN, X_STEP_PIN, CW, 10 )
+
+    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
+    print("Homing X complete. Motor zeroed.")
 
 def cut_sections(num_sections):
 
