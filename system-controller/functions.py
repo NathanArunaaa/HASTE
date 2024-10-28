@@ -63,7 +63,7 @@ def home_motor():
     print("Lowering slowly to find the limit switch...")
     GPIO.output(Y_DIR_PIN, CW)  # Set direction to CCW (down)
 
-    while GPIO.input(Y_LIMIT_PIN) == GPIO.HIGH:  # While switch is not pressed
+    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  # While switch is not pressed
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10, )
 
     print("Limit switch hit! Backing off slightly...")
