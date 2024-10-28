@@ -14,8 +14,8 @@ CW = 1
 CCW = 0  
 
 STEP_DELAY = 0.00000000000001  
-BLADE_RETRACT_STEPS = 50  
-BLADE_ADVANCE_STEPS = 60   
+BLADE_RETRACT_STEPS = 2000  
+BLADE_ADVANCE_STEPS = 2000   
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -46,6 +46,7 @@ def cut_sections(num_sections):
             step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 15000)
             step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS)
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 15000)
 
             print(f"Section {section + 1} complete.\n")
 
