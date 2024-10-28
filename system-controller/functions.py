@@ -57,19 +57,19 @@ def home_motor():
 
     # Step 1: Lift slightly (CW) to ensure it’s not already pressing the limit switch.
     print("Lifting slightly...")
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 1000)  # Lift slightly
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  # Lift slightly
 
     # Step 2: Lower slowly (CCW) until the limit switch is hit.
     print("Lowering slowly to find the limit switch...")
-    GPIO.output(Y_DIR_PIN, CCW)  # Set direction to CCW (down)
+    GPIO.output(Y_DIR_PIN, CW)  # Set direction to CCW (down)
 
     while GPIO.input(Y_LIMIT_PIN) == GPIO.HIGH:  # While switch is not pressed
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10, )
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10, )
 
     print("Limit switch hit! Backing off slightly...")
 
     # Step 3: Back off slightly (CW) for stability.
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10)
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
 
     print("Homing complete. Motor zeroed.")
 
