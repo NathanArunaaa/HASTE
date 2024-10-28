@@ -44,7 +44,7 @@ def home_motor():
     print("Lowering slowly to find the limit switch...")
     GPIO.output(Y_DIR_PIN, CCW)
 
-    while GPIO.input(Y_LIMIT_PIN) == GPIO.HIGH:  
+    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  
         GPIO.output(Y_STEP_PIN, GPIO.HIGH)
         time.sleep(HOMING_STEP_DELAY)
         GPIO.output(Y_STEP_PIN, GPIO.LOW)
