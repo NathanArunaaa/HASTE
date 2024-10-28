@@ -37,7 +37,7 @@ while True:
                     sample_retract()
                 elif command == "SECTION_SAMPLE":
                     print("Retracting sample...")
-                    cut_sections(2, 0.0005)
+                    cut_sections(2, 1)
                 else:
                     print(f"Unknown command: {command}")
 
