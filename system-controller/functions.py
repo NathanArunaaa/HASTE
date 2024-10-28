@@ -36,9 +36,9 @@ GPIO.setup(X_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def home_motor():
 
-
     GPIO.output(20, CCW)
-    
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 1000)
+
     while GPIO.input(23) == GPIO.HIGH:
         GPIO.output(21, GPIO.HIGH)
         time.sleep(HOMING_STEP_DELAY)
