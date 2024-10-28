@@ -38,6 +38,9 @@ while True:
                 elif command == "SECTION_SAMPLE":
                     print("Retracting sample...")
                     cut_sections(3)
+                elif command == "SYSTEM_CALIBRATION":
+                    print("Retracting sample...")
+                    home_motor(20, 21, 23, CCW)
                 else:
                     print(f"Unknown command: {command}")
 
