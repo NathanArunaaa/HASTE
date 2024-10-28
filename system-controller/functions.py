@@ -36,23 +36,30 @@ GPIO.setup(X_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 def home_motor():
 
-    GPIO.output(20, CCW)
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 1000)
+    print("Starting homing procedure...")
 
-    while GPIO.input(23) == GPIO.HIGH:
-        GPIO.output(21, GPIO.HIGH)
+    print("Lifting slightly...")
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 100)
+
+    print("Lowering slowly to find the limit switch...")
+    GPIO.output(Y_DIR_PIN, CCW)
+
+    while GPIO.input(Y_LIMIT_PIN) == GPIO.HIGH:  
+        GPIO.output(Y_STEP_PIN, GPIO.HIGH)
         time.sleep(HOMING_STEP_DELAY)
-        GPIO.output(21, GPIO.LOW)
+        GPIO.output(Y_STEP_PIN, GPIO.LOW)
         time.sleep(HOMING_STEP_DELAY)
 
     print("Limit switch hit! Backing off slightly...")
-    
-    GPIO.output(20, CW if CCW == CCW else CCW)
-    for _ in range(10): 
-        GPIO.output(21, GPIO.HIGH)
-        time.sleep(HOMING_STEP_DELAY)
-        GPIO.output(21, GPIO.LOW)
-        time.sleep(HOMING_STEP_DELAY)
+
+    for _ in range(3):  
+        print("Fine-tuning position...")
+
+        GPIO.output(Y_DIR_PIN, CW)
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10, delay=HOMING_STEP_DELAY)
+
+        GPIO.output(Y_DIR_PIN, CCW)
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10, delay=HOMING_STEP_DELAY)
 
     print("Homing complete. Motor zeroed.")
 
