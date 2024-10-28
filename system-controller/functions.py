@@ -34,25 +34,24 @@ GPIO.setup(Y_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(X_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
 
 
-def home_motor(dir_pin, step_pin, limit_pin, direction):
+def home_motor():
 
-    print(f"Homing motor on pin {limit_pin}...")
 
-    GPIO.output(dir_pin, direction)
+    GPIO.output(20, CCW)
     
-    while GPIO.input(limit_pin) == GPIO.HIGH:
-        GPIO.output(step_pin, GPIO.HIGH)
+    while GPIO.input(23) == GPIO.HIGH:
+        GPIO.output(21, GPIO.HIGH)
         time.sleep(HOMING_STEP_DELAY)
-        GPIO.output(step_pin, GPIO.LOW)
+        GPIO.output(21, GPIO.LOW)
         time.sleep(HOMING_STEP_DELAY)
 
     print("Limit switch hit! Backing off slightly...")
     
-    GPIO.output(dir_pin, CW if direction == CCW else CCW)
+    GPIO.output(20, CW if CCW == CCW else CCW)
     for _ in range(10): 
-        GPIO.output(step_pin, GPIO.HIGH)
+        GPIO.output(21, GPIO.HIGH)
         time.sleep(HOMING_STEP_DELAY)
-        GPIO.output(step_pin, GPIO.LOW)
+        GPIO.output(21, GPIO.LOW)
         time.sleep(HOMING_STEP_DELAY)
 
     print("Homing complete. Motor zeroed.")
