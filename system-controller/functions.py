@@ -59,7 +59,7 @@ def home_motor():
     print("Homing Y complete. Motor zeroed.")
 
 
-    step_motor(X_DIR_PIN, X_STEP_PIN, CC, 1000)  
+    step_motor(X_DIR_PIN, X_STEP_PIN, CW, 1000)  
     GPIO.output(X_DIR_PIN, CCW) 
 
     while GPIO.input(X_LIMIT_PIN) == GPIO.LOW:  
