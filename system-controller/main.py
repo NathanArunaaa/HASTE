@@ -8,13 +8,14 @@ from functions import (
     home_motor
 )
 GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False) 
+GPIO.setwarnings(False)
+ 
+home_motor()
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(('0.0.0.0', 5000)) 
 server_socket.listen(1)
 
-home_motor()
 
 print("Waiting for a connection...")
 
