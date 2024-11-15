@@ -295,7 +295,7 @@ class App(customtkinter.CTk):
         loader_label.pack(pady=(0, 10)) 
 
         def on_done():
-            command_thread = threading.Thread(target=lambda: self.send_command("RETRACT_SAMPLE"))
+            command_thread = threading.Thread(target=lambda: self.send_command("SYSTEM_CALIBRATION"))
             command_thread.daemon = True
             command_thread.start()
             

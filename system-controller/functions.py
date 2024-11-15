@@ -91,7 +91,7 @@ def cut_sections(num_sections):
 def sample_extend():
     try:
         print("Raising sample holder...")
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 37000)  
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 36000)  
     finally:
         print("Sample holder raised.")
 
