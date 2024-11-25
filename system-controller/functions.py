@@ -15,7 +15,7 @@ X_LIMIT_PIN = 17
 CW = 1   
 CCW = 0  
 
-STEP_DELAY = 0.00000000000001 
+STEP_DELAY = 0.2
 HOMING_STEP_DELAY = 0.01  
 
 BLADE_RETRACT_STEPS = 2000  
@@ -76,6 +76,7 @@ def cut_sections(num_sections):
             print(f"Cutting section {section + 1}...")
 
             step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
+            step_motor(X_DIR_PIN, X_STEP_PIN, CW, 200)
             step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS)
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
             step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
