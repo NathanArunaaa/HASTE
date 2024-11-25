@@ -48,16 +48,6 @@ def step_motor(dir_pin, step_pin, direction, steps):
 
 
 def home_motor():
-   
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  
-    GPIO.output(Y_DIR_PIN, CW) 
-
-    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10)
-
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
-    print("Homing Y complete. Motor zeroed.")
-
 
     step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
     GPIO.output(X_DIR_PIN, CW) 
@@ -67,6 +57,15 @@ def home_motor():
 
     step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
     print("Homing X complete. Motor zeroed.")
+
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  
+    GPIO.output(Y_DIR_PIN, CW) 
+
+    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10)
+
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
+    print("Homing Y complete. Motor zeroed.")
 
 def cut_sections(num_sections):
 
