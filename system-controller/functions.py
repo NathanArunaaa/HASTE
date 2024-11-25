@@ -19,7 +19,7 @@ STEP_DELAY = 0.0000001
 HOMING_STEP_DELAY = 0.01  
 
 BLADE_RETRACT_STEPS = 200 
-BLADE_ADVANCE_STEPS = 200
+BLADE_ADVANCE_STEPS = 500
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -72,7 +72,7 @@ def cut_sections(num_sections):
 
     try:
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
-        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 6000)
+        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 9000)
 
         for section in range(num_sections):
             print(f"Cutting section {section + 1}...")
