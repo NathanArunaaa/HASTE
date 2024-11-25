@@ -71,14 +71,14 @@ def home_motor():
 def cut_sections(num_sections):
 
     try:
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 30000)
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
         for section in range(num_sections):
             print(f"Cutting section {section + 1}...")
 
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 15000)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
             step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS)
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 15000)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
 
             print(f"Section {section + 1} complete.\n")
 
