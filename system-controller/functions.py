@@ -70,7 +70,7 @@ def home_motor():
 def cut_sections(num_sections):
 
     try:
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 3500)
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 6000)
         step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 7000)
 
         for section in range(num_sections):
