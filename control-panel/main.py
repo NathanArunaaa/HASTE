@@ -119,7 +119,7 @@ class App(customtkinter.CTk):
         self.video_label.grid(row=0, column=0, padx=20, pady=20) 
         
     
-        self.update_video_feed()
+        #self.update_video_feed()
 
 
         #------Console log-------
@@ -218,11 +218,14 @@ class App(customtkinter.CTk):
         self.preset_combobox.set("Select a Preset")  
         self.preset_combobox.grid(row=2, column=0, padx=20, pady=10)
 
-        start_button = customtkinter.CTkButton(config_window, text="Start",command=lambda: self.send_command("SECTION_SAMPLE"))
+        start_button = customtkinter.CTkButton(config_window, text_color="red", text="Start",command=lambda: self.send_command("SECTION_SAMPLE"))
         start_button.grid(row=3, column=0, padx=20, pady=10)
+        
+        start_button = customtkinter.CTkButton(config_window,  text="Face Sample", command=lambda: self.send_command(""))
+        start_button.grid(row=4, column=0, padx=20, pady=10)
 
         close_button = customtkinter.CTkButton(config_window, text="Cancel", command=config_window.destroy)
-        close_button.grid(row=4, column=0, padx=20, pady=10)
+        close_button.grid(row=5, column=0, padx=20, pady=10)
 
         def apply_preset():
             selected_preset = self.preset_combobox.get()

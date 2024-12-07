@@ -21,6 +21,9 @@ HOMING_STEP_DELAY = 0.01
 BLADE_RETRACT_STEPS = 200 
 BLADE_ADVANCE_STEPS = 230
 
+FACE_BLADE_RETRACT_STEPS = 200 
+FACE_BLADE_ADVANCE_STEPS = 230
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -66,9 +69,33 @@ def home_motor():
 
     step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
     print("Homing Y complete. Motor zeroed.")
+    
+def face_sample(num_sections):
+ 
+    try:
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 11000)
+
+        for section in range(num_sections):
+            print(f"Cutting section {section + 1}...")
+
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
+            step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS)
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+
+            print(f"Section {section + 1} complete.\n")
+
+        print(section, "sections cut.")
+
+    finally:
+        #remember to return status code to control panel
+        print("Cutting complete.")
+
+
 
 def cut_sections(num_sections):
-
+ 
     try:
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
         step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 11000)
