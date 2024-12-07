@@ -8,7 +8,7 @@ from PIL import Image, ImageTk
 from tkinter import messagebox
 import os
 import time
-
+import json
 
 from web_interface.app import start_flask
 from functions import (
@@ -24,6 +24,7 @@ customtkinter.set_default_color_theme("blue")
 
 CONTROL_PANEL_IP = '192.168.1.10'
 CONTROL_PANEL_PORT = 5000
+
 
 
 class TextWidgetStream:
@@ -50,7 +51,10 @@ class App(customtkinter.CTk):
         self.title("HASTE CONTROL PANEL")
         self.config(cursor="none")
         self.cap = cv2.VideoCapture(0) 
-        
+
+        self.section_value = 10  # Default section value
+        self.micron_value = 50  # Default micron value
+        self.selected_preset = None  # Default preset selection
 
         self.attributes("-fullscreen", True)
         #self.config(cursor="none")
@@ -448,12 +452,36 @@ class App(customtkinter.CTk):
         buzzer_thread.daemon = True
         buzzer_thread.start()  
         
-    def update_micron_value(self, value, label):
-        label.configure(text=f"Selected value: {int(value)} micron(s)")
-        
     def update_section_value(self, value, label):
-        label.configure(text=f"Selected value: {int(value)} section(s)")
-        
+        self.section_value = int(value)
+        label.config(text=f"Selected value: {self.section_value} section(s)")
+        print(f"Section value updated to: {self.section_value}")
+
+    def update_micron_value(self, value, label):
+        self.micron_value = int(value)
+        label.config(text=f"Selected value: {self.micron_value} micron(s)")
+        print(f"Micron value updated to: {self.micron_value}")
+
+    def apply_preset(self):
+        self.selected_preset = self.preset_combobox.get()
+        print(f"Selected preset: {self.selected_preset}")
+
+    def send_config_data(self):
+        data = {
+            "section_value": self.section_value,
+            "micron_value": self.micron_value,
+            "selected_preset": self.selected_preset,
+        }
+        print(f"Sending data: {data}")
+
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((CONTROL_PANEL_IP, CONTROL_PANEL_PORT))
+                s.sendall(json.dumps(data).encode('utf-8'))
+            print("Data sent successfully!")
+        except Exception as e:
+            print(f"Error sending data: {e}")
+            
     def show_confirmation_dialog(self, action):
         response = messagebox.askyesno("Confirm Action", f"Are you sure you want to {action}?")
         return response
