@@ -369,11 +369,7 @@ class App(customtkinter.CTk):
         timer_thread.daemon = True
         timer_thread.start()
 
-        buzzer_thread = threading.Thread(target=play_buzzer)
-        buzzer_thread.daemon = True
-        buzzer_thread.start()
-
-
+      
 
        
 
