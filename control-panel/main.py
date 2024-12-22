@@ -372,18 +372,20 @@ class App(customtkinter.CTk):
     #------Functions-------
 
     def send_command(self, command):
-      server_ip = '192.168.1.20'
-      port = 5000  
+      
+        def threaded_send():
+            try:
+                print(f"Sending command: {command}")
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    s.connect((CONTROL_PANEL_IP, CONTROL_PANEL_PORT))
+                    s.sendall(command.encode())
+                    response = s.recv(1024).decode()
+                    print(f"Response: {response}")
+            except Exception as e:
+                print(f"Error sending command: {e}")
 
-      with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
-        try:
-            client_socket.connect((server_ip, port))  
-            client_socket.sendall(command.encode('utf-8'))  
-            print(f"Sent command: {command}")
-        except ConnectionRefusedError:
-            print("Connection failed. Is the server running?")
-        except Exception as e:
-            print(f"An error occurred: {e}")
+        # Run the command in a separate thread
+        threading.Thread(target=threaded_send, daemon=True).start()
 
 
     #------Sample Loading-------
