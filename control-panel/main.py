@@ -8,7 +8,7 @@ from PIL import Image, ImageTk
 from tkinter import messagebox
 import os
 import time
-import json
+
 
 from web_interface.app import start_flask
 from functions import (
@@ -24,7 +24,6 @@ customtkinter.set_default_color_theme("blue")
 
 CONTROL_PANEL_IP = '192.168.1.10'
 CONTROL_PANEL_PORT = 5000
-
 
 
 class TextWidgetStream:
@@ -51,9 +50,7 @@ class App(customtkinter.CTk):
         self.title("HASTE CONTROL PANEL")
         self.config(cursor="none")
         self.cap = cv2.VideoCapture(0) 
-        self.section_value = 10  # Default section value
-        self.micron_value = 50  # Default micron value
-        self.selected_preset = None  # Default preset selection
+        
 
         self.attributes("-fullscreen", True)
         #self.config(cursor="none")
@@ -109,7 +106,12 @@ class App(customtkinter.CTk):
         self.video_feeds_frame.grid_rowconfigure(4, weight=1)
         self.textbox = customtkinter.CTkTextbox(self, width=250)
 
-        
+        self.cam_buttons = customtkinter.CTkSegmentedButton(
+            self.video_feeds_frame, 
+            values=["Microscope", "CAM-1", "CAM-2"],
+            command=self.on_camera_change 
+        )
+        self.cam_buttons.grid(row=0, column=0, padx=20, pady=10)
         
         self.video_frame = customtkinter.CTkFrame(self.video_feeds_frame, fg_color="white")
         self.video_frame.grid(row=1, column=0, padx=(20, 0), pady=(20, 0), sticky="nsew")
@@ -367,7 +369,10 @@ class App(customtkinter.CTk):
         timer_thread.daemon = True
         timer_thread.start()
 
-        
+        buzzer_thread = threading.Thread(target=play_buzzer)
+        buzzer_thread.daemon = True
+        buzzer_thread.start()
+
 
 
        
@@ -407,7 +412,22 @@ class App(customtkinter.CTk):
         
         
     #------Video-------
-    
+    def on_camera_change(self, event):
+        selected_camera = self.cam_buttons.get()
+        print(f"Selected camera: {selected_camera}")  
+        camera_index = 0  
+
+        if selected_camera == "Microscope":
+            camera_index = 0  
+        elif selected_camera == "CAM-1":
+            camera_index = 1
+        elif selected_camera == "CAM-2":
+            camera_index = 2 
+        
+        self.cap.release() 
+        self.cap = cv2.VideoCapture(camera_index)  
+        if not self.cap.isOpened():
+            messagebox.showerror("Error", f"Unable to access camera: {camera_index}")
    
     def update_video_feed(self):
         ret, frame = self.cap.read()
@@ -420,33 +440,13 @@ class App(customtkinter.CTk):
 
         self.after(10, self.update_video_feed)
                  
-   
-        
+    
     def update_micron_value(self, value, label):
-        self.micron_value = int(value)
-        label.config(text=f"Selected value: {self.micron_value} micron(s)")
-        print(f"Micron value updated to: {self.micron_value}")
-
-    def apply_preset(self):
-        self.selected_preset = self.preset_combobox.get()
-        print(f"Selected preset: {self.selected_preset}")
-
-    def send_config_data(self):
-        data = {
-            "section_value": self.section_value,
-            "micron_value": self.micron_value,
-            "selected_preset": self.selected_preset,
-        }
-        print(f"Sending data: {data}")
-
-        try:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.connect((CONTROL_PANEL_IP, CONTROL_PANEL_PORT))
-                s.sendall(json.dumps(data).encode('utf-8'))
-            print("Data sent successfully!")
-        except Exception as e:
-            print(f"Error sending data: {e}")
-            
+        label.configure(text=f"Selected value: {int(value)} micron(s)")
+        
+    def update_section_value(self, value, label):
+        label.configure(text=f"Selected value: {int(value)} section(s)")
+        
     def show_confirmation_dialog(self, action):
         response = messagebox.askyesno("Confirm Action", f"Are you sure you want to {action}?")
         return response
@@ -484,4 +484,3 @@ if __name__ == "__main__":
     flask_thread.daemon = True
     flask_thread.start()
     app.mainloop()
-#a
