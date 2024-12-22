@@ -49,6 +49,7 @@ class App(customtkinter.CTk):
         #------inits-------     
         self.title("HASTE CONTROL PANEL")
         self.config(cursor="none")
+        
         self.cap = cv2.VideoCapture(0) 
         
 
@@ -173,7 +174,6 @@ class App(customtkinter.CTk):
             
         #------Default values-------
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
-        self.cam_buttons.set("Microscope")
  
     #------Config menus-------
     def open_config_menu(self):
