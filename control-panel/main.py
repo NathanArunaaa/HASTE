@@ -106,12 +106,7 @@ class App(customtkinter.CTk):
         self.video_feeds_frame.grid_rowconfigure(4, weight=1)
         self.textbox = customtkinter.CTkTextbox(self, width=250)
 
-        self.cam_buttons = customtkinter.CTkSegmentedButton(
-            self.video_feeds_frame, 
-            values=["Microscope", "CAM-1", "CAM-2"],
-            command=self.on_camera_change 
-        )
-        self.cam_buttons.grid(row=0, column=0, padx=20, pady=10)
+       
         
         self.video_frame = customtkinter.CTkFrame(self.video_feeds_frame, fg_color="white")
         self.video_frame.grid(row=1, column=0, padx=(20, 0), pady=(20, 0), sticky="nsew")
@@ -119,7 +114,7 @@ class App(customtkinter.CTk):
         self.video_label.grid(row=0, column=0, padx=20, pady=20) 
         
     
-        #self.update_video_feed()
+        self.update_video_feed()
 
 
         #------Console log-------
@@ -408,22 +403,6 @@ class App(customtkinter.CTk):
         
         
     #------Video-------
-    def on_camera_change(self, event):
-        selected_camera = self.cam_buttons.get()
-        print(f"Selected camera: {selected_camera}")  
-        camera_index = 0  
-
-        if selected_camera == "Microscope":
-            camera_index = 0  
-        elif selected_camera == "CAM-1":
-            camera_index = 1
-        elif selected_camera == "CAM-2":
-            camera_index = 2 
-        
-        self.cap.release() 
-        self.cap = cv2.VideoCapture(camera_index)  
-        if not self.cap.isOpened():
-            messagebox.showerror("Error", f"Unable to access camera: {camera_index}")
    
     def update_video_feed(self):
         ret, frame = self.cap.read()
