@@ -48,13 +48,12 @@ class App(customtkinter.CTk):
 
         #------inits-------     
         self.title("HASTE CONTROL PANEL")
-        self.config(cursor="none")
+        #self.config(cursor="none")
         
         self.cap = cv2.VideoCapture(0) 
         
 
         self.attributes("-fullscreen", True)
-        #self.config(cursor="none")
         self.change_scaling_event("130%")
 
         self.grid_columnconfigure(1, weight=1)
@@ -129,38 +128,47 @@ class App(customtkinter.CTk):
         self.tabview = customtkinter.CTkTabview(self, fg_color="white", width=250)
         self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(0, 0), sticky="nsew")
         self.tabview.add("Blade")
-        self.tabview.add("Sensors")
+        self.tabview.add("Debug")
         self.tabview.add("Steppers")
 
         #------Blades-------
-        self.blade_health = customtkinter.CTkLabel(self.tabview.tab("Blade"), text="Blade Health:")
-        self.blade_health.grid(row=0, column=0, padx=20, pady=20)
-        self.blade_cylce = customtkinter.CTkLabel(self.tabview.tab("Blade"), text="Blade Cylces: 182")
-        self.blade_cylce.grid(row=1, column=0, padx=20, pady=20)
-        self.blade_progressbar_1 = customtkinter.CTkProgressBar(self.tabview.tab("Blade"))
-        self.blade_progressbar_1.grid(row=2, column=0, padx=20, pady=20)
+        self.tabview.tab("Blade").grid_rowconfigure(0, weight=1)
+        self.tabview.tab("Blade").grid_columnconfigure(0, weight=1)
 
-        #------Sensors-------
-        self.label_tab_2 = customtkinter.CTkLabel(self.tabview.tab("Sensors"), text="Sensor info here")
-        self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
+        self.blade_cylce = customtkinter.CTkLabel(self.tabview.tab("Blade"), text="Blade Cycles: 182")
+        self.blade_cylce.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+        #------Debug-------
+        self.tabview.tab("Debug").grid_rowconfigure(0, weight=1)
+        self.tabview.tab("Debug").grid_columnconfigure(0, weight=1)
+
+        self.debug_button1 = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Pump A", width=20)
+        self.debug_button1.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")  
+         
+        self.debug_button1 = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Pump B", width=20)
+        self.debug_button1.grid(row=2, column=0, padx=20, pady=20, sticky="nsew")   
         
+        self.debug_button1 = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Illuminator", width=20)
+        self.debug_button1.grid(row=3, column=0, padx=20, pady=20, sticky="nsew")   
         #------Steppers-------
+        self.tabview.tab("Steppers").grid_rowconfigure((0, 1, 2), weight=1)
+        self.tabview.tab("Steppers").grid_columnconfigure((0, 1, 2), weight=1)
+
         self.up_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="↑", width=20)
-        self.up_button.grid(row=0, column=1, padx=10, pady=10)
+        self.up_button.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
 
         self.left_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="←", width=20)
-        self.left_button.grid(row=1, column=0, padx=10, pady=10)
-        
-        self.left_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="O", width=20)
-        self.left_button.grid(row=1, column=1, padx=10, pady=10)
+        self.left_button.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+
+        self.center_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="O", width=20)
+        self.center_button.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
 
         self.right_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="→", width=20)
-        self.right_button.grid(row=1, column=2, padx=10, pady=10)
+        self.right_button.grid(row=1, column=2, padx=10, pady=10, sticky="nsew")
 
         self.down_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="↓", width=20)
-        self.down_button.grid(row=2, column=1, padx=10, pady=10)
+        self.down_button.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
         
-        
+       
         #------Switch buttons-------
         self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="Active Indicators")
         self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
