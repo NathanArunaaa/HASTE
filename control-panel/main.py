@@ -51,7 +51,7 @@ class App(customtkinter.CTk):
         #self.config(cursor="none")
         
         self.cap = cv2.VideoCapture(0) 
-        
+        self.running = True
 
         self.attributes("-fullscreen", True)
         self.change_scaling_event("130%")
@@ -114,8 +114,8 @@ class App(customtkinter.CTk):
         self.video_label.grid(row=0, column=0, padx=20, pady=20) 
         
     
-        self.update_video_feed()
-
+        self.video_thread = threading.Thread(target=self.update_video_feed, daemon=True)
+        self.video_thread.start()
 
         #------Console log-------
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
@@ -415,15 +415,16 @@ class App(customtkinter.CTk):
     #------Video-------
    
     def update_video_feed(self):
-        ret, frame = self.cap.read()
-        if ret:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  
-            img = Image.fromarray(frame)  
-            imgtk = ImageTk.PhotoImage(image=img) 
-            self.video_label.configure(image=imgtk)
-            self.video_label.imgtk = imgtk  
-
-        self.after(10, self.update_video_feed)
+        while self.running:
+            ret, frame = self.cap.read()
+            if ret:
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                img = Image.fromarray(frame)
+                imgtk = ImageTk.PhotoImage(image=img)
+                
+                self.video_label.after(0, self.video_label.configure, {"image": imgtk})
+                self.video_label.image = imgtk
+            time.sleep(0.03)  
                  
     
     def update_micron_value(self, value, label):
