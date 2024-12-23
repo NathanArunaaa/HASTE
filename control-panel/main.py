@@ -114,9 +114,8 @@ class App(customtkinter.CTk):
         self.video_label.grid(row=0, column=0, padx=20, pady=20) 
         
     
-        self.video_thread = threading.Thread(target=self.update_video_feed, daemon=True)
+        self.video_thread = threading.Thread(target=self.run_video_feed, daemon=True)
         self.video_thread.start()
-
         #------Console log-------
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.textbox.configure(cursor="none") 
@@ -414,17 +413,29 @@ class App(customtkinter.CTk):
         
     #------Video-------
    
-    def update_video_feed(self):
+    def run_video_feed(self):
         while self.running:
             ret, frame = self.cap.read()
             if ret:
+                # Convert the frame to RGB
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 img = Image.fromarray(frame)
-                imgtk = ImageTk.PhotoImage(image=img)
-                
-                self.video_label.after(0, self.video_label.configure, {"image": imgtk})
-                self.video_label.image = imgtk
-            time.sleep(0.03)  
+                img_tk = ImageTk.PhotoImage(img)
+
+                # Update the video label in the main thread
+                self.video_label.after(0, self.update_video_frame, img_tk)
+            else:
+                break
+
+    def update_video_frame(self, img_tk):
+        self.video_label.configure(image=img_tk)
+        self.video_label.image = img_tk
+
+    def on_closing(self):
+        self.running = False
+        if self.cap.isOpened():
+            self.cap.release()
+        self.destroy()
                  
     
     def update_micron_value(self, value, label):
@@ -466,6 +477,7 @@ class App(customtkinter.CTk):
 if __name__ == "__main__":
     print(os.getcwd())
     app = App()
+    
     flask_thread = threading.Thread(target=start_flask)
     flask_thread.daemon = True
     flask_thread.start()
