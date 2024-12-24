@@ -53,7 +53,8 @@ class App(customtkinter.CTk):
         self.cap = cv2.VideoCapture(0) 
         self.running = True
 
-        self.attributes("-fullscreen", True)
+        self.after(100, self.make_fullscreen)
+
         self.change_scaling_event("130%")
 
         self.grid_columnconfigure(1, weight=1)
@@ -377,6 +378,13 @@ class App(customtkinter.CTk):
 
     
     #------Functions-------
+    
+    def make_fullscreen(self):
+        # Use geometry method to set fullscreen
+        self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}+0+0")
+        self.attributes("-fullscreen", True)  # Optional, for specific behavior control
+        # Optionally, disable resizing if you want true fullscreen behavior
+        self.resizable(False, False)
 
     def send_command(self, command):
       server_ip = '192.168.1.20'
