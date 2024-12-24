@@ -22,7 +22,7 @@ from functions import (
 customtkinter.set_appearance_mode("light")  
 customtkinter.set_default_color_theme("blue") 
 
-CONTROL_PANEL_IP = '192.168.1.10'
+CONTROL_PANEL_IP = '192.168.2.34'
 CONTROL_PANEL_PORT = 5000
 
 
@@ -417,12 +417,10 @@ class App(customtkinter.CTk):
         while self.running:
             ret, frame = self.cap.read()
             if ret:
-                # Convert the frame to RGB
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 img = Image.fromarray(frame)
                 img_tk = ImageTk.PhotoImage(img)
 
-                # Update the video label in the main thread
                 self.video_label.after(0, self.update_video_frame, img_tk)
             else:
                 break
