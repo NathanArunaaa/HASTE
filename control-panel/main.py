@@ -380,17 +380,17 @@ class App(customtkinter.CTk):
 
     def send_command(self, command):
       
-            try:
-                print(f"Sending command: {command}")
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                    s.connect((CONTROL_PANEL_IP, CONTROL_PANEL_PORT))
-                    s.sendall(command.encode())
-                    response = s.recv(1024).decode()
-                    print(f"Response: {response}")
-            except Exception as e:
-                print(f"Error sending command: {e}")
+        try:
+            print(f"Sending command: {command}")
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((CONTROL_PANEL_IP, CONTROL_PANEL_PORT))
+                s.sendall(command.encode())
+                response = s.recv(1024).decode()
+                print(f"Response: {response}")
+        except Exception as e:
+            print(f"Error sending command: {e}")
 
-
+        
 
     #------Sample Loading-------
     def handle_sample_loading(self):
@@ -463,9 +463,7 @@ class App(customtkinter.CTk):
            sys_restart()
 
 
-    def on_closing(self, event=0):
-        self.cap.release()  
-        self.destroy()
+   
     
  
 
