@@ -113,9 +113,7 @@ class App(customtkinter.CTk):
         self.video_label = customtkinter.CTkLabel(self.video_frame, text="")
         self.video_label.grid(row=0, column=0, padx=20, pady=20) 
         
-    
-        self.video_thread = threading.Thread(target=self.update_video_feed, daemon=True)
-        self.video_thread.start()
+        self.update_video_feed()
         #------Console log-------
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.textbox.configure(cursor="none") 
