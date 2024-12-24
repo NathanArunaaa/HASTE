@@ -22,15 +22,7 @@ from functions import (
 customtkinter.set_appearance_mode("light")  
 customtkinter.set_default_color_theme("blue") 
 
-try:
-    hostname = socket.gethostname()
-    local_ip = socket.gethostbyname(hostname)
-    CONTROL_PANEL_IP = local_ip
-except socket.error as e:
-    print(f"Error getting local IP: {e}")
-    CONTROL_PANEL_IP = '127.0.0.1'
-    
-
+CONTROL_PANEL_IP = '192.168.2.126'
 CONTROL_PANEL_PORT = 5000
 
 
