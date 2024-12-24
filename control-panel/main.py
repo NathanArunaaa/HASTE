@@ -380,7 +380,6 @@ class App(customtkinter.CTk):
 
     def send_command(self, command):
       
-        def threaded_send():
             try:
                 print(f"Sending command: {command}")
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -391,8 +390,6 @@ class App(customtkinter.CTk):
             except Exception as e:
                 print(f"Error sending command: {e}")
 
-        # Run the command in a separate thread
-        threading.Thread(target=threaded_send, daemon=True).start()
 
 
     #------Sample Loading-------
