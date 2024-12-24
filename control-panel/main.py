@@ -22,7 +22,7 @@ from functions import (
 customtkinter.set_appearance_mode("light")  
 customtkinter.set_default_color_theme("blue") 
 
-CONTROL_PANEL_IP = '192.168.2.126'
+CONTROL_PANEL_IP = '192.168.1.10'
 CONTROL_PANEL_PORT = 5000
 
 
@@ -373,24 +373,27 @@ class App(customtkinter.CTk):
 
       
 
+
+
        
 
     
     #------Functions-------
 
     def send_command(self, command):
-      
-        try:
-            print(f"Sending command: {command}")
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                s.connect((CONTROL_PANEL_IP, CONTROL_PANEL_PORT))
-                s.sendall(command.encode())
-                response = s.recv(1024).decode()
-                print(f"Response: {response}")
-        except Exception as e:
-            print(f"Error sending command: {e}")
+      server_ip = '192.168.1.20'
+      port = 5000  
 
-        
+      with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
+        try:
+            client_socket.connect((server_ip, port))  
+            client_socket.sendall(command.encode('utf-8'))  
+            print(f"Sent command: {command}")
+        except ConnectionRefusedError:
+            print("Connection failed. Is the server running?")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
 
     #------Sample Loading-------
     def handle_sample_loading(self):
@@ -410,29 +413,22 @@ class App(customtkinter.CTk):
         
     #------Video-------
    
-    def run_video_feed(self):
-        while self.running:
-            ret, frame = self.cap.read()
-            if ret:
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                img = Image.fromarray(frame)
-                img_tk = ImageTk.PhotoImage(img)
+    def update_video_feed(self):
+        ret, frame = self.cap.read()
+        if ret:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  
+            img = Image.fromarray(frame)  
+            imgtk = ImageTk.PhotoImage(image=img) 
+            self.video_label.configure(image=imgtk)
+            self.video_label.imgtk = imgtk  
 
-                self.video_label.after(0, self.update_video_frame, img_tk)
-            else:
-                break
-
-    def update_video_frame(self, img_tk):
-        self.video_label.configure(image=img_tk)
-        self.video_label.image = img_tk
-
-    def on_closing(self):
-        self.running = False
-        if self.cap.isOpened():
-            self.cap.release()
-        self.destroy()
+        self.after(10, self.update_video_feed)
                  
-    
+    def buzzer_thread(self):
+        buzzer_thread = threading.Thread(target=play_buzzer)
+        buzzer_thread.daemon = True
+        buzzer_thread.start()  
+        
     def update_micron_value(self, value, label):
         label.configure(text=f"Selected value: {int(value)} micron(s)")
         
@@ -463,14 +459,15 @@ class App(customtkinter.CTk):
            sys_restart()
 
 
-   
+    def on_closing(self, event=0):
+        self.cap.release()  
+        self.destroy()
     
  
 
 if __name__ == "__main__":
     print(os.getcwd())
     app = App()
-    
     flask_thread = threading.Thread(target=start_flask)
     flask_thread.daemon = True
     flask_thread.start()
