@@ -1,11 +1,15 @@
 import socket
 import RPi.GPIO as GPIO
-
+import time
 from functions import (
     sample_extend, 
     sample_retract,
     cut_sections,
-    home_motor
+    home_motor,
+    pump_A_on,
+    pump_A_off,
+    pump_B_on,
+    pump_B_off
 )
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -36,15 +40,30 @@ while True:
                 if command == "EXTEND_SAMPLE":
                     print("Extending sample...")
                     sample_extend()
+                    
                 elif command == "RETRACT_SAMPLE":
                     print("Retracting sample...")
                     sample_retract()
+                    
                 elif command == "SECTION_SAMPLE":
                     print("Retracting sample...")
                     cut_sections(3)
+                    
                 elif command == "SYSTEM_CALIBRATION":
                     print("Retracting sample...")
                     home_motor()
+                    
+                elif command == "DEBUG_PUMP_A":
+                    pump_A_on()
+                    time.sleep(2)
+                    pump_A_off()
+                    
+                elif command == "DEBUG_PUMP_B":
+                    pump_B_on()
+                    time.sleep(2)
+                    pump_B_off()
+                    
+                    
                 else:
                     print(f"Unknown command: {command}")
 

@@ -36,8 +36,26 @@ GPIO.setup(X_STEP_PIN, GPIO.OUT)
 GPIO.setup(Y_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
 GPIO.setup(X_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
 
-
-
+def pump_A_on():
+    RELAY_PIN1= 24
+    GPIO.setup(RELAY_PIN1, GPIO.OUT)
+    GPIO.output(RELAY_PIN1, GPIO.HIGH)
+        
+def pump_A_off():
+    RELAY_PIN1 = 24
+    GPIO.setup(RELAY_PIN1, GPIO.OUT)
+    GPIO.output(RELAY_PIN1, GPIO.LOW)
+        
+def pump_B_on():
+    RELAY_PIN2 = 25
+    GPIO.setup(RELAY_PIN2, GPIO.OUT)
+    GPIO.output(RELAY_PIN2, GPIO.HIGH)
+        
+def pump_B_off():
+    RELAY_PIN2 = 25
+    GPIO.setup(RELAY_PIN2, GPIO.OUT)
+    GPIO.output(RELAY_PIN2, GPIO.LOW)
+        
 
 # ------Motion Handlers-------
 def step_motor(dir_pin, step_pin, direction, steps):

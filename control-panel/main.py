@@ -139,14 +139,14 @@ class App(customtkinter.CTk):
         self.tabview.tab("Debug").grid_rowconfigure(0, weight=1)
         self.tabview.tab("Debug").grid_columnconfigure(0, weight=1)
 
-        self.debug_button1 = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Pump A", width=20)
-        self.debug_button1.grid(row=1, column=0, padx=40, pady=2, sticky="nsew")  
+        self.debug_button1 = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Pump A", width=20, command=lambda: self.send_command("DEBUG_PUMP_A"))
+        self.debug_button1.grid(row=0, column=0, padx=40, pady=2, sticky="nsew")  
          
-        self.debug_button2 = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Pump B", width=20)
-        self.debug_button2.grid(row=2, column=0, padx=40, pady=2, sticky="nsew")   
+        self.debug_button2 = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Pump B", width=20,command=lambda: self.send_command("DEBUG_PUMP_B"))
+        self.debug_button2.grid(row=1, column=0, padx=40, pady=2, sticky="nsew")   
         
         self.debug_button3 = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Illuminator", width=20)
-        self.debug_button3.grid(row=3, column=0, padx=40, pady=2, sticky="nsew")   
+        self.debug_button3.grid(row=2, column=0, padx=40, pady=2, sticky="nsew")   
         #------Steppers-------
         self.tabview.tab("Steppers").grid_rowconfigure((0, 1, 2), weight=1)
         self.tabview.tab("Steppers").grid_columnconfigure((0, 1, 2), weight=1)
