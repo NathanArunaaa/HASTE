@@ -183,6 +183,7 @@ class App(customtkinter.CTk):
  
     #------Config menus-------
     def open_config_menu(self):
+        self.after(100, self.make_fullscreen)
         config_window = customtkinter.CTkToplevel(self)
 
         config_window.title("Configuration Analysis Settings")
@@ -278,6 +279,7 @@ class App(customtkinter.CTk):
         
     
     def open_loading_menu(self):
+        self.after(100, self.make_fullscreen)
         command_thread = threading.Thread(target=lambda: self.send_command("EXTEND_SAMPLE"))
         command_thread.daemon = True
         command_thread.start()
