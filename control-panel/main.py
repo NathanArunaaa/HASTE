@@ -183,7 +183,7 @@ class App(customtkinter.CTk):
  
     #------Config menus-------
     def open_config_menu(self):
-        self.after(100, self.make_fullscreen)
+        self.after(1000, self.make_fullscreen)
         config_window = customtkinter.CTkToplevel(self)
 
         config_window.title("Configuration Analysis Settings")
