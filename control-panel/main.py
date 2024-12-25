@@ -16,7 +16,6 @@ from functions import (
     sys_shutdown, 
     sys_restart, 
     get_local_ip,
-    play_buzzer
 )
 
 customtkinter.set_appearance_mode("light")  
