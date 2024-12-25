@@ -22,7 +22,7 @@ from functions import (
 customtkinter.set_appearance_mode("light")  
 customtkinter.set_default_color_theme("blue") 
 
-CONTROL_PANEL_IP = '192.168.2.126'
+CONTROL_PANEL_IP = '192.168.2.34'
 CONTROL_PANEL_PORT = 5000
 
 
@@ -380,10 +380,8 @@ class App(customtkinter.CTk):
     #------Functions-------
     
     def make_fullscreen(self):
-        # Use geometry method to set fullscreen
         self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}+0+0")
-        self.attributes("-fullscreen", True)  # Optional, for specific behavior control
-        # Optionally, disable resizing if you want true fullscreen behavior
+        self.attributes("-fullscreen", True)  
         self.resizable(False, False)
 
     def send_command(self, command):
