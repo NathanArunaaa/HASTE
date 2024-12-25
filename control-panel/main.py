@@ -186,9 +186,10 @@ class App(customtkinter.CTk):
         config_window = customtkinter.CTkToplevel(self)
 
         config_window.title("Configuration Analysis Settings")
-        config_window.geometry("700x400")  
-        config_window.attributes("-fullscreen", True)  
+        config_window.geometry(f"{config_window.winfo_screenwidth()}x{config_window.winfo_screenheight()}+0+0")
 
+        config_window.attributes("-fullscreen", True)
+        config_window.attributes("-topmost", True)
         config_window.overrideredirect(True)
 
         config_window.grid_rowconfigure(5, weight=5)
@@ -279,7 +280,6 @@ class App(customtkinter.CTk):
         
     
     def open_loading_menu(self):
-        self.after(100, self.make_fullscreen)
         command_thread = threading.Thread(target=lambda: self.send_command("EXTEND_SAMPLE"))
         command_thread.daemon = True
         command_thread.start()
@@ -287,8 +287,11 @@ class App(customtkinter.CTk):
         loading_window = customtkinter.CTkToplevel(self)
         loading_window.title("Sample Loading")
         
+        loading_window.geometry(f"{loading_window.winfo_screenwidth()}x{loading_window.winfo_screenheight()}+0+0")
         loading_window.attributes("-fullscreen", True)
         loading_window.attributes("-topmost", True)
+
+        loading_window.overrideredirect(True)
 
     
         content_frame = customtkinter.CTkFrame(loading_window, fg_color="#ebebeb")
