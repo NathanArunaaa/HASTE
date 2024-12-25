@@ -186,11 +186,11 @@ class App(customtkinter.CTk):
         config_window = customtkinter.CTkToplevel(self)
 
         config_window.title("Configuration Analysis Settings")
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
+        config_window.geometry("700x400")  
+        config_window.attributes("-fullscreen", True)  
 
-        config_window.geometry(f"{screen_width}x{screen_height}+0+0")
-        config_window.attributes("-topmost", True)
+        config_window.overrideredirect(True)
+
         config_window.grid_rowconfigure(5, weight=5)
         config_window.grid_columnconfigure(5, weight=5)
 
