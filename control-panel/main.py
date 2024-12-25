@@ -48,7 +48,7 @@ class App(customtkinter.CTk):
 
         #------inits-------     
         self.title("HASTE CONTROL PANEL")
-        #self.config(cursor="none")
+        self.config(cursor="none")
         
         self.cap = cv2.VideoCapture(0) 
         self.running = True
@@ -71,27 +71,27 @@ class App(customtkinter.CTk):
 
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, text="Start", hover_color="#3b8ed0", command=self.open_config_menu)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        #self.sidebar_button_1.configure(cursor="none")
+        self.sidebar_button_1.configure(cursor="none")
 
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame, text="System Calibration", hover_color="#3b8ed0", command=lambda: self.send_command("SYSTEM_CALIBRATION"))
         self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
-        #self.sidebar_button_2.configure(cursor="none")
+        self.sidebar_button_2.configure(cursor="none")
 
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame, text="Load Sample", hover_color="#3b8ed0", command=self.open_loading_menu)
         self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
-        #self.sidebar_button_3.configure(cursor="none")
+        self.sidebar_button_3.configure(cursor="none")
         
         self.sidebar_button_6 = customtkinter.CTkButton(self.sidebar_frame, text="Flush System", hover_color="#3b8ed0", command=self.open_flush_menu)
         self.sidebar_button_6.grid(row=4, column=0, padx=20, pady=10)
-        #self.sidebar_button_6.configure(cursor="none")
+        self.sidebar_button_6.configure(cursor="none")
 
         self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="System Restart", hover_color="#3b8ed0", command=self.sys_restart)
         self.sidebar_button_4.grid(row=6, column=0, padx=20, pady=(10, 10))
-        #self.sidebar_button_4.configure(cursor="none")
+        self.sidebar_button_4.configure(cursor="none")
 
         self.sidebar_button_5 = customtkinter.CTkButton(self.sidebar_frame, text="Shut Down", hover_color="#3b8ed0", command=self.sys_shutdown)
         self.sidebar_button_5.grid(row=7 , column=0, padx=20, pady=(10, 10))
-        #self.sidebar_button_5.configure(cursor="none")
+        self.sidebar_button_5.configure(cursor="none")
         
 
         local_ip = get_local_ip() 
@@ -242,10 +242,7 @@ class App(customtkinter.CTk):
             else:
                 print("Applying custom settings...")
 
-        buzzer_thread = threading.Thread(target=play_buzzer)
-        buzzer_thread.daemon = True
-        buzzer_thread.start()
-
+   
         input_value = customtkinter.StringVar()  
 
         input_entry = customtkinter.CTkEntry(config_window, textvariable=input_value, justify="right", width=100, font=("Arial", 18))
@@ -376,11 +373,6 @@ class App(customtkinter.CTk):
         timer_thread.daemon = True
         timer_thread.start()
 
-      
-
-
-
-       
 
     
     #------Functions-------
@@ -424,19 +416,22 @@ class App(customtkinter.CTk):
     #------Video-------
    
     def update_video_feed(self):
-        ret, frame = self.cap.read()
-        if ret:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            img = ImageTk.PhotoImage(image=Image.fromarray(frame))
-            self.video_label.configure(image=img)
-            self.video_label.image = img
+     while self.running:
+        if self.cap.isOpened():
+            ret, frame = self.cap.read()
+            if ret:
+                frame = cv2.resize(frame, (640, 480))
 
-        self.after(10, self.update_video_feed)
+                cv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                img = Image.fromarray(cv_image)
+                imgtk = ImageTk.PhotoImage(image=img)
+
+                self.video_label.configure(image=imgtk)
+                self.video_label.image = imgtk
+
+        time.sleep(0.03)  
                  
-    def buzzer_thread(self):
-        buzzer_thread = threading.Thread(target=play_buzzer)
-        buzzer_thread.daemon = True
-        buzzer_thread.start()  
+   
         
     def update_micron_value(self, value, label):
         label.configure(text=f"Selected value: {int(value)} micron(s)")

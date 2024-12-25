@@ -4,15 +4,6 @@ import customtkinter
 import simpleaudio as sa
 import numpy as np
 
-def play_buzzer(frequency=750, duration=0.1, sample_rate=44100):
-    t = np.linspace(0, duration, int(sample_rate * duration), False)
-    wave = 32767 * 0.5 * np.sin(2 * np.pi * frequency * t)
-    wave = wave.astype(np.int16)
-
-    audio_data = np.column_stack([wave, wave])
-
-    sound = sa.play_buffer(audio_data, 2, 2, sample_rate)
-    sound.wait_done()
 
 def change_scaling_event(new_scaling: str):
     new_scaling_float = int(new_scaling.replace("%", "")) / 100
