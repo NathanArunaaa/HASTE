@@ -285,13 +285,16 @@ class App(customtkinter.CTk):
         loading_window = customtkinter.CTkToplevel(self)
         loading_window.title("Sample Loading")
         
+        loading_window = customtkinter.CTkToplevel(self)
+        loading_window.title("Loading Menu")  
+    
+    
         loading_window.geometry(f"{loading_window.winfo_screenwidth()}x{loading_window.winfo_screenheight()}+0+0")
         loading_window.attributes("-fullscreen", True)
         loading_window.attributes("-topmost", True)
 
-    
         content_frame = customtkinter.CTkFrame(loading_window, fg_color="#ebebeb")
-        content_frame.pack(expand=True)  
+        content_frame.pack(expand=True, fill="both") 
 
         label = customtkinter.CTkLabel(content_frame, text="Ensure The Sample Is Properly Secured Before Continuing", font=("Arial", 26))
         label.pack(pady=(20, 10))  
