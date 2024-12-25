@@ -283,11 +283,11 @@ class App(customtkinter.CTk):
         command_thread.start()
 
         loading_window = customtkinter.CTkToplevel(self)
-        loading_window.title("Flush System")
+        loading_window.title("Sample Loading")
         
+        loading_window.geometry(f"{loading_window.winfo_screenwidth()}x{loading_window.winfo_screenheight()}+0+0")
+        loading_window.attributes("-fullscreen", True)
         loading_window.attributes("-topmost", True)
-        self.after(100, self.make_fullscreen)
-
 
     
         content_frame = customtkinter.CTkFrame(loading_window, fg_color="#ebebeb")
