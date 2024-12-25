@@ -284,9 +284,10 @@ class App(customtkinter.CTk):
 
         loading_window = customtkinter.CTkToplevel(self)
         loading_window.title("Flush System")
-        loading_window.geometry("500x200")
+        
         loading_window.attributes("-topmost", True)
-        loading_window.attributes("-fullscreen", True)
+        self.after(100, self.make_fullscreen)
+
 
     
         content_frame = customtkinter.CTkFrame(loading_window, fg_color="#ebebeb")
@@ -340,7 +341,8 @@ class App(customtkinter.CTk):
         loading_window.title("Load Sample")
         loading_window.geometry("500x200")
         loading_window.attributes("-topmost", True)
-        loading_window.attributes("-fullscreen", True)
+        self.after(100, self.make_fullscreen)
+
 
     
         content_frame = customtkinter.CTkFrame(loading_window, fg_color="#ebebeb")
