@@ -105,7 +105,7 @@ class App(customtkinter.CTk):
         self.video_feeds_frame.grid(row=1, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.video_feeds_frame.grid_columnconfigure(0, weight=1)
         self.video_feeds_frame.grid_rowconfigure(4, weight=1)
-        self.textbox = customtkinter.CTkTextbox(self, width=250)
+        self.textbox = customtkinter.CTkTextbox(self, width=2530)
 
        
         
@@ -114,7 +114,7 @@ class App(customtkinter.CTk):
         self.video_label = customtkinter.CTkLabel(self.video_frame, text="")
         self.video_label.grid(row=0, column=0, padx=20, pady=20) 
         
-        self.update_video_feed()
+        threading.Thread(target=self.update_video_feed, daemon=True).start()
         #------Console log-------
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.textbox.configure(cursor="none") 
@@ -426,11 +426,10 @@ class App(customtkinter.CTk):
     def update_video_feed(self):
         ret, frame = self.cap.read()
         if ret:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  
-            img = Image.fromarray(frame)  
-            imgtk = ImageTk.PhotoImage(image=img) 
-            self.video_label.configure(image=imgtk)
-            self.video_label.imgtk = imgtk  
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            img = ImageTk.PhotoImage(image=Image.fromarray(frame))
+            self.video_label.configure(image=img)
+            self.video_label.image = img
 
         self.after(10, self.update_video_feed)
                  
