@@ -13,7 +13,10 @@ from functions import (
 )
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
- 
+
+pump_A_off()
+pump_B_off()
+
 home_motor()
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
