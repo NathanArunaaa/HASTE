@@ -58,10 +58,12 @@ while True:
                     
                 elif command == "DEBUG_PUMP_A":
                     pump_A_on()
+                    time.sleep(1)
                     pump_A_off()
                     
                 elif command == "DEBUG_PUMP_B":
                     pump_B_on()
+                    time.sleep(1)
                     pump_B_off()
                     
                     
