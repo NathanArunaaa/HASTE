@@ -168,7 +168,7 @@ class App(customtkinter.CTk):
         self.down_button.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
         
        
-        #------Switch buttons-------
+        #------Temp Monitoring-------
         self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="Temperatures")
         self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
@@ -176,7 +176,7 @@ class App(customtkinter.CTk):
         self.water_temp = customtkinter.CTkLabel(self.scrollable_frame, text="Water Temp: --°C")
         self.water_temp.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")   
         
-        threading.Thread(target=self.update_video_feed, daemon=True).start()
+        threading.Thread(target=self.update_temperature, daemon=True).start()
 
         #------Default values-------
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
