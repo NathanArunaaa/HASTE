@@ -416,20 +416,16 @@ class App(customtkinter.CTk):
     #------Video-------
    
     def update_video_feed(self):
-     while self.running:
-        if self.cap.isOpened():
+        while self.running:
             ret, frame = self.cap.read()
             if ret:
-                frame = cv2.resize(frame, (640, 480))
-
-                cv_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                img = Image.fromarray(cv_image)
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                img = Image.fromarray(frame)
                 imgtk = ImageTk.PhotoImage(image=img)
-
+            
+                self.video_label.imgtk = imgtk  
                 self.video_label.configure(image=imgtk)
-                self.video_label.image = imgtk
 
-        time.sleep(0.03)  
         
     
          
