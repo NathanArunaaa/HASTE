@@ -8,6 +8,7 @@ from PIL import Image, ImageTk
 from tkinter import messagebox
 import os
 import time
+import glob
 
 
 from web_interface.app import start_flask
@@ -114,6 +115,7 @@ class App(customtkinter.CTk):
         self.video_label.grid(row=0, column=0, padx=20, pady=20) 
         
         threading.Thread(target=self.update_video_feed, daemon=True).start()
+        
         #------Console log-------
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.textbox.configure(cursor="none") 
@@ -167,16 +169,15 @@ class App(customtkinter.CTk):
         
        
         #------Switch buttons-------
-        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="Active Indicators")
+        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="Temperatures")
         self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
-        self.scrollable_frame_switches = []
-        for i in range(4):
-            switch = customtkinter.CTkSwitch(master=self.scrollable_frame, text=f"Indicator {i}")
-            switch.grid(row=i, column=0, padx=10, pady=(0, 20))
-            self.scrollable_frame_switches.append(switch)
-            
-            
+        
+        self.water_temp = customtkinter.CTkLabel(self.scrollable_frame, text="Water Temp: --°C")
+        self.water_temp.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")   
+        
+        threading.Thread(target=self.update_video_feed, daemon=True).start()
+
         #------Default values-------
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
  
@@ -429,9 +430,33 @@ class App(customtkinter.CTk):
                 self.video_label.image = imgtk
 
         time.sleep(0.03)  
-                 
-   
         
+    
+         
+    #------Temperature-------   
+    def read_ds18b20_temp(self):
+        base_dir = '/sys/bus/w1/devices/'
+        device_folder = glob.glob(base_dir + '28-*')[0]  
+        device_file = device_folder + '/w1_slave'
+
+        with open(device_file, 'r') as f:
+            lines = f.readlines()
+
+        if lines[0].strip()[-3:] == 'YES':  
+            temp_pos = lines[1].find('t=')
+            if temp_pos != -1:
+                temp_string = lines[1][temp_pos + 2:]
+                temp_c = float(temp_string) / 1000.0
+                return temp_c
+        return None
+    
+    def update_temperature(self):
+        temp_c = self.read_ds18b20_temp()
+        if temp_c is not None:
+            self.water_temp.configure(text=f"Water Temp: {temp_c:.2f}°C")
+        self.after(1000, self.update_temperature)
+        
+          
     def update_micron_value(self, value, label):
         label.configure(text=f"Selected value: {int(value)} micron(s)")
         
