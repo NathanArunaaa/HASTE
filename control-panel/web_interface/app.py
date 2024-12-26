@@ -1,30 +1,31 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
+import os
 
-app = Flask(__name__)
+# Set the static folder to 'static' within the 'web_interface' directory
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 
-@app.route('/')
-def home():
-    cards = [
-        {
-            'image': 'images/image1.jpg', 
-            'name': 'Slide 1',
-            'location': 'Captured at: 11:58:18 ',
-            'description': 'Perform AI analysis on your data'
-        },
-        {
-            'image': 'images/image2.jpg',
-            'name': 'Slide 2',
-            'location': 'Captured at: 11:58:18 ',
-            'description': 'Perform AI analysis on your data'
-        },
-        {
-            'image': 'images/image3.jpg',
-            'name': 'Slide 3',
-            'location': 'Captured at: 11:58:18 ',
-            'description': 'Perform AI analysis on your data'
-        }
-    ]
-    return render_template('index.html', cards=cards)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Get the path to the current file (app.py)
+IMAGE_DIR = os.path.join(BASE_DIR, "static", "images")  # Join with static/images
+
+@app.route("/")
+def index():
+    """Render the main page."""
+    return render_template("index.html")
+
+@app.route("/images")
+def get_images():
+    """Return a list of image file names in the directory."""
+    if not os.path.exists(IMAGE_DIR):
+        return f"Directory {IMAGE_DIR} does not exist", 500
+
+    images = sorted(os.listdir(IMAGE_DIR))
+    if not images:
+        return f"No images found in {IMAGE_DIR}", 500
+
+    image_urls = [f"/static/images/{image}" for image in images]
+    return jsonify(image_urls)
+
 
 def start_flask():
     """Start the Flask server."""
