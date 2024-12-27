@@ -56,6 +56,8 @@ class App(customtkinter.CTk):
         self.after(100, self.make_fullscreen)
 
         self.change_scaling_event("130%")
+        
+        self.start_threads()
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure((2, 3), weight=0)
@@ -176,6 +178,7 @@ class App(customtkinter.CTk):
         self.water_temp = customtkinter.CTkLabel(self.scrollable_frame, text="Water Temp: --°C")
         self.water_temp.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")   
         
+        threading.Thread(target=self.update_temperature, daemon=True).start()
 
         #------Default values-------
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
@@ -414,18 +417,31 @@ class App(customtkinter.CTk):
         
     #------Video-------
    
-    def update_video_feed(self):
-        while self.running:
-            ret, frame = self.cap.read()
-            if ret:
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                frame_image = ImageTk.PhotoImage(Image.fromarray(frame))
-                self.video_label.configure(image=frame_image)
-                self.video_label.image = frame_image
-            else:
-                print("Failed to grab frame")
-            time.sleep(0.03)
+    def start_threads(self):
+        """Start all threads."""
+        # Video Feed Thread
+        threading.Thread(target=self.update_video_feed, daemon=True).start()
 
+        # Temperature Monitoring Thread
+        threading.Thread(target=self.update_temperature, daemon=True).start()
+
+    def update_video_feed(self):
+        """Update the video feed."""
+        while self.running:
+            try:
+                ret, frame = self.cap.read()
+                if ret:
+                    # Convert frame to RGB and display
+                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    img = Image.fromarray(frame)
+                    imgtk = ImageTk.PhotoImage(image=img)
+                    self.video_label.configure(image=imgtk)
+                    self.video_label.image = imgtk
+                time.sleep(0.03)  # Reduce CPU usage
+            except Exception as e:
+                print(f"Error in video feed thread: {e}")
+
+   
         
     
          
