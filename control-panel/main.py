@@ -180,7 +180,8 @@ class App(customtkinter.CTk):
 
         #------Default values-------
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
-        threading.Thread(target=self.update_temperature, daemon=True).start() 
+        threading.Thread(target=self.update_temperature, daemon=True).start()
+        threading.Thread(target=self.update_video_feed, daemon=True).start() 
 
     #------Config menus-------
     def open_config_menu(self):
