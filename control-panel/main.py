@@ -57,7 +57,9 @@ class App(customtkinter.CTk):
 
         self.change_scaling_event("130%")
         
-
+        threading.Thread(target=self.update_temperature, daemon=True).start() 
+        threading.Thread(target=self.update_video_feed, daemon=True).start()
+        
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure((2, 3), weight=0)
         self.grid_rowconfigure((0, 1, 2), weight=1)
@@ -489,8 +491,7 @@ class App(customtkinter.CTk):
         self.destroy()
     
 
-    threading.Thread(target=update_video_feed, daemon=True).start()
-    threading.Thread(target=update_temperature, daemon=True).start() 
+    
 
 if __name__ == "__main__":
     print(os.getcwd())
