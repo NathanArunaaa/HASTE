@@ -57,7 +57,8 @@ class App(customtkinter.CTk):
 
         self.change_scaling_event("130%")
         
-        self.start_threads()
+        threading.Thread(target=self.update_video_feed, daemon=True).start()
+        threading.Thread(target=self.update_temperature, daemon=True).start()
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure((2, 3), weight=0)
@@ -116,7 +117,9 @@ class App(customtkinter.CTk):
         self.video_label = customtkinter.CTkLabel(self.video_frame, text="", anchor="center")
         self.video_label.grid(row=0, column=0, padx=20, pady=20)
         
-        
+        threading.Thread(target=self.update_video_feed, daemon=True).start()
+        threading.Thread(target=self.update_temperature, daemon=True).start()
+
         #------Console log-------
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.textbox.configure(cursor="none") 
@@ -415,31 +418,18 @@ class App(customtkinter.CTk):
         
     #------Video-------
    
-    def start_threads(self):
-        """Start all threads."""
-        # Video Feed Thread
-        threading.Thread(target=self.update_video_feed, daemon=True).start()
-
-        # Temperature Monitoring Thread
-        threading.Thread(target=self.update_temperature, daemon=True).start()
-
     def update_video_feed(self):
-        """Update the video feed."""
         while self.running:
-            try:
-                ret, frame = self.cap.read()
-                if ret:
-                    # Convert frame to RGB and display
-                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    img = Image.fromarray(frame)
-                    imgtk = ImageTk.PhotoImage(image=img)
-                    self.video_label.configure(image=imgtk)
-                    self.video_label.image = imgtk
-                time.sleep(0.03)  # Reduce CPU usage
-            except Exception as e:
-                print(f"Error in video feed thread: {e}")
+            ret, frame = self.cap.read()
+            if ret:
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                frame_image = ImageTk.PhotoImage(Image.fromarray(frame))
+                self.video_label.configure(image=frame_image)
+                self.video_label.image = frame_image
+            else:
+                print("Failed to grab frame")
+            time.sleep(0.03)
 
-   
         
     
          
