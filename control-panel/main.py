@@ -57,8 +57,6 @@ class App(customtkinter.CTk):
 
         self.change_scaling_event("130%")
         
-        threading.Thread(target=self.update_temperature, daemon=True).start() 
-        threading.Thread(target=self.update_video_feed, daemon=True).start()
         
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure((2, 3), weight=0)
@@ -182,7 +180,8 @@ class App(customtkinter.CTk):
 
         #------Default values-------
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
- 
+        threading.Thread(target=self.update_temperature, daemon=True).start() 
+
     #------Config menus-------
     def open_config_menu(self):
         config_window = customtkinter.CTkToplevel(self)
@@ -244,7 +243,6 @@ class App(customtkinter.CTk):
             else:
                 print("Applying custom settings...")
 
-   
         input_value = customtkinter.StringVar()  
 
         input_entry = customtkinter.CTkEntry(config_window, textvariable=input_value, justify="right", width=100, font=("Arial", 18))
