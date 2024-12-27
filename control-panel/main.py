@@ -425,6 +425,7 @@ class App(customtkinter.CTk):
                 self.video_label.configure(image=frame_image)
                 self.video_label.image = frame_image
             else:
+                self.cap = cv2.VideoCapture(0) 
                 print("Failed to grab frame")
             time.sleep(0.03)
 
