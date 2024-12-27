@@ -58,7 +58,6 @@ class App(customtkinter.CTk):
         self.change_scaling_event("130%")
         
         threading.Thread(target=self.update_video_feed, daemon=True).start()
-        threading.Thread(target=self.update_temperature, daemon=True).start()
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure((2, 3), weight=0)
