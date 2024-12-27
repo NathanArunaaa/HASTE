@@ -116,7 +116,6 @@ class App(customtkinter.CTk):
         self.video_label = customtkinter.CTkLabel(self.video_frame, text="", anchor="center")
         self.video_label.grid(row=0, column=0, padx=20, pady=20)
         
-        threading.Thread(target=self.update_video_feed, daemon=True).start()
         
         #------Console log-------
         self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
@@ -178,7 +177,6 @@ class App(customtkinter.CTk):
         self.water_temp = customtkinter.CTkLabel(self.scrollable_frame, text="Water Temp: --°C")
         self.water_temp.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")   
         
-        threading.Thread(target=self.update_temperature, daemon=True).start()
 
         #------Default values-------
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
