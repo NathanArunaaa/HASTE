@@ -420,11 +420,12 @@ class App(customtkinter.CTk):
             ret, frame = self.cap.read()
             if ret:
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                img = Image.fromarray(frame)
-                imgtk = ImageTk.PhotoImage(image=img)
-            
-                self.video_label.imgtk = imgtk  
-                self.video_label.configure(image=imgtk)
+                frame_image = ImageTk.PhotoImage(Image.fromarray(frame))
+                self.video_label.configure(image=frame_image)
+                self.video_label.image = frame_image
+            else:
+                print("Failed to grab frame")
+            time.sleep(0.03)
 
         
     
