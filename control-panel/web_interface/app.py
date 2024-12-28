@@ -12,7 +12,8 @@ def three_d_view():
     images = [
         '/static/images/image1.jpg',
         '/static/images/image2.jpg',
-        '/static/images/image3.jpg'
+        '/static/images/image3.jpg',
+        '/static/images/image4.jpg'
     ]
     return render_template('3d-view.html', images=images)
 
