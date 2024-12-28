@@ -1,30 +1,20 @@
 from flask import Flask, render_template
+import os
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    cards = [
-        {
-            'image': 'images/image1.jpg', 
-            'name': 'Slide 1',
-            'location': 'Captured at: 11:58:18 ',
-            'description': 'Perform AI analysis on your data'
-        },
-        {
-            'image': 'images/image2.jpg',
-            'name': 'Slide 2',
-            'location': 'Captured at: 11:58:18 ',
-            'description': 'Perform AI analysis on your data'
-        },
-        {
-            'image': 'images/image3.jpg',
-            'name': 'Slide 3',
-            'location': 'Captured at: 11:58:18 ',
-            'description': 'Perform AI analysis on your data'
-        }
+    return render_template('home.html')
+
+@app.route('/3d-view')
+def three_d_view():
+    images = [
+        '/static/images/image1.jpg',
+        '/static/images/image2.jpg',
+        '/static/images/image3.jpg'
     ]
-    return render_template('index.html', cards=cards)
+    return render_template('3d-view.html', images=images)
 
 def start_flask():
     """Start the Flask server."""
