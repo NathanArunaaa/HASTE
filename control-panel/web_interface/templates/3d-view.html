@@ -5,11 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Tissue Sections</title>
     <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .taskbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50px;
+            background-color: #333;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 10;
+        }
+
+        .taskbar button {
+            background-color: #555;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .taskbar button:hover {
+            background-color: #777;
+        }
     </style>
 </head>
 <body>
+    <div class="taskbar">
+        <button id="homeButton">Home</button>
+        <button id="resetButton">Reset View</button>
+        <button id="exportButton">Export Data</button>
+    </div>
+
     <script src="/static/js/three.min.js"></script>
     <script src="/static/js/OrbitControls.js"></script>
 
@@ -20,19 +62,18 @@
                 return;
             }
 
-            const imageUrls = {{ images|tojson }};
-            
-            // Create the scene, camera, and renderer
+            const imageUrls = {{ images|tojson }}; 
+
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(window.innerWidth, window.innerHeight - 50); 
+            renderer.domElement.style.marginTop = "50px"; 
             document.body.appendChild(renderer.domElement);
 
             const controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.25;
-            controls.screenSpacePanning = false;
 
             const light = new THREE.AmbientLight(0xffffff, 1);
             scene.add(light);
@@ -44,23 +85,36 @@
                 const material = new THREE.MeshBasicMaterial({
                     map: texture,
                     transparent: true,
-                    opacity: 0.8
+                    opacity: 0.8,
                 });
-                const geometry = new THREE.PlaneGeometry(5, 5); 
+                const geometry = new THREE.PlaneGeometry(5, 5);
                 const plane = new THREE.Mesh(geometry, material);
 
                 plane.position.z = -index * zSpacing;
                 scene.add(plane);
             });
-
-            camera.position.set(3, 3, 6);
+            
+            //cam initial position
+            camera.position.set(4, 4, 10);
 
             window.addEventListener("resize", () => {
                 const width = window.innerWidth;
-                const height = window.innerHeight;
+                const height = window.innerHeight - 50;
                 renderer.setSize(width, height);
                 camera.aspect = width / height;
                 camera.updateProjectionMatrix();
+            });
+
+            document.getElementById("homeButton").addEventListener("click", () => {
+                window.location.href = "/";
+            });
+
+            document.getElementById("resetButton").addEventListener("click", () => {
+                camera.position.set(3, 3, 6);
+            });
+
+            document.getElementById("exportButton").addEventListener("click", () => {
+                alert("Export functionality not implemented yet.");
             });
 
             function animate() {
