@@ -3,24 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Tissue 3D Viewer</title>
+    <title>Home - Result Viewer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 50px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px auto;
+            max-width: 400px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        ul::-webkit-scrollbar {
+            width: 10px;
+        }
+        ul::-webkit-scrollbar-track {
+            background: #FFFFFF;
+            border-radius: 8px;
+        }
+        ul::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 8px;
+        }
+        ul::-webkit-scrollbar-thumb:hover {
+            background: #FFFFFF;
+        }
+        li {
+            font-size: 18px;
+            margin: 5px 0;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #ddd;
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+        .index {
+            font-weight: bold;
+            color: #3b8ed0;
+            margin-right: 10px;
         }
         button {
             font-size: 18px;
             padding: 10px 20px;
-            background-color: #2167c3;
-            color: white;
+            background-color: #3b8ed0;
+            color: #FFFFFF;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #2167c3;
+            background-color: #1a5199;
         }
     </style>
 </head>
@@ -30,6 +75,15 @@
     <a href="/3d-view">
         <button>Go to 3D View</button>
     </a>
+
+    <h2>Data Loaded</h2>
+    <ul>
+        {% for index, image in images %}
+            <li>
+                <span class="index">{{ loop.index }}</span>
+                {{ image.split('/')[-1] }}
+            </li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
-	

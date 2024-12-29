@@ -5,7 +5,10 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+    image_files = ["image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg"]
+    
+    images = list(enumerate(image_files, start=1))  
+    return render_template('home.html', images=images)
 
 @app.route('/3d-view')
 def three_d_view():

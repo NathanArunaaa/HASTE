@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Tissue Sections</title>
+    <title>3D - Result Viewer</title>
     <style>
         body {
             margin: 0;
@@ -110,7 +110,8 @@
             });
 
             document.getElementById("resetButton").addEventListener("click", () => {
-                camera.position.set(3, 3, 6);
+                //cam reset position
+                camera.position.set(4, 4, 10);
             });
 
             document.getElementById("exportButton").addEventListener("click", () => {
