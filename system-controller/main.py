@@ -6,6 +6,7 @@ from functions import (
     sample_retract,
     cut_sections,
     home_motor,
+    face_sample,
     pump_A_on,
     pump_A_off,
     pump_B_on,
@@ -54,7 +55,7 @@ while True:
                 
                 elif command == "FACE_SAMPLE":
                     print("Retracting sample...")
-                    cut_sections(3)
+                    face_sample()
                 
                 elif command == "SYSTEM_CALIBRATION":
                     print("Retracting sample...")
