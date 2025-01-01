@@ -250,11 +250,11 @@ class App(customtkinter.CTk):
         input_value = customtkinter.StringVar()  
         
         label = customtkinter.CTkLabel(config_window, text="LIS Number", font=("Arial", 14))
-        label.grid(row=0, column=2, padx=20, pady=10, sticky="e")
+        label.grid(row=0, column=2, padx=20, pady=10 )
 
 
         input_entry = customtkinter.CTkEntry(config_window, textvariable=input_value, justify="right", width=100, font=("Arial", 18))
-        input_entry.grid(row=1, column=2, padx=20, pady=10, sticky="e")
+        input_entry.grid(row=1, column=2, padx=20, pady=10)
 
         def on_number_click(num):
             current = input_value.get()
