@@ -87,12 +87,12 @@ def home_motor():
     print("Homing Y complete. Motor zeroed.")
     
     
-def face_sample(num_sections):
+def face_sample():
     try:
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
         step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 2000)
 
-        for section in range(num_sections):
+        for section in range(5):
 
             step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
             step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS)
