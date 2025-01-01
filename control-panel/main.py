@@ -248,9 +248,13 @@ class App(customtkinter.CTk):
                 print("Applying custom settings...")
 
         input_value = customtkinter.StringVar()  
+        
+        label = customtkinter.CTkLabel(config_window, text="LIS Number", font=("Arial", 14))
+        label.grid(row=0, column=2, padx=20, pady=10)
+
 
         input_entry = customtkinter.CTkEntry(config_window, textvariable=input_value, justify="right", width=100, font=("Arial", 18))
-        input_entry.grid(row=0, column=2, padx=20, pady=10, sticky="e")
+        input_entry.grid(row=1, column=2, padx=20, pady=10, sticky="e")
 
         def on_number_click(num):
             current = input_value.get()
@@ -260,11 +264,9 @@ class App(customtkinter.CTk):
             input_value.set("")
 
         number_pad = customtkinter.CTkFrame(config_window, fg_color="white")
-        number_pad.grid(row=1, column=2, rowspan=5, padx=20, pady=10, sticky="nsew")
+        number_pad.grid(row=2, column=2, rowspan=5, padx=20, pady=10, sticky="nsew")
 
-        label = customtkinter.CTkLabel(config_window, text="LIS Number", font=("Arial", 14))
-        label.grid(row=0, column=2, padx=20, pady=10)
-
+        
         buttons = [
             ('1', 0, 0), ('2', 0, 1), ('3', 0, 2),
             ('4', 1, 0), ('5', 1, 1), ('6', 1, 2),
