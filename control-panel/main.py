@@ -259,7 +259,7 @@ class App(customtkinter.CTk):
         def clear_input():
             input_value.set("")
 
-        number_pad = customtkinter.CTkFrame(config_window)
+        number_pad = customtkinter.CTkFrame(config_window, fg_color="white")
         number_pad.grid(row=1, column=2, rowspan=5, padx=20, pady=10, sticky="nsew")
 
         buttons = [
