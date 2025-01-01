@@ -67,9 +67,7 @@ def step_motor(dir_pin, step_pin, direction, steps):
         GPIO.output(step_pin, GPIO.LOW)
         time.sleep(STEP_DELAY)
 
-
 def home_motor():
-
     step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
     GPIO.output(X_DIR_PIN, CW) 
 
@@ -88,21 +86,18 @@ def home_motor():
     step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
     print("Homing Y complete. Motor zeroed.")
     
+    
 def face_sample(num_sections):
- 
     try:
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
-        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 11000)
+        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 6000)
 
         for section in range(num_sections):
-            print(f"Cutting section {section + 1}...")
 
             step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
             step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS)
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
             step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
-
-            print(f"Section {section + 1} complete.\n")
 
         print(section, "sections cut.")
 

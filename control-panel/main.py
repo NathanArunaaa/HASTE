@@ -229,8 +229,8 @@ class App(customtkinter.CTk):
         start_button = customtkinter.CTkButton(config_window, text_color="red", text="Start",command=lambda: self.send_command("SECTION_SAMPLE"))
         start_button.grid(row=3, column=0, padx=20, pady=10)
         
-        start_button = customtkinter.CTkButton(config_window,  text="Face Sample", command=lambda: self.send_command(""))
-        start_button.grid(row=4, column=0, padx=20, pady=10)
+        face_button = customtkinter.CTkButton(config_window,  text="Face Sample", command=lambda: self.send_command("FACE_SAMPLE"))
+        face_button.grid(row=4, column=0, padx=20, pady=10)
 
         close_button = customtkinter.CTkButton(config_window, text="Cancel", command=config_window.destroy)
         close_button.grid(row=5, column=0, padx=20, pady=10)
