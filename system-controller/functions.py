@@ -90,7 +90,7 @@ def home_motor():
 def face_sample(num_sections):
     try:
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
-        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 6000)
+        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 2000)
 
         for section in range(num_sections):
 
