@@ -48,7 +48,7 @@ class App(customtkinter.CTk):
 
         #------inits-------     
         self.title("HASTE CONTROL PANEL")
-        #self.config(cursor="none")
+        self.config(cursor="none")
         
         self.cap = cv2.VideoCapture(0) 
         self.running = True
@@ -188,7 +188,7 @@ class App(customtkinter.CTk):
 
     #------Config menus-------
     def open_config_menu(self):
-        config_window = customtkinter.CTkToplevel(self)
+        config_window = customtkinter.CTkToplevel(self, cursor="none")
 
         config_window.title("Configuration Analysis Settings")
         config_window.geometry(f"{config_window.winfo_screenwidth()}x{config_window.winfo_screenheight()}+0+0")
