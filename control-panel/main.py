@@ -22,7 +22,7 @@ from functions import (
 customtkinter.set_appearance_mode("light")  
 customtkinter.set_default_color_theme("blue") 
 
-CONTROL_PANEL_IP = '10.190.2.159'
+CONTROL_PANEL_IP = '192.168.1.100'
 CONTROL_PANEL_PORT = 5000
 
 
