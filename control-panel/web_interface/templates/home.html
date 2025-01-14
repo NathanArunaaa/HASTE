@@ -16,26 +16,12 @@
             list-style-type: none;
             padding: 0;
             margin: 20px auto;
-            max-width: 400px;
+            width: 600px; 
             max-height: 300px;
             overflow-y: auto;
             border: 1px solid #ccc;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-        ul::-webkit-scrollbar {
-            width: 10px;
-        }
-        ul::-webkit-scrollbar-track {
-            background: #FFFFFF;
-            border-radius: 8px;
-        }
-        ul::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 8px;
-        }
-        ul::-webkit-scrollbar-thumb:hover {
-            background: #FFFFFF;
         }
         li {
             font-size: 18px;
@@ -54,6 +40,23 @@
             font-weight: bold;
             color: #3b8ed0;
             margin-right: 10px;
+            text-align: left;
+            flex: 1; 
+        }
+        select {
+            font-size: 16px;
+            padding: 8px;
+            width: 250px; 
+            border-radius: 8px; 
+            margin-right: 10px; 
+        }
+        #search {
+            margin: 20px 0;
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            border-radius: 8px; 
+            text-align: left; 
         }
         button {
             font-size: 18px;
@@ -67,23 +70,155 @@
         button:hover {
             background-color: #1a5199;
         }
+        #search-container {
+            display: flex;
+            justify-content: flex-start; 
+        }
+        #patientList {
+            text-align: left; 
+        }
+        .patient-item {
+            display: flex;
+            justify-content: flex-end; 
+            width: 100%;
+        }
+        .patient-button {
+            margin-left: 10px; 
+        }
+        #selected-image-container {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        #selected-image {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 10px;
+        }
+        #all-images-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .image-thumbnail {
+            max-width: 150px;
+            margin: 10px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
-    <h1>Welcome to the Tissue 3D Viewer</h1>
+    <h1>HASTE Visualization</h1>
     <p>Click the button below to view the 3D representation of tissue sections.</p>
-    <a href="/3d-view">
-        <button>Go to 3D View</button>
-    </a>
 
-    <h2>Data Loaded</h2>
-    <ul>
-        {% for index, image in images %}
+    <p>Developed By: Nathan Aruna & Arielle Benarroch</p>
+
+    <input type="text" id="search" placeholder="Search for Patient ID" onkeyup="filterPatients()">
+
+    <ul id="patientList">
+        {% for patient_id, images in patient_data.items() %}
             <li>
-                <span class="index">{{ loop.index }}</span>
-                {{ image.split('/')[-1] }}
+                <span class="index">{{ patient_id }}</span>
+                <select onchange="showImage(event, '{{ patient_id }}')">
+                    <option value="" disabled selected>Select an Image</option>
+                    <option value="all">All Images</option>
+                    {% for image in images %}
+                        <option value="{{ url_for('static', filename='images/' + patient_id + '/' + image) }}">{{ image }}</option>
+                    {% endfor %}
+                </select>
+                <!-- 3D View Button -->
+                <a href="{{ url_for('three_d_view', patient_id=patient_id) }}">
+                    <button>View 3D</button>
+                </a>
             </li>
         {% endfor %}
     </ul>
+
+    <div id="selected-image-container">
+        <p>Selected Image:</p>
+        <img id="selected-image" src="" alt="Selected Image" style="display: none;">
+    </div>
+
+    <div id="all-images-container"></div>
+
+    <button id="export-btn" onclick="exportData()" style="margin-top: 20px;">Export Data</button>
+
+    <script>
+        const patientData = {{ patient_data | tojson }};
+
+        function filterPatients() {
+            const searchQuery = document.getElementById("search").value.toLowerCase();
+            const patientList = document.getElementById("patientList");
+            const patients = patientList.getElementsByTagName("li");
+
+            for (let i = 0; i < patients.length; i++) {
+                const patient = patients[i];
+                const patientName = patient.querySelector(".index").textContent.toLowerCase();
+
+                if (patientName.includes(searchQuery)) {
+                    patient.style.display = "";
+                } else {
+                    patient.style.display = "none";
+                }
+            }
+        }
+
+        function showImage(event, patientId) {
+            const selectedImageUrl = event.target.value;
+            const imageElement = document.getElementById("selected-image");
+            const allImagesContainer = document.getElementById("all-images-container");
+
+            allImagesContainer.innerHTML = '';
+
+            if (selectedImageUrl === "all") {
+                fetchImages(patientId);
+            } else if (selectedImageUrl) {
+                imageElement.src = selectedImageUrl;
+                imageElement.style.display = "block"; 
+            } else {
+                imageElement.style.display = "none"; 
+            }
+        }
+
+        function fetchImages(patientId) {
+            const patientImages = patientData[patientId];
+            const allImagesContainer = document.getElementById("all-images-container");
+
+            patientImages.forEach(image => {
+                const img = document.createElement("img");
+                img.src = "/static/images/" + patientId + "/" + image;
+                img.classList.add("image-thumbnail");
+                allImagesContainer.appendChild(img);
+            });
+        }
+
+        function exportData() {
+            const selectedPatient = document.querySelector("select").value;
+            let data = "";
+
+            if (selectedPatient === "all") {
+                Object.keys(patientData).forEach(patientId => {
+                    data += "Patient ID: " + patientId + "\n";
+                    patientData[patientId].forEach(image => {
+                        data += "- " + image + "\n";
+                    });
+                    data += "\n";
+                });
+            } else {
+                const selectedImageUrl = document.getElementById("selected-image").src;
+                data = "Selected Image URL: " + selectedImageUrl;
+            }
+
+            const blob = new Blob([data], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'exported_data.txt';
+            link.click();
+        }
+    </script>
 </body>
 </html>
