@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import time
-
+import cv2
+import os
 # ------Pin Configuration-------
 Y_DIR_PIN = 20  
 Y_STEP_PIN = 21 
@@ -36,6 +37,9 @@ GPIO.setup(X_STEP_PIN, GPIO.OUT)
 GPIO.setup(Y_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
 GPIO.setup(X_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
 
+
+
+
 def pump_A_off():
     RELAY_PIN1= 24
     GPIO.setup(RELAY_PIN1, GPIO.OUT)
@@ -56,6 +60,38 @@ def pump_B_on():
     GPIO.setup(RELAY_PIN2, GPIO.OUT)
     GPIO.output(RELAY_PIN2, GPIO.LOW)
         
+
+
+# ------Imaging Handlers-------
+def capture_image(patient_id):
+  
+    save_dir = "control-panel/web_interface/static/images/" + patient_id
+    filename = "webcam_capture.jpg"
+    
+    os.makedirs(save_dir, exist_ok=True)
+    
+    camera_index = 0
+    
+    cap = cv2.VideoCapture(camera_index)
+    if not cap.isOpened():
+        return "Error: Could not open the camera."
+    
+    
+    ret, frame = cap.read()
+    
+    cap.release()
+    
+    if not ret:
+        return "Error: Could not capture an image from the camera."
+    
+    save_path = os.path.join(save_dir, filename)
+    quality_params = [cv2.IMWRITE_JPEG_QUALITY, 100]  
+    if cv2.imwrite(save_path, frame, quality_params):
+        return f"Image saved successfully at {save_path}"
+    else:
+        return "Error: Failed to save the image."
+
+
 
 # ------Motion Handlers-------
 def step_motor(dir_pin, step_pin, direction, steps):
@@ -100,7 +136,6 @@ def face_sample():
             step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
 
         print(section, "sections cut.")
-
     finally:
         #remember to return status code to control panel
         print("Cutting complete.")
@@ -128,6 +163,7 @@ def cut_sections(num_sections):
     finally:
         #remember to return status code to control panel
         print("Cutting complete.")
+        
 
 def sample_extend():
     try:
@@ -137,9 +173,12 @@ def sample_extend():
         print("Sample holder raised.")
 
 
+
 def sample_retract():
     try:
         print("Lowering sample holder...")
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 37000)  
     finally:
         print("Sample holder lowered.")
+        
+
