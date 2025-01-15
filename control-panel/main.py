@@ -390,7 +390,7 @@ class App(customtkinter.CTk):
         self.resizable(False, False)
 
     def send_command(self, command):
-      server_ip = '10.190.2.54'
+      server_ip = '10.190.2.159'
       port = 5000  
 
       with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
