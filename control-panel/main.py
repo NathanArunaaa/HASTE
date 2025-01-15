@@ -22,8 +22,6 @@ from functions import (
 customtkinter.set_appearance_mode("light")  
 customtkinter.set_default_color_theme("blue") 
 
-CONTROL_PANEL_IP = '10.190.2.54'
-CONTROL_PANEL_PORT = 5000
 
 
 class TextWidgetStream:
@@ -392,7 +390,7 @@ class App(customtkinter.CTk):
         self.resizable(False, False)
 
     def send_command(self, command):
-      server_ip = '192.168.2.126'
+      server_ip = '10.190.2.54'
       port = 5000  
 
       with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
