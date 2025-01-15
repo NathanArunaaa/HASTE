@@ -341,7 +341,7 @@ class App(customtkinter.CTk):
         
         
     def open_flush_menu(self):
-        command_thread = threading.Thread(target=lambda: self.send_command(""))
+        command_thread = threading.Thread(target=lambda: self.send_command("SYSTEM_FLUSH"))
         command_thread.daemon = True
         command_thread.start()
 
@@ -361,10 +361,6 @@ class App(customtkinter.CTk):
         loader_label.pack(pady=(20, 10)) 
 
         def on_done():
-            command_thread = threading.Thread(target=lambda: self.send_command(""))
-            command_thread.daemon = True
-            command_thread.start()
-            self.sample_loaded = True
             loading_window.destroy()
 
         done_button = customtkinter.CTkButton(content_frame, text="Done", command=on_done)
@@ -372,7 +368,7 @@ class App(customtkinter.CTk):
         done_button.pack_forget() 
 
         def remove_loader_and_show_done():
-            time.sleep(4)
+            time.sleep(5)
             loader_label.pack_forget()  
             done_button.pack(pady=(10, 20))  
 

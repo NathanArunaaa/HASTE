@@ -7,6 +7,7 @@ from functions import (
     cut_sections,
     home_motor,
     face_sample,
+    flush_system,
     pump_A_on,
     pump_A_off,
     pump_B_on,
@@ -60,6 +61,10 @@ while True:
                 elif command == "SYSTEM_CALIBRATION":
                     print("Retracting sample...")
                     home_motor()
+
+                elif command == "SYSTEM_FLUSH":
+                    print("Flushing system...")
+                    flush_system()
                     
                 elif command == "DEBUG_PUMP_A":
                     pump_A_on()

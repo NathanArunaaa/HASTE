@@ -39,6 +39,7 @@ GPIO.setup(X_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 
+# ------Liquid Handlers-------
 
 def pump_A_off():
     RELAY_PIN1= 24
@@ -61,6 +62,12 @@ def pump_B_on():
     GPIO.output(RELAY_PIN2, GPIO.LOW)
         
 
+def flush_system():
+    pump_A_on()
+    pump_B_on()
+    time.sleep(5)
+    pump_A_off()
+    pump_B_off()
 
 # ------Imaging Handlers-------
 def capture_image(patient_id):
