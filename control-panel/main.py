@@ -139,8 +139,7 @@ class App(customtkinter.CTk):
         self.tabview.tab("Debug").grid_rowconfigure(0, weight=1)
         self.tabview.tab("Debug").grid_columnconfigure(0, weight=1)
         
-        self.spacer = customtkinter.CTkLabel(self.tabview.tab("Debug"), text="", width=20, )
-        self.spacer.grid(row=0, column=0, padx=40, pady=2, sticky="nsew") 
+      
 
         self.debug_button1 = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Pump A", width=20, command=lambda: self.send_command("DEBUG_PUMP_A"))
         self.debug_button1.grid(row=1, column=0, padx=40, pady=2, sticky="nsew")  
@@ -170,14 +169,34 @@ class App(customtkinter.CTk):
         self.down_button.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
         
        
-        #------Temp Monitoring-------
-        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="Temperatures")
+        #------Liquid systems-------
+        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="Fluid Control")
         self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
         
-        self.water_temp = customtkinter.CTkLabel(self.scrollable_frame, text="Water Temp: --°C")
-        self.water_temp.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")   
         
+        
+        self.water_temp = customtkinter.CTkLabel(self.scrollable_frame, text="Water Temp: --°C")
+        self.water_temp.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")  
+        
+        self.temp_frame = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
+        self.temp_frame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+        
+        self.temp_minus_button = customtkinter.CTkButton(self.temp_frame, text="-", width=30)
+        self.temp_minus_button.grid(row=0, column=0, padx=5)
+
+        self.temp_entry = customtkinter.CTkEntry(self.temp_frame, width=70, justify="center")
+        self.temp_entry.insert(0, "25")  
+        self.temp_entry.grid(row=0, column=1, padx=5)
+
+        self.temp_plus_button = customtkinter.CTkButton(self.temp_frame, text="+", width=30)
+        self.temp_plus_button.grid(row=0, column=2, padx=5) 
+        
+        self.pump_A = customtkinter.CTkSwitch(self.scrollable_frame, text="Pump A")
+        self.pump_A.grid(row=2, column=0, padx=10, pady=(0, 20)) 
+        
+        self.pump_B = customtkinter.CTkSwitch(self.scrollable_frame, text="Pump B")
+        self.pump_B.grid(row=3, column=0, padx=10, pady=(0, 20))    
 
         #------Default values-------
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
