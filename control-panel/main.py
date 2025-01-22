@@ -139,16 +139,7 @@ class App(customtkinter.CTk):
         self.tabview.tab("Debug").grid_rowconfigure(0, weight=1)
         self.tabview.tab("Debug").grid_columnconfigure(0, weight=1)
         
-      
-
-        self.debug_button1 = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Pump A", width=20, command=lambda: self.send_command("DEBUG_PUMP_A"))
-        self.debug_button1.grid(row=1, column=0, padx=40, pady=2, sticky="nsew")  
-         
-        self.debug_button2 = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Pump B", width=20,command=lambda: self.send_command("DEBUG_PUMP_B"))
-        self.debug_button2.grid(row=2, column=0, padx=40, pady=2, sticky="nsew")   
         
-        self.debug_button3 = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Illuminator", width=20)
-        self.debug_button3.grid(row=3, column=0, padx=40, pady=2, sticky="nsew")   
         #------Steppers-------
         self.tabview.tab("Steppers").grid_rowconfigure((0, 1, 2), weight=1)
         self.tabview.tab("Steppers").grid_columnconfigure((0, 1, 2), weight=1)
@@ -169,7 +160,7 @@ class App(customtkinter.CTk):
         self.down_button.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
         
        
-        #------Liquid systems-------
+        #------systems control-------
         self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="Fluid Control")
         self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
@@ -177,7 +168,14 @@ class App(customtkinter.CTk):
         
         
         self.water_temp = customtkinter.CTkLabel(self.scrollable_frame, text="Water Temp: --°C")
-        self.water_temp.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")  
+        self.water_temp.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+
+        self.temp_minus_button = customtkinter.CTkButton(self.temp_frame, text="ON", command=lambda: self.send_command("ILLUMINATOR_ON"))
+        self.temp_minus_button.grid(row=1, column=0, padx=5)
+
+        self.temp_minus_button = customtkinter.CTkButton(self.temp_frame, text="OFF", command=lambda: self.send_command("ILLUMINATOR_OFF"))
+        self.temp_minus_button.grid(row=1, column=2, padx=5)
+          
         
         self.temp_frame = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
         self.temp_frame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")

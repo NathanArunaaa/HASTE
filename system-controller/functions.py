@@ -42,24 +42,24 @@ GPIO.setup(X_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 # ------Liquid Handlers-------
 
 def pump_A_off():
-    RELAY_PIN1= 24
-    GPIO.setup(RELAY_PIN1, GPIO.OUT)
-    GPIO.output(RELAY_PIN1, GPIO.HIGH)
+    RELAY_A_PIN1= 24
+    GPIO.setup(RELAY_A_PIN1, GPIO.OUT)
+    GPIO.output(RELAY_A_PIN1, GPIO.HIGH)
         
 def pump_A_on():
-    RELAY_PIN1 = 24
-    GPIO.setup(RELAY_PIN1, GPIO.OUT)
-    GPIO.output(RELAY_PIN1, GPIO.LOW)
+    RELAY_A_PIN1 = 24
+    GPIO.setup(RELAY_A_PIN1, GPIO.OUT)
+    GPIO.output(RELAY_A_PIN1, GPIO.LOW)
         
 def pump_B_off():
-    RELAY_PIN2 = 25
-    GPIO.setup(RELAY_PIN2, GPIO.OUT)
-    GPIO.output(RELAY_PIN2, GPIO.HIGH)
+    RELAY_A_PIN2 = 25
+    GPIO.setup(RELAY_A_PIN2, GPIO.OUT)
+    GPIO.output(RELAY_A_PIN2, GPIO.HIGH)
         
 def pump_B_on():
-    RELAY_PIN2 = 25
-    GPIO.setup(RELAY_PIN2, GPIO.OUT)
-    GPIO.output(RELAY_PIN2, GPIO.LOW)
+    RELAY_A_PIN2 = 25
+    GPIO.setup(RELAY_A_PIN2, GPIO.OUT)
+    GPIO.output(RELAY_A_PIN2, GPIO.LOW)
         
 
 def flush_system():
@@ -70,6 +70,18 @@ def flush_system():
     pump_B_off()
 
 # ------Imaging Handlers-------
+
+def illuminator_off():
+    RELAY_B_PIN4= 12
+    GPIO.setup(RELAY_B_PIN4, GPIO.OUT)
+    GPIO.output(RELAY_B_PIN4, GPIO.HIGH)
+        
+def illuminator_on():
+    RELAY_B_PIN4 = 12
+    GPIO.setup(RELAY_B_PIN4, GPIO.OUT)
+    GPIO.output(RELAY_B_PIN4, GPIO.LOW)
+
+    
 def capture_image(patient_id):
   
     save_dir = "control-panel/web_interface/static/images/" + patient_id
