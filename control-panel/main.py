@@ -170,10 +170,10 @@ class App(customtkinter.CTk):
         self.water_temp = customtkinter.CTkLabel(self.scrollable_frame, text="Water Temp: --°C")
         self.water_temp.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")  
 
-        self.on_button = customtkinter.CTkButton(self.temp_frame, text="ON", width=30, command=lambda: self.send_command("ILLUMINATOR_ON"))
+        self.on_button = customtkinter.CTkButton(self.scrollable_frame, text="ON", width=30, command=lambda: self.send_command("ILLUMINATOR_ON"))
         self.on_button.grid(row=1, column=0, padx=5) 
 
-        self.off_button = customtkinter.CTkButton(self.temp_frame, text="OFF", width=30, command=lambda: self.send_command("ILLUMINATOR_OFF"))
+        self.off_button = customtkinter.CTkButton(self.scrollable_frame, text="OFF", width=30, command=lambda: self.send_command("ILLUMINATOR_OFF"))
         self.off_button.grid(row=1, column=1, padx=5) 
         
         self.temp_frame = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
