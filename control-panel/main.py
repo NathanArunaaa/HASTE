@@ -145,42 +145,49 @@ class App(customtkinter.CTk):
         self.tabview.tab("Steppers").grid_columnconfigure((0, 1, 2), weight=1)
 
         self.up_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="↑", width=20)
-        self.up_button.grid(row=0, column=1, padx=10, pady=10, sticky="nsew")
+        self.up_button.grid(row=0, column=1, sticky="nsew")
 
         self.left_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="←", width=20)
-        self.left_button.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+        self.left_button.grid(row=1, column=0, sticky="nsew")
 
         self.center_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="O", width=20)
-        self.center_button.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
+        self.center_button.grid(row=1, column=1,  sticky="nsew")
 
         self.right_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="→", width=20)
-        self.right_button.grid(row=1, column=2, padx=10, pady=10, sticky="nsew")
+        self.right_button.grid(row=1, column=2, sticky="nsew")
 
         self.down_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="↓", width=20)
-        self.down_button.grid(row=2, column=1, padx=10, pady=10, sticky="nsew")
+        self.down_button.grid(row=2, column=1,  sticky="nsew")
         
        
         #------systems control-------
-        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="Fluid Control")
+        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="systems control")
         self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
         
         
         
         self.water_temp = customtkinter.CTkLabel(self.scrollable_frame, text="Water Temp: --°C")
-        self.water_temp.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")  
+        self.water_temp.grid(row=0, column=0,  sticky="nsew")
+        
+        self.illuminator_label = customtkinter.CTkLabel(self.scrollable_frame, text="Illuminator")
+        self.illuminator_label.grid(row=1, column=0, sticky="nsew")   
+        
+        
+        self.button_frame = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
+        self.button_frame.grid(row=2, column=0, sticky="nsew")
 
-        self.on_button = customtkinter.CTkButton(self.scrollable_frame, text="ON", width=30, command=lambda: self.send_command("ILLUMINATOR_ON"))
-        self.on_button.grid(row=1, column=0, padx=5) 
+        self.on_button = customtkinter.CTkButton(self.button_frame, text="ON", width=30, command=lambda: self.send_command("ILLUMINATOR_ON"))
+        self.on_button.grid(row=0, column=0 ) 
 
-        self.off_button = customtkinter.CTkButton(self.scrollable_frame, text="OFF", width=30, command=lambda: self.send_command("ILLUMINATOR_OFF"))
-        self.off_button.grid(row=1, column=1, padx=5) 
+        self.off_button = customtkinter.CTkButton(self.button_frame, text="OFF", width=30, command=lambda: self.send_command("ILLUMINATOR_OFF"))
+        self.off_button.grid(row=0, column=1 ) 
         
         self.temp_frame = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
-        self.temp_frame.grid(row=2, column=0, padx=20, pady=20, sticky="nsew")
+        self.temp_frame.grid(row=3, column=0, sticky="nsew")
         
         self.temp_minus_button = customtkinter.CTkButton(self.temp_frame, text="-", width=30)
-        self.temp_minus_button.grid(row=0, column=0, padx=5)
+        self.temp_minus_button.grid(row=0, column=0)
 
         self.temp_entry = customtkinter.CTkEntry(self.temp_frame, width=70, justify="center")
         self.temp_entry.insert(0, "25")  
@@ -190,12 +197,11 @@ class App(customtkinter.CTk):
         self.temp_plus_button.grid(row=0, column=2, padx=5) 
         
         self.pump_A = customtkinter.CTkSwitch(self.scrollable_frame, text="Pump A")
-        self.pump_A.grid(row=3, column=0, padx=10, pady=(0, 20)) 
+        self.pump_A.grid(row=4, column=0, padx=10, pady=(0, 20)) 
         
         self.pump_B = customtkinter.CTkSwitch(self.scrollable_frame, text="Pump B")
-        self.pump_B.grid(row=4, column=0, padx=10, pady=(0, 20))    
+        self.pump_B.grid(row=5, column=0, padx=10, pady=(0, 20))    
 
-        #------Default values-------
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
         threading.Thread(target=self.update_temperature, daemon=True).start()
         threading.Thread(target=self.update_video_feed, daemon=True).start() 
@@ -362,7 +368,7 @@ class App(customtkinter.CTk):
         command_thread.start()
 
         loading_window = customtkinter.CTkToplevel(self)
-        loading_window.title("Load Sample")
+        loading_window.title("System Flush")
         loading_window.geometry("500x200")
         loading_window.attributes("-topmost", True)
         self.after(100, self.make_fullscreen)
