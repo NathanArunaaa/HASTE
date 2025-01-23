@@ -109,7 +109,16 @@ def capture_image(patient_id):
         return f"Image saved successfully at {save_path}"
     else:
         return "Error: Failed to save the image."
-
+    
+def illuminator_off():
+    RELAY_PIN6 = 12
+    GPIO.setup(RELAY_PIN6, GPIO.OUT)
+    GPIO.output(RELAY_PIN6, GPIO.HIGH)
+        
+def illuminator_on():
+    RELAY_PIN6 = 12
+    GPIO.setup(RELAY_PIN6, GPIO.OUT)
+    GPIO.output(RELAY_PIN6, GPIO.LOW)
 
 
 # ------Motion Handlers-------

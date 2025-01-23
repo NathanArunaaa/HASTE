@@ -8,6 +8,8 @@ from functions import (
     home_motor,
     face_sample,
     flush_system,
+    illuminator_on,
+    illuminator_off,
     pump_A_on,
     pump_A_off,
     pump_B_on,
@@ -71,6 +73,16 @@ while True:
                 elif command == "ILLUMINATOR_ON":
                     print("Turning illuminator on...")
                     illuminator_on()
+                    
+                elif command == "ILLUMINATOR_OFF":
+                    print("Turning illuminator off...")
+                    illuminator_off()
+                   
+                    
+                elif command == "DEBUG_PUMP_A":
+                    pump_A_on()
+                    time.sleep(1)
+                    pump_A_off()
                     
                 elif command == "ILLUMINATOR_OFF":
                     print("Turning illuminator off...")
