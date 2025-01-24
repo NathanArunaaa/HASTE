@@ -1,6 +1,7 @@
 import socket
 import RPi.GPIO as GPIO
 import time
+import json
 from functions import (
     sample_extend, 
     sample_retract,
@@ -14,16 +15,17 @@ from functions import (
     pump_A_off,
     pump_B_on,
     pump_B_off,
-    illuminator_off,
-    illuminator_on
+   
 )
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
+home_motor()
+
+
 pump_A_off()
 pump_B_off()
 
-home_motor()
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(('0.0.0.0', 5000)) 
@@ -78,20 +80,35 @@ while True:
                     print("Turning illuminator off...")
                     illuminator_off()
                    
-                    
-                elif command == "DEBUG_PUMP_A":
-                    pump_A_on()
-                    time.sleep(1)
-                    pump_A_off()
+
                     
                 elif command == "ILLUMINATOR_OFF":
                     print("Turning illuminator off...")
                     illuminator_off()
                     
                     
-                    
                 else:
-                    print(f"Unknown command: {command}")
+                    section_value, micron_value, lis_number = command.split(" | ")
+                    
+                    section_value = int(section_value)  
+                    micron_value = int(micron_value)    
+                    lis_number = lis_number.strip()
+                    
+                    data_dict = {
+                        "section_value": section_value,
+                        "micron_value": micron_value,
+                        "lis_number": lis_number
+                    }  
+                    
+                    file_path = "config_data.json"
+                    file_path = "system-controller/config.json"
+                    
+                    with open(file_path, 'w') as json_file:
+                        json.dump(data_dict, json_file, indent=4)
+
+   
+
+
 
             except Exception as process_error:
                 print(f"Error processing command: {process_error}")

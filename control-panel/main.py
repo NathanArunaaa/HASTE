@@ -46,7 +46,7 @@ class App(customtkinter.CTk):
 
         #------inits-------     
         self.title("HASTE CONTROL PANEL")
-        self.config(cursor="none")
+        #self.config(cursor="none")
         
         self.cap = cv2.VideoCapture(0) 
         self.running = True
@@ -54,6 +54,12 @@ class App(customtkinter.CTk):
         self.after(100, self.make_fullscreen)
 
         self.change_scaling_event("130%")
+        
+        self.selected_section_value = 10  
+        self.selected_micron_value = 50
+        self.selected_lis_number = None
+        
+        self.contructed_command = None
         
         
         self.grid_columnconfigure(1, weight=1)
@@ -206,6 +212,7 @@ class App(customtkinter.CTk):
         threading.Thread(target=self.update_temperature, daemon=True).start()
         threading.Thread(target=self.update_video_feed, daemon=True).start() 
 
+
     #------Config menus-------
     def open_config_menu(self):
         config_window = customtkinter.CTkToplevel(self, cursor="none")
@@ -217,7 +224,7 @@ class App(customtkinter.CTk):
         config_window.attributes("-topmost", True)
         config_window.overrideredirect(True)
 
-        config_window.grid_rowconfigure(5, weight=5)
+        config_window.grid_rowconfigure(6, weight=6)
         config_window.grid_columnconfigure(5, weight=5)
 
         label = customtkinter.CTkLabel(config_window, text="Sample Analysis Settings", font=("Arial", 14))
@@ -230,30 +237,31 @@ class App(customtkinter.CTk):
         section_value_label = customtkinter.CTkLabel(config_window, text="Selected value: 10 section(s)", font=("Arial", 14))
         section_value_label.grid(row=1, column=1, padx=20, pady=10)
 
-        section_slider = customtkinter.CTkSlider(
-            config_window, from_=1, to=20, width=300,
-            command=lambda value: self.update_section_value(value, section_value_label))
+        section_slider = customtkinter.CTkSlider(config_window, from_=1, to=20, width=300, command=lambda value: self.update_section_value(value, section_value_label))
         section_slider.grid(row=0, column=1, padx=20, pady=10)
 
         micron_value_label = customtkinter.CTkLabel(config_window, text="Selected value: 50 micron(s)", font=("Arial", 14))
         micron_value_label.grid(row=3, column=1, padx=20, pady=10)
 
-        scale = customtkinter.CTkSlider(config_window, from_=1, to=100, width=300,command=lambda value: self.update_micron_value(value, micron_value_label))
-        scale.grid(row=2, column=1, padx=20, pady=10)
+        micron_slider = customtkinter.CTkSlider(config_window, from_=1, to=100, width=300,command=lambda value: self.update_micron_value(value, micron_value_label))
+        micron_slider.grid(row=2, column=1, padx=20, pady=10)
 
         preset_options = ["Tissue Type 1", "Tissue Type 2", "Tissue Type 3", "Tissue Type 4"]
         self.preset_combobox = customtkinter.CTkComboBox(config_window, values=preset_options)
         self.preset_combobox.set("Select a Preset")  
         self.preset_combobox.grid(row=2, column=0, padx=20, pady=10)
 
-        start_button = customtkinter.CTkButton(config_window, text_color="red", text="Start",command=lambda: self.send_command("SECTION_SAMPLE"))
+        start_button = customtkinter.CTkButton(config_window, text_color="red", text="Start",command=lambda: self.send_command(self.contructed_command))
         start_button.grid(row=3, column=0, padx=20, pady=10)
         
+        save_button = customtkinter.CTkButton(config_window,  text="Save Config", command=self.contruct_command)
+        save_button.grid(row=4, column=0, padx=20, pady=10)
+        
         face_button = customtkinter.CTkButton(config_window,  text="Face Sample", command=lambda: self.send_command("FACE_SAMPLE"))
-        face_button.grid(row=4, column=0, padx=20, pady=10)
+        face_button.grid(row=5, column=0, padx=20, pady=10)
 
         close_button = customtkinter.CTkButton(config_window, text="Cancel", command=config_window.destroy)
-        close_button.grid(row=5, column=0, padx=20, pady=10)
+        close_button.grid(row=6, column=0, padx=20, pady=10)
 
         def apply_preset():
             selected_preset = self.preset_combobox.get()
@@ -279,6 +287,8 @@ class App(customtkinter.CTk):
         def on_number_click(num):
             current = input_value.get()
             input_value.set(current + str(num))
+            self.selected_lis_number = input_value.get()
+            
 
         def clear_input():
             input_value.set("")
@@ -359,6 +369,7 @@ class App(customtkinter.CTk):
         timer_thread.daemon = True
         timer_thread.start()
 
+       
        
         
         
@@ -478,25 +489,27 @@ class App(customtkinter.CTk):
             self.water_temp.configure(text=f"Water Temp: {temp_c:.2f}°C")
         self.after(1000, self.update_temperature)
         
+        
           
-    def update_micron_value(self, value, label):
-        label.configure(text=f"Selected value: {int(value)} micron(s)")
-        
     def update_section_value(self, value, label):
-        label.configure(text=f"Selected value: {int(value)} section(s)")
-        
+        self.selected_section_value = int(value)  
+        label.configure(text=f"Selected value: {self.selected_section_value} section(s)")
+    
+    def update_micron_value(self, value, label):
+        self.selected_micron_value = int(value)  
+        label.configure(text=f"Selected value: {self.selected_micron_value} micron(s)")
+      
+      
+    def contruct_command(self):
+        self.contructed_command = (self.selected_section_value, "|", self.selected_micron_value)
+        print(self.selected_section_value,"|", self.selected_micron_value, "|", self.selected_lis_number)
+          
+       
+    #------System shutdown/restart-------   
     def show_confirmation_dialog(self, action):
         response = messagebox.askyesno("Confirm Action", f"Are you sure you want to {action}?")
-        return response
-    
-    
-    def apply_settings(self, speed, max_value):
-        print(f"Speed set to: {speed}")
-        print(f"Max Value set to: {max_value}")
+        return response  
 
-
-    def change_scaling_event(self, new_scaling: str):
-        change_scaling_event(new_scaling)
 
 
     def sys_shutdown(self):
@@ -508,13 +521,13 @@ class App(customtkinter.CTk):
         if self.show_confirmation_dialog("Restart"):
            sys_restart()
 
-
     def on_closing(self, event=0):
         self.cap.release()  
         self.destroy()
     
 
-    
+    def change_scaling_event(self, new_scaling: str):
+        change_scaling_event(new_scaling)
 
 if __name__ == "__main__":
     print(os.getcwd())
