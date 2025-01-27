@@ -39,6 +39,12 @@ GPIO.setup(X_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 
+def system_shutdown():
+    pump_B_on()
+    time.sleep(10)
+    GPIO.cleanup()
+    os.system("sudo shutdown now")
+
 # ------Liquid Handlers-------
 
 def pump_A_off():
@@ -82,10 +88,10 @@ def illuminator_on():
     GPIO.output(RELAY_B_PIN4, GPIO.LOW)
 
     
-def capture_image(patient_id):
+def capture_image(patient_id, section_id):
   
     save_dir = "control-panel/web_interface/static/images/" + patient_id
-    filename = "webcam_capture.jpg"
+    filename = section_id + ".jpg"
     
     os.makedirs(save_dir, exist_ok=True)
     
@@ -110,15 +116,8 @@ def capture_image(patient_id):
     else:
         return "Error: Failed to save the image."
     
-def illuminator_off():
-    RELAY_PIN6 = 12
-    GPIO.setup(RELAY_PIN6, GPIO.OUT)
-    GPIO.output(RELAY_PIN6, GPIO.HIGH)
-        
-def illuminator_on():
-    RELAY_PIN6 = 12
-    GPIO.setup(RELAY_PIN6, GPIO.OUT)
-    GPIO.output(RELAY_PIN6, GPIO.LOW)
+
+
 
 
 # ------Motion Handlers-------

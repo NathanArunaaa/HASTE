@@ -171,46 +171,47 @@ class App(customtkinter.CTk):
         self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
         
-        
-        
         self.water_temp = customtkinter.CTkLabel(self.scrollable_frame, text="Water Temp: --°C")
-        self.water_temp.grid(row=0, column=0,  sticky="nsew")
-        
-        self.illuminator_label = customtkinter.CTkLabel(self.scrollable_frame, text="Illuminator")
-        self.illuminator_label.grid(row=1, column=0, sticky="nsew")   
-        
-        
-        self.button_frame = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
-        self.button_frame.grid(row=2, column=0, sticky="nsew")
-
-        self.on_button = customtkinter.CTkButton(self.button_frame, text="ON", width=30, command=lambda: self.send_command("ILLUMINATOR_ON"))
-        self.on_button.grid(row=0, column=0 ) 
-
-        self.off_button = customtkinter.CTkButton(self.button_frame, text="OFF", width=30, command=lambda: self.send_command("ILLUMINATOR_OFF"))
-        self.off_button.grid(row=0, column=1 ) 
+        self.water_temp.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
         
         self.temp_frame = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
-        self.temp_frame.grid(row=3, column=0, sticky="nsew")
+        self.temp_frame.grid(row=1, column=0,  padx=5, pady=5, sticky="nsew")
+        self.temp_frame.grid_columnconfigure((0, 1, 2), weight=1)
         
         self.temp_minus_button = customtkinter.CTkButton(self.temp_frame, text="-", width=30)
-        self.temp_minus_button.grid(row=0, column=0)
-
+        self.temp_minus_button.grid(row=0, column=0, sticky="ew")
+        
         self.temp_entry = customtkinter.CTkEntry(self.temp_frame, width=70, justify="center")
-        self.temp_entry.insert(0, "25")  
-        self.temp_entry.grid(row=0, column=1, padx=5)
-
+        self.temp_entry.insert(0, "25")
+        self.temp_entry.grid(row=0, column=1, padx=5, sticky="ew")
+        
         self.temp_plus_button = customtkinter.CTkButton(self.temp_frame, text="+", width=30)
-        self.temp_plus_button.grid(row=0, column=2, padx=5) 
+        self.temp_plus_button.grid(row=0, column=2, padx=5, sticky="ew")
+        
+        
+        self.illuminator_label = customtkinter.CTkLabel(self.scrollable_frame, text="Illuminator")
+        self.illuminator_label.grid(row=2, column=0, padx=5, pady=5, sticky="nsew")
+        
+        self.button_frame = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
+        self.button_frame.grid(row=3, column=0, padx=5, pady=5,sticky="nsew")
+        self.button_frame.grid_columnconfigure((0, 1), weight=1)
+        
+        self.on_button = customtkinter.CTkButton(self.button_frame, text="ON", width=30, command=lambda: self.send_command("ILLUMINATOR_ON"))
+        self.on_button.grid(row=0, column=0, sticky="ew")
+        
+        self.off_button = customtkinter.CTkButton(self.button_frame, text="OFF", width=30, command=lambda: self.send_command("ILLUMINATOR_OFF"))
+        self.off_button.grid(row=0, column=1, sticky="ew")
+        
         
         self.pump_A = customtkinter.CTkSwitch(self.scrollable_frame, text="Pump A")
-        self.pump_A.grid(row=4, column=0, padx=10, pady=(0, 20)) 
+        self.pump_A.grid(row=4, column=0, padx=10, pady=(0, 20), sticky="nsew")
         
         self.pump_B = customtkinter.CTkSwitch(self.scrollable_frame, text="Pump B")
-        self.pump_B.grid(row=5, column=0, padx=10, pady=(0, 20))    
-
-        self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n" )
+        self.pump_B.grid(row=5, column=0, padx=10, pady=(0, 20), sticky="nsew")
+        
+        self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n")
         threading.Thread(target=self.update_temperature, daemon=True).start()
-        threading.Thread(target=self.update_video_feed, daemon=True).start() 
+        threading.Thread(target=self.update_video_feed, daemon=True).start()
 
 
     #------Config menus-------
@@ -513,7 +514,9 @@ class App(customtkinter.CTk):
 
 
     def sys_shutdown(self):
+
         if self.show_confirmation_dialog("Shut Down"):
+           self.send_command("SYS_SHUTDOWN")
            sys_shutdown()
      
            

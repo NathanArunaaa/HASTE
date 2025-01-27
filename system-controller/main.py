@@ -11,12 +11,12 @@ from functions import (
     flush_system,
     illuminator_on,
     illuminator_off,
-    pump_A_on,
     pump_A_off,
-    pump_B_on,
     pump_B_off,
+    system_shutdown
    
 )
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -71,6 +71,10 @@ while True:
                 elif command == "SYSTEM_FLUSH":
                     print("Flushing system...")
                     flush_system()
+                    
+                elif command == "SYS_SHUTDOWN":
+                    print("Shutting down system...")
+                    system_shutdown()
 
                 elif command == "ILLUMINATOR_ON":
                     print("Turning illuminator on...")
@@ -80,7 +84,6 @@ while True:
                     print("Turning illuminator off...")
                     illuminator_off()
                    
-
                     
                 elif command == "ILLUMINATOR_OFF":
                     print("Turning illuminator off...")
