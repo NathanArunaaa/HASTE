@@ -2,6 +2,8 @@ import RPi.GPIO as GPIO
 import time
 import cv2
 import os
+
+
 # ------Pin Configuration-------
 Y_DIR_PIN = 20  
 Y_STEP_PIN = 21 

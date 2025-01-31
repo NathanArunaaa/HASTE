@@ -9,6 +9,8 @@ from tkinter import messagebox
 import os
 import time
 import glob
+from pyzbar.pyzbar import decode
+import numpy as np  
 
 
 from web_interface.app import start_flask
@@ -114,8 +116,8 @@ class App(customtkinter.CTk):
 
        
         
-        self.video_frame = customtkinter.CTkFrame(self.video_feeds_frame, fg_color="white")
-        self.video_frame.grid(row=1, column=0, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        self.video_frame = customtkinter.CTkFrame(self.video_feeds_frame, fg_color="gray")
+        self.video_frame.grid(row=1, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
         self.video_label = customtkinter.CTkLabel(self.video_frame, text="", anchor="center")
         self.video_label.grid(row=0, column=0, padx=20, pady=20)
         
@@ -131,19 +133,27 @@ class App(customtkinter.CTk):
         #------Tabs-------
         self.tabview = customtkinter.CTkTabview(self, fg_color="white", width=250)
         self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(0, 0), sticky="nsew")
+        self.tabview.add("Patient")
         self.tabview.add("Blade")
-        self.tabview.add("Debug")
         self.tabview.add("Steppers")
 
+       
+        #------Patient-------
+        self.tabview.tab("Patient").grid_rowconfigure((0, 1, 2), weight=1)
+        self.tabview.tab("Patient").grid_columnconfigure(0, weight=1)
+        
+        self.start_scan = customtkinter.CTkButton(self.tabview.tab("Patient"), text="Register LIS ID", width=30)
+        self.start_scan.grid(row=0, column=0, sticky="ew")
+        
+        self.loaded_id = customtkinter.CTkLabel(self.tabview.tab("Patient"), text="Loaded ID: --")
+        self.loaded_id.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+        
         #------Blades-------
         self.tabview.tab("Blade").grid_rowconfigure(0, weight=1)
         self.tabview.tab("Blade").grid_columnconfigure(0, weight=1)
 
         self.blade_cylce = customtkinter.CTkLabel(self.tabview.tab("Blade"), text="Blade Cycles: 182")
         self.blade_cylce.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
-        #------Debug-------
-        self.tabview.tab("Debug").grid_rowconfigure(0, weight=1)
-        self.tabview.tab("Debug").grid_columnconfigure(0, weight=1)
         
         
         #------Steppers-------
@@ -196,18 +206,23 @@ class App(customtkinter.CTk):
         self.button_frame.grid(row=3, column=0, padx=5, pady=5,sticky="nsew")
         self.button_frame.grid_columnconfigure((0, 1), weight=1)
         
+        
+        
         self.on_button = customtkinter.CTkButton(self.button_frame, text="ON", width=30, command=lambda: self.send_command("ILLUMINATOR_ON"))
         self.on_button.grid(row=0, column=0, sticky="ew")
         
         self.off_button = customtkinter.CTkButton(self.button_frame, text="OFF", width=30, command=lambda: self.send_command("ILLUMINATOR_OFF"))
         self.off_button.grid(row=0, column=1, sticky="ew")
         
+        self.pump_frame = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
+        self.pump_frame.grid(row=4, column=0, padx=5, pady=5,sticky="nsew")
+        self.pump_frame.grid_columnconfigure((0, 1), weight=1)
         
-        self.pump_A = customtkinter.CTkSwitch(self.scrollable_frame, text="Pump A")
-        self.pump_A.grid(row=4, column=0, padx=10, pady=(0, 20), sticky="nsew")
+        self.pump_A = customtkinter.CTkSwitch(self.pump_frame, text="Pump A")
+        self.pump_A.grid(row=0, column=0, padx=10, pady=(0, 20), sticky="nsew")
         
-        self.pump_B = customtkinter.CTkSwitch(self.scrollable_frame, text="Pump B")
-        self.pump_B.grid(row=5, column=0, padx=10, pady=(0, 20), sticky="nsew")
+        self.pump_B = customtkinter.CTkSwitch(self.pump_frame, text="Pump B")
+        self.pump_B.grid(row=0, column=1, padx=10, pady=(0, 20), sticky="nsew")
         
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n")
         threading.Thread(target=self.update_temperature, daemon=True).start()
@@ -456,12 +471,32 @@ class App(customtkinter.CTk):
         while self.running:
             ret, frame = self.cap.read()
             if ret:
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                barcodes = decode(gray)
+
+                for barcode in barcodes:
+                    barcode_data = barcode.data.decode("utf-8")
+                    barcode_type = barcode.type  
+
+                    self.barcode_data = barcode_data  
+                    #keep barcode type to figure out the one majed provided
+                    print(f"Barcode Data: {barcode_data}, Type: {barcode_type}")  
+
+                    pts = np.array([barcode.polygon], np.int32)
+                    pts = pts.reshape((-1, 1, 2))
+                    cv2.polylines(frame, [pts], True, (0, 255, 0), 3)  
+
+                    x, y = pts[0].ravel()
+                    cv2.putText(frame, barcode_data, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+
+
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 frame_image = ImageTk.PhotoImage(Image.fromarray(frame))
                 self.video_label.configure(image=frame_image)
                 self.video_label.image = frame_image
             else:
-                self.cap = cv2.VideoCapture(0) 
+                self.cap = cv2.VideoCapture(0)
             time.sleep(0.01)
 
         

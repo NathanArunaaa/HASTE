@@ -1,7 +1,6 @@
 import os
 import socket
 import customtkinter
-import simpleaudio as sa
 import numpy as np
 
 
