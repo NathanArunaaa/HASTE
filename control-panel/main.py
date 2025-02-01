@@ -9,7 +9,7 @@ from tkinter import messagebox
 import os
 import time
 import glob
-from pyzbar.pyzbar import decode
+#from pyzbar.pyzbar import decode
 import numpy as np  
 
 
@@ -48,9 +48,9 @@ class App(customtkinter.CTk):
 
         #------inits-------     
         self.title("HASTE CONTROL PANEL")
-        #self.config(cursor="none")
+        # self.config(cursor="none")
         
-        self.cap = cv2.VideoCapture(0) 
+        # self.cap = cv2.VideoCapture(0) 
         self.running = True
 
         self.after(100, self.make_fullscreen)
@@ -59,7 +59,7 @@ class App(customtkinter.CTk):
         
         self.selected_section_value = 10  
         self.selected_micron_value = 50
-        self.selected_lis_number = None
+        self.selected_lis_number =  "10-AC2-23B-9C"    #self.barcode_data
         
         self.contructed_command = None
         
@@ -142,7 +142,7 @@ class App(customtkinter.CTk):
         self.tabview.tab("Patient").grid_rowconfigure((0, 1, 2), weight=1)
         self.tabview.tab("Patient").grid_columnconfigure(0, weight=1)
         
-        self.start_scan = customtkinter.CTkButton(self.tabview.tab("Patient"), text="Register LIS ID", width=30)
+        self.start_scan = customtkinter.CTkButton(self.tabview.tab("Patient"), text="Register LIS ID", width=30, command=self.register_lis_id)
         self.start_scan.grid(row=0, column=0, sticky="ew")
         
         self.loaded_id = customtkinter.CTkLabel(self.tabview.tab("Patient"), text="Loaded ID: --")
@@ -177,7 +177,7 @@ class App(customtkinter.CTk):
         
        
         #------systems control-------
-        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="systems control")
+        self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="System control")
         self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
         
@@ -291,41 +291,12 @@ class App(customtkinter.CTk):
             else:
                 print("Applying custom settings...")
 
-        input_value = customtkinter.StringVar()  
         
-        label = customtkinter.CTkLabel(config_window, text="LIS Number", font=("Arial", 14))
+        label = customtkinter.CTkLabel(config_window, text="Loaded LIS:" + (self.selected_lis_number), font=("Arial", 14))
         label.grid(row=0, column=2, padx=20, pady=10 )
 
 
-        input_entry = customtkinter.CTkEntry(config_window, textvariable=input_value, justify="right", width=100, font=("Arial", 18))
-        input_entry.grid(row=1, column=2, padx=20, pady=10)
-
-        def on_number_click(num):
-            current = input_value.get()
-            input_value.set(current + str(num))
-            self.selected_lis_number = input_value.get()
-            
-
-        def clear_input():
-            input_value.set("")
-
-        number_pad = customtkinter.CTkFrame(config_window, fg_color="white")
-        number_pad.grid(row=2, column=2, rowspan=5, padx=20, pady=10, sticky="nsew")
-
         
-        buttons = [
-            ('1', 0, 0), ('2', 0, 1), ('3', 0, 2),
-            ('4', 1, 0), ('5', 1, 1), ('6', 1, 2),
-            ('7', 2, 0), ('8', 2, 1), ('9', 2, 2),
-            ('0', 3, 1), ('C', 3, 0), ('-', 3, 2)
-        ]
-
-        for (text, row, col) in buttons:
-            if text == 'C':
-                btn = customtkinter.CTkButton(number_pad, text=text, command=clear_input, width=50)
-            else:
-                btn = customtkinter.CTkButton(number_pad, text=text, command=lambda t=text: on_number_click(t), width=50)
-            btn.grid(row=row, column=col, padx=5, pady=5)
 
    
 
@@ -429,11 +400,14 @@ class App(customtkinter.CTk):
     
     #------Functions-------
     
+
     def make_fullscreen(self):
         self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}+0+0")
         self.attributes("-fullscreen", True)  
         self.resizable(False, False)
 
+
+    #------Send Data to System-Controller-------
     def send_command(self, command):
       server_ip = '10.190.2.54'
       port = 5000  
@@ -447,6 +421,12 @@ class App(customtkinter.CTk):
             print("Connection failed. Is the server running?")
         except Exception as e:
             print(f"An error occurred: {e}")
+
+
+    #------Patient Registration-------
+    def register_lis_id(self):
+        self.loaded_id.configure(text=f"Loaded ID: {self.selected_lis_number}")
+
 
 
     #------Sample Loading-------
@@ -526,7 +506,7 @@ class App(customtkinter.CTk):
         self.after(1000, self.update_temperature)
         
         
-          
+    #------Sample Settings-------  
     def update_section_value(self, value, label):
         self.selected_section_value = int(value)  
         label.configure(text=f"Selected value: {self.selected_section_value} section(s)")
