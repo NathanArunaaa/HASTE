@@ -45,30 +45,29 @@ class App(customtkinter.CTk):
         super().__init__()
         
         self.sample_loaded = False
+        self.scanning_done = False
 
         #------inits-------     
         self.title("HASTE CONTROL PANEL")
         # self.config(cursor="none")
         
         self.cap = cv2.VideoCapture(0) 
-        self.running = True
 
         self.after(100, self.make_fullscreen)
 
         self.change_scaling_event("130%")
         
-        self.selected_section_value = 10  
-        self.selected_micron_value = 50
-        self.selected_lis_number =  "N/A"
-
-        self.scanning_done = False
-        
-        self.contructed_command = None
-        
         
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure((2, 3), weight=0)
         self.grid_rowconfigure((0, 1, 2), weight=1)
+        
+        #------Data for sys-control config-------
+        self.selected_section_value = 10  
+        self.selected_micron_value = 50
+        self.selected_lis_number =  "N/A"
+
+        self.contructed_command = None
 
         #------Sidebar------- 
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0, fg_color="white")
@@ -144,13 +143,16 @@ class App(customtkinter.CTk):
         self.tabview.tab("Patient").grid_columnconfigure(0, weight=1)
 
         
-        self.start_scan = customtkinter.CTkButton(self.tabview.tab("Patient"), text="Register LIS ID", width=30, command=self.register_lis_id)
-        self.start_scan.grid(row=0, column=0, sticky="ew")
+        self.start_scan = customtkinter.CTkButton(self.tabview.tab("Patient"), text="Register New LIS ID", width=30, command=self.start_lis_scan)
+        self.start_scan.grid(row=0, column=0, padx=10, pady=10,sticky="nsew")
+        
+        self.finish_scan = customtkinter.CTkButton(self.tabview.tab("Patient"), text="Complete Scan", width=30, command=self.finish_lis_scan)
+        self.finish_scan.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
         
         
-        self.loaded_id = customtkinter.CTkLabel(self.tabview.tab("Patient"), text="Loaded ID: -asdasd-")
-        self.loaded_id.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+        self.loaded_id = customtkinter.CTkLabel(self.tabview.tab("Patient"), text="Loaded ID: --")
+        self.loaded_id.grid(row=2, column=0, padx=20, pady=20, sticky="nsew")
         
         #------Blades-------
         self.tabview.tab("Blade").grid_rowconfigure(0, weight=1)
@@ -401,7 +403,6 @@ class App(customtkinter.CTk):
 
     
     #------Functions-------
-    
 
     def make_fullscreen(self):
         self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}+0+0")
@@ -425,18 +426,7 @@ class App(customtkinter.CTk):
             print(f"An error occurred: {e}")
 
 
-    #------Patient Registration-------
-    def register_lis_id(self):
-        threading.Thread(target=self.update_video_feed, daemon=True).start()
-        
-        while True:
-            self.scanning_done = True
-            time.sleep(0.1)
-
-            break
-
     
-
 
 
 
@@ -456,10 +446,13 @@ class App(customtkinter.CTk):
         self.sample_loaded = True 
         
         
-    #------Video-------
+    #------Patient Registration-------
    
-    def update_video_feed(self):
-        while self.running:
+    def scan_bardcode(self):
+        self.scanning_done = False  
+        self.loaded_id.configure(text="Loaded ID: Searching....")
+        
+        while not self.scanning_done:
             ret, frame = self.cap.read()
             if ret:
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -474,7 +467,7 @@ class App(customtkinter.CTk):
                     print(f"Barcode Data: {barcode_data}, Type: {barcode_type}")
                     self.loaded_id.configure(text="Loaded ID: " + barcode_data)
 
-                    self.scanning_done = True
+                    self.selected_lis_number = barcode_data
 
                     pts = np.array([barcode.polygon], np.int32)
                     pts = pts.reshape((-1, 1, 2))
@@ -492,7 +485,20 @@ class App(customtkinter.CTk):
             else:
                 self.cap = cv2.VideoCapture(0)
             time.sleep(0.01)
+            
+    def start_lis_scan(self):
+        print("Please place the patient document under the main display.")
+        self.video_label.grid(row=0, column=0)
+        self.scanning_done = False  
+        threading.Thread(target=self.scan_bardcode, daemon=True).start()
 
+
+
+    def finish_lis_scan(self):
+        print("Scan completed.")
+        self.video_label.grid_forget()
+        self.scanning_done = True  
+        
         
     
          
