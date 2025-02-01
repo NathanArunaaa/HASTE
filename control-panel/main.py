@@ -9,7 +9,7 @@ from tkinter import messagebox
 import os
 import time
 import glob
-#from pyzbar.pyzbar import decode
+from pyzbar.pyzbar import decode
 import numpy as np  
 
 
@@ -50,7 +50,7 @@ class App(customtkinter.CTk):
         self.title("HASTE CONTROL PANEL")
         # self.config(cursor="none")
         
-        # self.cap = cv2.VideoCapture(0) 
+        self.cap = cv2.VideoCapture(0) 
         self.running = True
 
         self.after(100, self.make_fullscreen)
@@ -59,7 +59,9 @@ class App(customtkinter.CTk):
         
         self.selected_section_value = 10  
         self.selected_micron_value = 50
-        self.selected_lis_number =  "10-AC2-23B-9C"    #self.barcode_data
+        self.selected_lis_number =  "N/A"
+
+        self.scanning_done = False
         
         self.contructed_command = None
         
@@ -109,14 +111,11 @@ class App(customtkinter.CTk):
 
         #------Video Feeds-------
         self.video_feeds_frame = customtkinter.CTkFrame(self, fg_color="white")
-        self.video_feeds_frame.grid(row=1, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        self.video_feeds_frame.grid(row=1, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
         self.video_feeds_frame.grid_columnconfigure(0, weight=1)
         self.video_feeds_frame.grid_rowconfigure(4, weight=1)
-        self.textbox = customtkinter.CTkTextbox(self, width=2530)
 
-       
-        
-        self.video_frame = customtkinter.CTkFrame(self.video_feeds_frame, fg_color="gray")
+        self.video_frame = customtkinter.CTkFrame(self.video_feeds_frame, fg_color="gray", width=300, height=100)  # Adjust width and height
         self.video_frame.grid(row=1, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
         self.video_label = customtkinter.CTkLabel(self.video_frame, text="", anchor="center")
         self.video_label.grid(row=0, column=0, padx=20, pady=20)
@@ -124,7 +123,9 @@ class App(customtkinter.CTk):
    
 
         #------Console log-------
-        self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        self.textbox = customtkinter.CTkTextbox(self)
+
+        self.textbox.grid(row=0, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
         self.textbox.configure(cursor="none") 
 
         sys.stdout = TextWidgetStream(self.textbox)
@@ -141,11 +142,14 @@ class App(customtkinter.CTk):
         #------Patient-------
         self.tabview.tab("Patient").grid_rowconfigure((0, 1, 2), weight=1)
         self.tabview.tab("Patient").grid_columnconfigure(0, weight=1)
+
         
         self.start_scan = customtkinter.CTkButton(self.tabview.tab("Patient"), text="Register LIS ID", width=30, command=self.register_lis_id)
         self.start_scan.grid(row=0, column=0, sticky="ew")
+
         
-        self.loaded_id = customtkinter.CTkLabel(self.tabview.tab("Patient"), text="Loaded ID: --")
+        
+        self.loaded_id = customtkinter.CTkLabel(self.tabview.tab("Patient"), text="Loaded ID: -asdasd-")
         self.loaded_id.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
         
         #------Blades-------
@@ -226,7 +230,6 @@ class App(customtkinter.CTk):
         
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n")
         threading.Thread(target=self.update_temperature, daemon=True).start()
-        threading.Thread(target=self.update_video_feed, daemon=True).start()
 
 
     #------Config menus-------
@@ -296,8 +299,7 @@ class App(customtkinter.CTk):
         label.grid(row=0, column=2, padx=20, pady=10 )
 
 
-        
-
+    
    
 
         
@@ -425,7 +427,16 @@ class App(customtkinter.CTk):
 
     #------Patient Registration-------
     def register_lis_id(self):
-        self.loaded_id.configure(text=f"Loaded ID: {self.selected_lis_number}")
+        threading.Thread(target=self.update_video_feed, daemon=True).start()
+        
+        while True:
+            self.scanning_done = True
+            time.sleep(0.1)
+
+            break
+
+    
+
 
 
 
@@ -460,7 +471,10 @@ class App(customtkinter.CTk):
 
                     self.barcode_data = barcode_data  
                     #keep barcode type to figure out the one majed provided
-                    print(f"Barcode Data: {barcode_data}, Type: {barcode_type}")  
+                    print(f"Barcode Data: {barcode_data}, Type: {barcode_type}")
+                    self.loaded_id.configure(text="Loaded ID: " + barcode_data)
+
+                    self.scanning_done = True
 
                     pts = np.array([barcode.polygon], np.int32)
                     pts = pts.reshape((-1, 1, 2))
