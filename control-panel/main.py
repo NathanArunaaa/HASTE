@@ -43,33 +43,33 @@ class TextWidgetStream:
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
+        self.title("HASTE CONTROL PANEL")
+
         
         self.sample_loaded = False
         self.scanning_done = False
-
-        #------inits-------     
-        self.title("HASTE CONTROL PANEL")
-        # self.config(cursor="none")
         
         self.cap = cv2.VideoCapture(0) 
-
-        self.after(100, self.make_fullscreen)
-
+        
         self.change_scaling_event("130%")
+        self.after(100, self.make_fullscreen)
+      # self.config(cursor="none")
+    
         
-        
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_columnconfigure((2, 3), weight=0)
-        self.grid_rowconfigure((0, 1, 2), weight=1)
-        
-        #------Data for sys-control config-------
         self.selected_section_value = 10  
         self.selected_micron_value = 50
         self.selected_lis_number =  "N/A"
+        self.target_temp = 25
+        self.actual_temp = None
 
         self.contructed_command = None
 
-        #------Sidebar------- 
+
+        #------Sidebar-------
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure((2, 3), weight=0)
+        self.grid_rowconfigure((0, 1, 2), weight=1)
+         
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0, fg_color="white")
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(5, weight=1)
@@ -157,9 +157,12 @@ class App(customtkinter.CTk):
         #------Blades-------
         self.tabview.tab("Blade").grid_rowconfigure(0, weight=1)
         self.tabview.tab("Blade").grid_columnconfigure(0, weight=1)
+        
+        self.finish_scan = customtkinter.CTkButton(self.tabview.tab("Blade"), text="Change Blade", width=30, )
+        self.finish_scan.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-        self.blade_cylce = customtkinter.CTkLabel(self.tabview.tab("Blade"), text="Blade Cycles: 182")
-        self.blade_cylce.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+        self.blade_cylce = customtkinter.CTkLabel(self.tabview.tab("Blade"), text="Blade Cycles: ")
+        self.blade_cylce.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
         
         
         #------Steppers-------
@@ -300,10 +303,6 @@ class App(customtkinter.CTk):
         label = customtkinter.CTkLabel(config_window, text="Loaded LIS:" + (self.selected_lis_number), font=("Arial", 14))
         label.grid(row=0, column=2, padx=20, pady=10 )
 
-
-    
-   
-
         
     
     def open_loading_menu(self):
@@ -361,7 +360,6 @@ class App(customtkinter.CTk):
         timer_thread.start()
 
        
-       
         
         
     def open_flush_menu(self):
@@ -401,15 +399,9 @@ class App(customtkinter.CTk):
         timer_thread.start()
 
 
+
+
     
-    #------Functions-------
-
-    def make_fullscreen(self):
-        self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}+0+0")
-        self.attributes("-fullscreen", True)  
-        self.resizable(False, False)
-
-
     #------Send Data to System-Controller-------
     def send_command(self, command):
       server_ip = '10.190.2.54'
@@ -425,8 +417,6 @@ class App(customtkinter.CTk):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-
-    
 
 
 
@@ -493,11 +483,11 @@ class App(customtkinter.CTk):
         threading.Thread(target=self.scan_bardcode, daemon=True).start()
 
 
-
     def finish_lis_scan(self):
         print("Scan completed.")
         self.video_label.grid_forget()
         self.scanning_done = True  
+        
         
         
     
@@ -525,12 +515,19 @@ class App(customtkinter.CTk):
             self.water_temp.configure(text=f"Water Temp: {temp_c:.2f}°C")
         self.after(1000, self.update_temperature)
         
+    def manage_temperature(self):
+        while True:
+            if self.target_temp > self.actual_temp:
+                self.send_commands("HEATER_ON")
+            if self.target_temp == self.actual_temp:
+                self.send_commands("HEATER_OFF")
+            if self.target_temp < self.actual_temp:
+                self.send_commands("HEATER_OFF")
+            
+        
+        
         
     #------Sample Settings-------  
-    def update_section_value(self, value, label):
-        self.selected_section_value = int(value)  
-        label.configure(text=f"Selected value: {self.selected_section_value} section(s)")
-    
     def update_micron_value(self, value, label):
         self.selected_micron_value = int(value)  
         label.configure(text=f"Selected value: {self.selected_micron_value} micron(s)")
@@ -539,6 +536,7 @@ class App(customtkinter.CTk):
     def contruct_command(self):
         self.contructed_command = (self.selected_section_value, "|", self.selected_micron_value)
         print(self.selected_section_value,"|", self.selected_micron_value, "|", self.selected_lis_number)
+          
           
        
     #------System shutdown/restart-------   
@@ -562,6 +560,12 @@ class App(customtkinter.CTk):
     def on_closing(self, event=0):
         self.cap.release()  
         self.destroy()
+        
+    #------Window Formatting -------   
+    def make_fullscreen(self):
+        self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}+0+0")
+        self.attributes("-fullscreen", True)  
+        self.resizable(False, False)
     
 
     def change_scaling_event(self, new_scaling: str):
