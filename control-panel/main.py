@@ -1,4 +1,3 @@
-
 import customtkinter
 import threading
 import sys
@@ -114,12 +113,13 @@ class App(customtkinter.CTk):
         self.video_feeds_frame.grid_columnconfigure(0, weight=1)
         self.video_feeds_frame.grid_rowconfigure(4, weight=1)
 
-        self.video_frame = customtkinter.CTkFrame(self.video_feeds_frame, fg_color="gray", width=300, height=100)  # Adjust width and height
+        self.video_frame = customtkinter.CTkFrame(self.video_feeds_frame, fg_color="gray")  
         self.video_frame.grid(row=1, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
-        self.video_label = customtkinter.CTkLabel(self.video_frame, text="", anchor="center")
+
+        self.video_label = customtkinter.CTkLabel(self.video_frame, text="", anchor="center", width=600, height=400)  
         self.video_label.grid(row=0, column=0, padx=20, pady=20)
         
-   
+        self.video_label.grid_propagate(False)
 
         #------Console log-------
         self.textbox = customtkinter.CTkTextbox(self)
