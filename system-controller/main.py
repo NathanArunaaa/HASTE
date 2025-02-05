@@ -91,11 +91,12 @@ while True:
                     
                     
                 else:
-                    section_value, micron_value, lis_number = command.split(" | ")
+                    print(command)
+                    section_value, micron_value, lis_number = command.split("|")
                     
                     section_value = int(section_value)  
                     micron_value = int(micron_value)    
-                    lis_number = lis_number.strip()
+                    lis_number = lis_number
                     
                     data_dict = {
                         "section_value": section_value,
@@ -103,8 +104,7 @@ while True:
                         "lis_number": lis_number
                     }  
                     
-                    file_path = "config_data.json"
-                    file_path = "system-controller/config.json"
+                    file_path = "./config.json"
                     
                     with open(file_path, 'w') as json_file:
                         json.dump(data_dict, json_file, indent=4)
