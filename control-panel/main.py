@@ -53,11 +53,16 @@ class App(customtkinter.CTk):
         self.change_scaling_event("130%")
         self.after(100, self.make_fullscreen)
       # self.config(cursor="none")
+
+        self.pump_A_state = False
+        self.pump_B_state = False
     
         
         self.selected_section_value = 10  
         self.selected_micron_value = 50
         self.selected_lis_number =  "N/A"
+        self.selected_face_value = 10
+
         self.target_temp = 25
         self.actual_temp = None
 
@@ -116,7 +121,7 @@ class App(customtkinter.CTk):
         self.video_frame = customtkinter.CTkFrame(self.video_feeds_frame, fg_color="gray")  
         self.video_frame.grid(row=1, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
-        self.video_label = customtkinter.CTkLabel(self.video_frame, text="", anchor="center", width=600, height=400)  
+        self.video_label = customtkinter.CTkLabel(self.video_frame, text="", anchor="center", width=600, height=200)  
         self.video_label.grid(row=0, column=0, padx=20, pady=20)
         
         self.video_label.grid_propagate(False)
@@ -232,7 +237,6 @@ class App(customtkinter.CTk):
         
         self.pump_B = customtkinter.CTkSwitch(self.pump_frame, text="Pump B")
         self.pump_B.grid(row=0, column=1, padx=10, pady=(0, 20), sticky="nsew")
-        
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n")
         threading.Thread(target=self.update_temperature, daemon=True).start()
 
@@ -258,17 +262,29 @@ class App(customtkinter.CTk):
             no_sample_label = customtkinter.CTkLabel(config_window, text="Warning: No sample loaded!", font=("Arial", 12), text_color="red")
             no_sample_label.grid(row=1, column=0, padx=20, pady=10)
 
-        section_value_label = customtkinter.CTkLabel(config_window, text="Selected value: 10 section(s)", font=("Arial", 14))
-        section_value_label.grid(row=1, column=1, padx=20, pady=10)
+      
 
         section_slider = customtkinter.CTkSlider(config_window, from_=1, to=20, width=300, command=lambda value: self.update_section_value(value, section_value_label))
         section_slider.grid(row=0, column=1, padx=20, pady=10)
 
-        micron_value_label = customtkinter.CTkLabel(config_window, text="Selected value: 50 micron(s)", font=("Arial", 14))
-        micron_value_label.grid(row=3, column=1, padx=20, pady=10)
+        section_value_label = customtkinter.CTkLabel(config_window, text="Selected value: 10 section(s)", font=("Arial", 14))
+        section_value_label.grid(row=1, column=1, padx=20, pady=10)
+
+        
 
         micron_slider = customtkinter.CTkSlider(config_window, from_=1, to=100, width=300,command=lambda value: self.update_micron_value(value, micron_value_label))
         micron_slider.grid(row=2, column=1, padx=20, pady=10)
+
+        micron_value_label = customtkinter.CTkLabel(config_window, text="Selected value: 50 micron(s)", font=("Arial", 14))
+        micron_value_label.grid(row=3, column=1, padx=20, pady=10)
+
+        num_face_slider = customtkinter.CTkSlider(config_window, from_=1, to=20, width=300,command=lambda value: self.update_face_value(value, num_face_label))
+        num_face_slider.grid(row=4, column=1, padx=20, pady=10)
+
+        num_face_label = customtkinter.CTkLabel(config_window, text="Selected value: 10 Faces", font=("Arial", 14))
+        num_face_label.grid(row=5, column=1, padx=20, pady=10)
+
+        
 
         preset_options = ["Tissue Type 1", "Tissue Type 2", "Tissue Type 3", "Tissue Type 4"]
         self.preset_combobox = customtkinter.CTkComboBox(config_window, values=preset_options)
@@ -489,7 +505,6 @@ class App(customtkinter.CTk):
         self.scanning_done = True  
         
         
-        
     
          
     #------Temperature-------   
@@ -531,20 +546,26 @@ class App(customtkinter.CTk):
     def update_micron_value(self, value, label):
         self.selected_micron_value = int(value)  
         label.configure(text=f"Selected value: {self.selected_micron_value} micron(s)")
+
+    def update_section_value(self, value, label):
+        self.selected_section_value = int(value)  
+        label.configure(text=f"Selected value: {self.selected_section_value} section(s)")
+
+    def update_face_value(self, value, label):
+        self.selected_face_value = int(value)  
+        label.configure(text=f"Selected value: {self.selected_face_value} face(s)")
       
       
     def contruct_command(self):
-        self.contructed_command = f"{self.selected_section_value}|{self.selected_micron_value}|{self.selected_lis_number}"
-        self.send_command(self.contructed_command)
+        self.contructed_command = f"{self.selected_section_value}|{self.selected_micron_value}|{self.selected_face_value}|{self.selected_lis_number}"
+        # self.send_command(self.contructed_command)
         print(self.contructed_command)
           
           
-       
     #------System shutdown/restart-------   
     def show_confirmation_dialog(self, action):
         response = messagebox.askyesno("Confirm Action", f"Are you sure you want to {action}?")
         return response  
-
 
 
     def sys_shutdown(self):

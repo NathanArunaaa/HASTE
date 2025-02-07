@@ -22,10 +22,10 @@ GPIO.setwarnings(False)
 
 home_motor()
 
-
 pump_A_off()
 pump_B_off()
 
+file_path = "./config.json"
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind(('0.0.0.0', 5000)) 
@@ -61,11 +61,11 @@ while True:
                     cut_sections(3)
                 
                 elif command == "FACE_SAMPLE":
-                    print("Retracting sample...")
+                    
                     face_sample()
                 
                 elif command == "SYSTEM_CALIBRATION":
-                    print("Retracting sample...")
+                    print("Calibrating system...")
                     home_motor()
 
                 elif command == "SYSTEM_FLUSH":
@@ -92,15 +92,17 @@ while True:
                     
                 else:
                     print(command)
-                    section_value, micron_value, lis_number = command.split("|")
+                    section_value, micron_value, faclis_number, lis_number = command.split("|")
                     
                     section_value = int(section_value)  
-                    micron_value = int(micron_value)    
+                    micron_value = int(micron_value)  
+                    face_value = int(face_value)  
                     lis_number = lis_number
                     
                     data_dict = {
                         "section_value": section_value,
                         "micron_value": micron_value,
+                        "face_value": face_value,
                         "lis_number": lis_number
                     }  
                     
