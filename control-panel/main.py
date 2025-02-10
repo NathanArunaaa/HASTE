@@ -454,13 +454,15 @@ class App(customtkinter.CTk):
         
     #------Patient Registration-------
    
-    def scan_bardcode(self):
+    def scan_barcode(self):
         self.scanning_done = False  
         self.loaded_id.configure(text="Loaded ID: Searching....")
-        
+
         while not self.scanning_done:
             ret, frame = self.cap.read()
             if ret:
+                frame = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_AREA)
+
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 barcodes = decode(gray)
 
@@ -469,7 +471,6 @@ class App(customtkinter.CTk):
                     barcode_type = barcode.type  
 
                     self.barcode_data = barcode_data  
-                    #keep barcode type to figure out the one majed provided
                     print(f"Barcode Data: {barcode_data}, Type: {barcode_type}")
                     self.loaded_id.configure(text="Loaded ID: " + barcode_data)
 
@@ -482,14 +483,14 @@ class App(customtkinter.CTk):
                     x, y = pts[0].ravel()
                     cv2.putText(frame, barcode_data, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-
-
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 frame_image = ImageTk.PhotoImage(Image.fromarray(frame))
+
                 self.video_label.configure(image=frame_image)
                 self.video_label.image = frame_image
             else:
                 self.cap = cv2.VideoCapture(0)
+
             time.sleep(0.01)
             
     def start_lis_scan(self):
