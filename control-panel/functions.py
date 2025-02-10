@@ -22,7 +22,7 @@ def get_local_ip():
         s.connect(('10.254.254.254', 1))  
         ip = s.getsockname()[0]
     except Exception:
-        ip = '127.0.0.1'
+        ip = '192.168.1.100:5000'
     finally:
         s.close()
     return ip
