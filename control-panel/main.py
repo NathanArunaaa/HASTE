@@ -115,14 +115,14 @@ class App(customtkinter.CTk):
         #------Video Feeds-------
         self.video_feeds_frame = customtkinter.CTkFrame(self, fg_color="white")
         self.video_feeds_frame.grid(row=1, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
-        self.video_frame.grid_columnconfigure(0, weight=1)  # Allow expansion
-        self.video_frame.grid_rowconfigure(0, weight=1)   
+        self.video_feeds_frame.grid_columnconfigure(0, weight=1)
+        self.video_feeds_frame.grid_rowconfigure(4, weight=1)
 
         self.video_frame = customtkinter.CTkFrame(self.video_feeds_frame, fg_color="gray")  
         self.video_frame.grid(row=1, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
-        self.video_label = customtkinter.CTkLabel(self.video_frame, text="", width=500, height=300)  
-        self.video_label.grid(row=0, column=0, sticky="nsew")
+        self.video_label = customtkinter.CTkLabel(self.video_frame, text="", anchor="center", width=600, height=200)  
+        self.video_label.grid(row=0, column=0, padx=20, pady=20)
         
         self.video_label.grid_propagate(False)
 
@@ -461,8 +461,6 @@ class App(customtkinter.CTk):
         while not self.scanning_done:
             ret, frame = self.cap.read()
             if ret:
-                frame = cv2.resize(frame, (640, 480), interpolation=cv2.INTER_AREA)
-
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 barcodes = decode(gray)
 
@@ -507,6 +505,7 @@ class App(customtkinter.CTk):
         self.scanning_done = True  
         
         
+    
          
     #------Temperature-------   
     def read_ds18b20_temp(self):
