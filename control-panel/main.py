@@ -507,7 +507,6 @@ class App(customtkinter.CTk):
         self.scanning_done = True  
         
         
-    
          
     #------Temperature-------   
     def read_ds18b20_temp(self):
