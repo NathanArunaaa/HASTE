@@ -84,7 +84,7 @@ def pump_B_on():
 def flush_system():
     pump_A_on()
     pump_B_on()
-    time.sleep(5)
+    time.sleep(15)
     pump_A_off()
     pump_B_off()
 
