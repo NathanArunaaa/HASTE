@@ -13,6 +13,8 @@ from functions import (
     illuminator_off,
     pump_A_off,
     pump_B_off,
+    valve_close,
+    valve_open,
     system_shutdown
    
 )
@@ -85,9 +87,13 @@ while True:
                     illuminator_off()
                    
                     
-                elif command == "ILLUMINATOR_OFF":
-                    print("Turning illuminator off...")
-                    illuminator_off()
+                elif command == "VALVE_OPEN":
+                    print("Opening valve...")
+                    valve_open()
+
+                elif command == "VALVE_CLOSE":
+                    print("Closing valve...")
+                    valve_close()
                     
                     
                 else:

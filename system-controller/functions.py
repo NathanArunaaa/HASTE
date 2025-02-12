@@ -49,6 +49,17 @@ def system_shutdown():
 
 # ------Liquid Handlers-------
 
+def valve_close():
+    RELAY_B_PIN1= 16
+    GPIO.setup(RELAY_B_PIN1, GPIO.OUT)
+    GPIO.output(RELAY_B_PIN1, GPIO.HIGH)
+        
+def valve_open():
+    RELAY_B_PIN1 = 16
+    GPIO.setup(RELAY_B_PIN1, GPIO.OUT)
+    GPIO.output(RELAY_B_PIN1, GPIO.LOW)
+
+
 def pump_A_off():
     RELAY_A_PIN1= 24
     GPIO.setup(RELAY_A_PIN1, GPIO.OUT)

@@ -227,9 +227,23 @@ class App(customtkinter.CTk):
         
         self.off_button = customtkinter.CTkButton(self.button_frame, text="OFF", width=30, command=lambda: self.send_command("ILLUMINATOR_OFF"))
         self.off_button.grid(row=0, column=1, sticky="ew")
+
+
+        self.button_frame2 = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
+        self.button_frame2.grid(row=5, column=0, padx=5, pady=5,sticky="nsew")
+        self.button_frame2.grid_columnconfigure((0, 1), weight=1)
+
+        self.valve_label = customtkinter.CTkLabel(self.scrollable_frame, text="Circulation Valve")
+        self.valve_label.grid(row=4, column=0, padx=5, pady=5, sticky="nsew")
+
+        self.open_button = customtkinter.CTkButton(self.button_frame2, text="OPEN", width=30, command=lambda: self.send_command("VALVE_OPEN"))
+        self.open_button.grid(row=0, column=0, sticky="ew")
+        
+        self.close_button = customtkinter.CTkButton(self.button_frame2, text="CLOSE", width=30, command=lambda: self.send_command("VALVE_CLOSE"))
+        self.close_button.grid(row=0, column=1, sticky="ew")
         
         self.pump_frame = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
-        self.pump_frame.grid(row=4, column=0, padx=5, pady=5,sticky="nsew")
+        self.pump_frame.grid(row=6, column=0, padx=5, pady=5,sticky="nsew")
         self.pump_frame.grid_columnconfigure((0, 1), weight=1)
         
         self.pump_A = customtkinter.CTkSwitch(self.pump_frame, text="Pump A")
