@@ -63,7 +63,7 @@ class App(customtkinter.CTk):
         self.selected_lis_number =  "N/A"
         self.selected_face_value = 10
 
-        self.target_temp = 25
+        self.target_temp = 40
         self.actual_temp = None
 
         self.contructed_command = None
@@ -116,13 +116,15 @@ class App(customtkinter.CTk):
         self.video_feeds_frame = customtkinter.CTkFrame(self, fg_color="white")
         self.video_feeds_frame.grid(row=1, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
         self.video_feeds_frame.grid_columnconfigure(0, weight=1)
-        self.video_feeds_frame.grid_rowconfigure(4, weight=1)
+        self.video_feeds_frame.grid_rowconfigure(0, weight=1)
 
         self.video_frame = customtkinter.CTkFrame(self.video_feeds_frame, fg_color="gray")  
-        self.video_frame.grid(row=1, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.video_frame.grid(row=0, column=0, sticky="nsew")
+        self.video_frame.grid_columnconfigure(0, weight=1)
+        self.video_frame.grid_rowconfigure(0, weight=1)
 
-        self.video_label = customtkinter.CTkLabel(self.video_frame, text="", anchor="center", width=600, height=200)  
-        self.video_label.grid(row=0, column=0, padx=20, pady=20)
+        self.video_label = customtkinter.CTkLabel(self.video_frame, text="", width=600, height=200)  
+        self.video_label.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
         
         self.video_label.grid_propagate(False)
 
@@ -202,14 +204,14 @@ class App(customtkinter.CTk):
         self.temp_frame.grid(row=1, column=0,  padx=5, pady=5, sticky="nsew")
         self.temp_frame.grid_columnconfigure((0, 1, 2), weight=1)
         
-        self.temp_minus_button = customtkinter.CTkButton(self.temp_frame, text="-", width=30)
+        self.temp_minus_button = customtkinter.CTkButton(self.temp_frame, text="-", width=30, command=lambda: self.temp_minus())
         self.temp_minus_button.grid(row=0, column=0, sticky="ew")
         
         self.temp_entry = customtkinter.CTkEntry(self.temp_frame, width=70, justify="center")
-        self.temp_entry.insert(0, "25")
+        self.temp_entry.insert(0, "40")
         self.temp_entry.grid(row=0, column=1, padx=5, sticky="ew")
         
-        self.temp_plus_button = customtkinter.CTkButton(self.temp_frame, text="+", width=30)
+        self.temp_plus_button = customtkinter.CTkButton(self.temp_frame, text="+", width=30, command=lambda: self.temp_plus())
         self.temp_plus_button.grid(row=0, column=2, padx=5, sticky="ew")
         
         
@@ -553,6 +555,16 @@ class App(customtkinter.CTk):
             if self.target_temp < self.actual_temp:
                 self.send_commands("HEATER_OFF")
             
+    def temp_plus(self):
+        self.target_temp += 1
+        self.temp_entry.delete(0, "end")
+        self.temp_entry.insert(0, self.target_temp)
+        
+    def temp_minus(self):
+        self.target_temp -= 1
+        self.temp_entry.delete(0, "end")
+        self.temp_entry.insert(0, self.target_temp)
+        
         
         
         
