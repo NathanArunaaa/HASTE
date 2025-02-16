@@ -63,7 +63,7 @@ while True:
                     cut_sections(3)
                 
                 elif command == "FACE_SAMPLE":
-                    
+                    print("Facing sample...")
                     face_sample()
                 
                 elif command == "SYSTEM_CALIBRATION":
@@ -98,7 +98,7 @@ while True:
                     
                 else:
                     print(command)
-                    section_value, micron_value, faclis_number, lis_number = command.split("|")
+                    section_value, micron_value, face_value, lis_number = command.split("|")
                     
                     section_value = int(section_value)  
                     micron_value = int(micron_value)  
