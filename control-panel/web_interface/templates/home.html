@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Result Viewer</title>
+    <script src="{{ url_for('static', filename='js/jszip.min.js') }}"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -196,27 +198,40 @@
             });
         }
 
-        function exportData() {
-            const selectedPatient = document.querySelector("select").value;
-            let data = "";
-
-            if (selectedPatient === "all") {
-                Object.keys(patientData).forEach(patientId => {
-                    data += "Patient ID: " + patientId + "\n";
-                    patientData[patientId].forEach(image => {
-                        data += "- " + image + "\n";
-                    });
-                    data += "\n";
-                });
-            } else {
-                const selectedImageUrl = document.getElementById("selected-image").src;
-                data = "Selected Image URL: " + selectedImageUrl;
+        async function exportData() {
+            const zip = new JSZip();
+            const selectedPatient = document.querySelector("#patientList li:not([style*='display: none'])");
+            
+            if (!selectedPatient) {
+                alert("Please select a patient first");
+                return;
             }
 
-            const blob = new Blob([data], { type: 'text/plain' });
+            const patientId = selectedPatient.querySelector(".index").textContent;
+            const selectedValue = selectedPatient.querySelector("select").value;
+
+            if (selectedValue === "all") {
+                const folder = zip.folder(patientId);
+                for (const imageName of patientData[patientId]) {
+                    const imageUrl = `/static/images/${patientId}/${imageName}`;
+                    const response = await fetch(imageUrl);
+                    const blob = await response.blob();
+                    folder.file(imageName, blob);
+                }
+            } else if (selectedValue) {
+                const imageName = selectedValue.split('/').pop();
+                const response = await fetch(selectedValue);
+                const blob = await response.blob();
+                zip.file(imageName, blob);
+            } else {
+                alert("Please select an image to export");
+                return;
+            }
+
+            const content = await zip.generateAsync({type: "blob"});
             const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'exported_data.txt';
+            link.href = URL.createObjectURL(content);
+            link.download = `${patientId}_images.zip`;
             link.click();
         }
     </script>

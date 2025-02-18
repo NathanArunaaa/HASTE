@@ -25,7 +25,6 @@ customtkinter.set_appearance_mode("light")
 customtkinter.set_default_color_theme("blue") 
 
 
-
 class TextWidgetStream:
     def __init__(self, text_widget):
         self.text_widget = text_widget
@@ -67,7 +66,6 @@ class App(customtkinter.CTk):
         self.actual_temp = None
         self.blade_cylce = None
         
-       
 
         self.contructed_command = None
 
