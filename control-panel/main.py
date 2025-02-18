@@ -9,7 +9,8 @@ import os
 import time
 import glob
 from pyzbar.pyzbar import decode
-import numpy as np  
+import numpy as np
+import json
 
 
 from web_interface.app import start_flask
@@ -44,19 +45,18 @@ class App(customtkinter.CTk):
         super().__init__()
         self.title("HASTE CONTROL PANEL")
 
+        self.change_scaling_event("130%")
+        self.after(100, self.make_fullscreen)
+      # self.config(cursor="none")
         
         self.sample_loaded = False
         self.scanning_done = False
         
-        self.cap = cv2.VideoCapture(0) 
-        
-        self.change_scaling_event("130%")
-        self.after(100, self.make_fullscreen)
-      # self.config(cursor="none")
-
         self.pump_A_state = False
         self.pump_B_state = False
     
+        
+        self.cap = cv2.VideoCapture(0) 
         
         self.selected_section_value = 10  
         self.selected_micron_value = 50
@@ -65,6 +65,9 @@ class App(customtkinter.CTk):
 
         self.target_temp = 40
         self.actual_temp = None
+        self.blade_cylce = None
+        
+       
 
         self.contructed_command = None
 
@@ -165,13 +168,20 @@ class App(customtkinter.CTk):
         self.tabview.tab("Blade").grid_rowconfigure(0, weight=1)
         self.tabview.tab("Blade").grid_columnconfigure(0, weight=1)
         
-        self.finish_scan = customtkinter.CTkButton(self.tabview.tab("Blade"), text="Change Blade", width=30, )
-        self.finish_scan.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        self.change_blade = customtkinter.CTkButton(self.tabview.tab("Blade"), text="Change Blade", width=30, )
+        self.change_blade.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
-        self.blade_cylce = customtkinter.CTkLabel(self.tabview.tab("Blade"), text="Blade Cycles: ")
-        self.blade_cylce.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
+        self.blade_cylce_label = customtkinter.CTkLabel(self.tabview.tab("Blade"), text="Blade Cycles: ")
+        self.blade_cylce_label.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
         
-        
+        try:
+            with open('control-panel/config.json', 'r') as file:
+                data = json.loads(file.read())
+                self.blade_cylce = data.get('blade_cycles', 0)
+                self.blade_cylce_label.configure(text=f"Blade Cycles: {self.blade_cylce}")
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.blade_cylce_label.configure(text="Error Reading Config")
+            
         #------Steppers-------
         self.tabview.tab("Steppers").grid_rowconfigure((0, 1, 2), weight=1)
         self.tabview.tab("Steppers").grid_columnconfigure((0, 1, 2), weight=1)
@@ -248,11 +258,12 @@ class App(customtkinter.CTk):
         self.pump_frame.grid(row=6, column=0, padx=5, pady=5,sticky="nsew")
         self.pump_frame.grid_columnconfigure((0, 1), weight=1)
         
-        self.pump_A = customtkinter.CTkSwitch(self.pump_frame, text="Pump A")
+        self.pump_A = customtkinter.CTkSwitch(self.pump_frame, text="Pump A", command=lambda: self.toggle_pump_A())
         self.pump_A.grid(row=0, column=0, padx=10, pady=(0, 20), sticky="nsew")
         
-        self.pump_B = customtkinter.CTkSwitch(self.pump_frame, text="Pump B")
+        self.pump_B = customtkinter.CTkSwitch(self.pump_frame, text="Pump B", command=lambda: self.toggle_pump_B())
         self.pump_B.grid(row=0, column=1, padx=10, pady=(0, 20), sticky="nsew")
+        
         self.textbox.insert("0.0", "Developed By: Nathan Aruna & Arielle Benarroch\n\n" + "Console Log:\n\n")
         threading.Thread(target=self.update_temperature, daemon=True).start()
 
@@ -406,7 +417,6 @@ class App(customtkinter.CTk):
         self.after(100, self.make_fullscreen)
 
 
-    
         content_frame = customtkinter.CTkFrame(loading_window, fg_color="#ebebeb")
         content_frame.pack(expand=True)  
 
@@ -429,8 +439,6 @@ class App(customtkinter.CTk):
         timer_thread = threading.Thread(target=remove_loader_and_show_done)
         timer_thread.daemon = True
         timer_thread.start()
-
-
 
 
     
@@ -485,7 +493,6 @@ class App(customtkinter.CTk):
                     barcode_type = barcode.type  
 
                     self.barcode_data = barcode_data  
-                    #keep barcode type to figure out the one majed provided
                     print(f"Barcode Data: {barcode_data}, Type: {barcode_type}")
                     self.loaded_id.configure(text="Loaded ID: " + barcode_data)
 
@@ -497,8 +504,6 @@ class App(customtkinter.CTk):
 
                     x, y = pts[0].ravel()
                     cv2.putText(frame, barcode_data, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-
-
 
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 frame_image = ImageTk.PhotoImage(Image.fromarray(frame))
@@ -565,7 +570,28 @@ class App(customtkinter.CTk):
         self.temp_entry.delete(0, "end")
         self.temp_entry.insert(0, self.target_temp)
         
-        
+    
+    #------Pump Toggle------- 
+    def toggle_pump_A(self):
+        if not self.pump_A_state:
+            self.send_command("PUMP_A_ON")
+            self.pump_A_state = True
+            print("Pump A ON")
+        else:
+            self.send_command("PUMP_A_OFF")
+            self.pump_A_state = False 
+            print("Pump A OFF")
+    
+    def toggle_pump_B(self):
+        if not self.pump_A_state:
+            self.send_command("PUMP_A_ON")
+            self.pump_B_state = True
+            print("Pump B ON")
+        else:
+            self.send_command("PUMP_A_OFF")
+            self.pump_B_state = False 
+            print("Pump B OFF")
+
         
         
     #------Sample Settings-------  

@@ -1,6 +1,5 @@
 import socket
 import RPi.GPIO as GPIO
-import time
 import json
 from functions import (
     sample_extend, 
@@ -13,6 +12,8 @@ from functions import (
     illuminator_off,
     pump_A_off,
     pump_B_off,
+    pump_A_on,
+    pump_B_on,
     valve_close,
     valve_open,
     system_shutdown
@@ -86,13 +87,28 @@ while True:
                     print("Turning illuminator off...")
                     illuminator_off()
                    
-                    
                 elif command == "VALVE_OPEN":
                     print("Opening valve...")
                     valve_open()
 
                 elif command == "VALVE_CLOSE":
                     print("Closing valve...")
+                    valve_close()
+                    
+                elif command == "PUMP_A_ON":
+                    print("Turning pump A on...")
+                    pump_A_on()
+
+                elif command == "PUMP_A_OFF":
+                    print("Turning pump A off...")
+                    pump_A_off()
+                
+                elif command == "PUMP_B_ON":
+                    print("Turning pump B on...")
+                    valve_open()
+
+                elif command == "PUMP_B_OFF":
+                    print("CTurning pump B off...")
                     valve_close()
                     
                     
@@ -116,10 +132,6 @@ while True:
                     
                     with open(file_path, 'w') as json_file:
                         json.dump(data_dict, json_file, indent=4)
-
-   
-
-
 
             except Exception as process_error:
                 print(f"Error processing command: {process_error}")
