@@ -105,11 +105,11 @@ while True:
                 
                 elif command == "PUMP_B_ON":
                     print("Turning pump B on...")
-                    valve_open()
+                    pump_B_on()
 
                 elif command == "PUMP_B_OFF":
-                    print("CTurning pump B off...")
-                    valve_close()
+                    print("Turning pump B off...")
+                    pump_B_off()
                     
                     
                 else:

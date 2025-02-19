@@ -574,21 +574,17 @@ class App(customtkinter.CTk):
         if not self.pump_A_state:
             self.send_command("PUMP_A_ON")
             self.pump_A_state = True
-            print("Pump A ON")
         else:
             self.send_command("PUMP_A_OFF")
             self.pump_A_state = False 
-            print("Pump A OFF")
     
     def toggle_pump_B(self):
         if not self.pump_A_state:
             self.send_command("PUMP_A_ON")
             self.pump_B_state = True
-            print("Pump B ON")
         else:
             self.send_command("PUMP_A_OFF")
             self.pump_B_state = False 
-            print("Pump B OFF")
 
         
         
