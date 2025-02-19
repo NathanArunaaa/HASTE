@@ -97,7 +97,7 @@ while True:
                     
                 elif command == "PUMP_A_ON":
                     print("Turning pump A on...")
-                    flush_system()
+                    pump_A_on()
 
                 elif command == "PUMP_A_OFF":
                     print("Turning pump A off...")
