@@ -79,6 +79,7 @@ def pump_B_on():
     RELAY_A_PIN2 = 25
     GPIO.setup(RELAY_A_PIN2, GPIO.OUT)
     GPIO.output(RELAY_A_PIN2, GPIO.LOW)
+    
         
 
 def flush_system():
