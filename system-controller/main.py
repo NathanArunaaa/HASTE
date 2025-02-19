@@ -65,7 +65,7 @@ while True:
                 
                 elif command == "FACE_SAMPLE":
                     print("Facing sample...")
-                    face_sample()
+                    face_sample(30)
                 
                 elif command == "SYSTEM_CALIBRATION":
                     print("Calibrating system...")
