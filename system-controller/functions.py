@@ -13,6 +13,7 @@ X_STEP_PIN = 4
 
 Y_LIMIT_PIN = 23  
 X_LIMIT_PIN = 17
+X2_LIMIT_PIN = 18
 
 # ------Inits-------
 CW = 1   
@@ -167,7 +168,8 @@ def home_motor():
 def face_sample(num_sections):
     try:
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
-        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 2000)
+        while GPIO.input(X2_LIMIT_PIN) == GPIO.LOW:  
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10 )
 
         for section in range(num_sections):
 
