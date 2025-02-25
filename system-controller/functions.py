@@ -13,7 +13,7 @@ X_STEP_PIN = 4
 
 Y_LIMIT_PIN = 23  
 X_LIMIT_PIN = 17
-X2_LIMIT_PIN = 17
+X2_LIMIT_PIN = 22
 
 # ------Inits-------
 CW = 1   
