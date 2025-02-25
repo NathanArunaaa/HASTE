@@ -169,7 +169,7 @@ def face_sample(num_sections):
     try:
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
 
-        while GPIO.input(X2_LIMIT_PIN) == GPIO.LOW:  
+        while GPIO.input(22) == GPIO.LOW:  
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10 )
 
         for section in range(num_sections):
