@@ -81,6 +81,16 @@ def pump_B_on():
     RELAY_A_PIN2 = 25
     GPIO.setup(RELAY_A_PIN2, GPIO.OUT)
     GPIO.output(RELAY_A_PIN2, GPIO.LOW)
+
+def heater_off():
+    RELAY_B_PIN1 = 16
+    GPIO.setup(RELAY_B_PIN1, GPIO.OUT)
+    GPIO.output(RELAY_B_PIN1, GPIO.HIGH)
+        
+def heater_on():
+    RELAY_B_PIN1 = 16
+    GPIO.setup(RELAY_B_PIN1, GPIO.OUT)
+    GPIO.output(RELAY_B_PIN1, GPIO.LOW)
     
         
 

@@ -16,6 +16,8 @@ from functions import (
     pump_B_on,
     valve_close,
     valve_open,
+    heater_off,
+    heater_on,
     system_shutdown
    
 )
@@ -110,6 +112,14 @@ while True:
                 elif command == "PUMP_B_OFF":
                     print("Turning pump B off...")
                     pump_B_off()
+
+                elif command == "HEATER_ON":
+                    print("Turning heater on...")
+                    heater_on()
+                    
+                elif command == "HEATER_OFF":
+                    print("Turning heater off...")
+                    heater_off()
                     
                     
                 else:
