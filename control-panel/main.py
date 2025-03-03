@@ -62,7 +62,7 @@ class App(customtkinter.CTk):
         self.selected_lis_number =  "N/A"
         self.selected_face_value = 10
 
-        self.target_temp = int(40)
+        self.target_temp = 40
         self.actual_temp = None
         self.heatin_active = False
         self.blade_cylce = None
@@ -571,7 +571,7 @@ class App(customtkinter.CTk):
         
     def manage_temperature(self):
         while self.heatin_active == True:
-            if self.actual_temp < self.target_temp:
+            if int(self.actual_temp )< int(self.target_temp):
                 self.send_command("HEATER_ON")
                 time.sleep(10)
             else:
