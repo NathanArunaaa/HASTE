@@ -13,7 +13,7 @@ X_STEP_PIN = 4
 
 Y_LIMIT_PIN = 23  
 X_LIMIT_PIN = 17
-X2_LIMIT_PIN = 22
+X2_LIMIT_PIN = 18
 
 # ------Inits-------
 CW = 1   
@@ -148,8 +148,6 @@ def capture_image(patient_id, section_id):
 
 # ------Motion Handlers-------
 def step_motor(dir_pin, step_pin, direction, steps):
-    GPIO.setup(dir_pin, GPIO.OUT)
-    GPIO.setup(step_pin, GPIO.OUT)
     GPIO.output(dir_pin, direction)
 
     for _ in range(steps):
@@ -183,7 +181,7 @@ def face_sample(num_sections):
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
         GPIO.output(X_DIR_PIN, CW) 
 
-        while GPIO.input(18) == GPIO.LOW:  
+        while GPIO.input(X2_LIMIT_PIN) == GPIO.LOW:  
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10 )
 
         for section in range(num_sections):
