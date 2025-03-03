@@ -62,7 +62,7 @@ class App(customtkinter.CTk):
         self.selected_lis_number =  "N/A"
         self.selected_face_value = 10
 
-        self.target_temp = 40
+        self.target_temp = int(40)
         self.actual_temp = None
         self.heatin_active = False
         self.blade_cylce = None
@@ -565,6 +565,7 @@ class App(customtkinter.CTk):
     
     def update_temperature(self):
         temp_c = self.read_ds18b20_temp()
+        temp_c = int(self.actual_temp)
         if temp_c is not None:
             self.water_temp.configure(text=f"Water Temp: {temp_c:.2f}°C")
         self.after(1000, self.update_temperature)
