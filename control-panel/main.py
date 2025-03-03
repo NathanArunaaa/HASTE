@@ -44,7 +44,7 @@ class App(customtkinter.CTk):
         super().__init__()
         self.title("HASTE CONTROL PANEL")
 
-        self.change_scaling_event("130%")
+        self.change_scaling_event("120%")
         self.after(100, self.make_fullscreen)
       # self.config(cursor="none")
         
@@ -202,7 +202,7 @@ class App(customtkinter.CTk):
        
         #------systems control-------
         self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="System control")
-        self.scrollable_frame.grid(row=1, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        self.scrollable_frame.grid(row=1, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
         
         self.water_temp = customtkinter.CTkLabel(self.scrollable_frame, text="Water Temp: --°C")
@@ -253,7 +253,7 @@ class App(customtkinter.CTk):
         self.close_button.grid(row=0, column=1, sticky="ew")
         
         self.pump_frame = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
-        self.pump_frame.grid(row=6, column=0, padx=5, pady=5,sticky="nsew")
+        self.pump_frame.grid(row=8, column=0, padx=5, pady=5,sticky="nsew")
         self.pump_frame.grid_columnconfigure((0, 1), weight=1)
         
         self.pump_A = customtkinter.CTkSwitch(self.pump_frame, text="Pump A", command=lambda: self.toggle_pump_A())
@@ -263,11 +263,11 @@ class App(customtkinter.CTk):
         self.pump_B.grid(row=0, column=1, padx=10, pady=(0, 20), sticky="nsew")
 
         self.button_frame3 = customtkinter.CTkFrame(self.scrollable_frame, fg_color="white")
-        self.button_frame3.grid(row=8, column=0, padx=8, pady=5,sticky="nsew")
+        self.button_frame3.grid(row=7, column=0, padx=8, pady=5,sticky="nsew")
         self.button_frame3.grid_columnconfigure((0, 1), weight=1)
 
         self.heater_label = customtkinter.CTkLabel(self.scrollable_frame, text="Heater")
-        self.heater_label.grid(row=7, column=0, padx=7, pady=5, sticky="nsew")
+        self.heater_label.grid(row=6, column=0, padx=7, pady=5, sticky="nsew")
 
         self.heater_on_button = customtkinter.CTkButton(self.button_frame3, text="ON", width=30, command=lambda: self.send_command("HEATER_ON"))
         self.heater_on_button.grid(row=0, column=0, sticky="ew")
