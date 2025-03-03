@@ -140,7 +140,7 @@ class App(customtkinter.CTk):
         
         #------Tabs-------
         self.tabview = customtkinter.CTkTabview(self, fg_color="white", width=250)
-        self.tabview.grid(row=0, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.tabview.grid(row=0, column=2, padx=(20, 10), pady=(20, 20), sticky="nsew")
         self.tabview.add("Patient")
         self.tabview.add("Blade")
         self.tabview.add("Steppers")
@@ -202,7 +202,7 @@ class App(customtkinter.CTk):
        
         #------systems control-------
         self.scrollable_frame = customtkinter.CTkScrollableFrame(self, fg_color="white", label_text="System control")
-        self.scrollable_frame.grid(row=1, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.scrollable_frame.grid(row=1, column=2, padx=(20, 10), pady=(20, 20), sticky="nsew")
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
         
         self.water_temp = customtkinter.CTkLabel(self.scrollable_frame, text="Water Temp: --°C")
