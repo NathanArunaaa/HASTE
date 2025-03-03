@@ -62,8 +62,8 @@ class App(customtkinter.CTk):
         self.selected_lis_number =  "N/A"
         self.selected_face_value = 10
 
-        self.target_temp = int(40)
-        self.actual_temp = None
+        self.target_temp = 40
+        self.actual_temp = 40
         self.heatin_active = False
         self.blade_cylce = None
         
