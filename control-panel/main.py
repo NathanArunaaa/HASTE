@@ -140,7 +140,7 @@ class App(customtkinter.CTk):
         
         #------Tabs-------
         self.tabview = customtkinter.CTkTabview(self, fg_color="white", width=250)
-        self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(0, 0), sticky="nsew")
+        self.tabview.grid(row=0, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
         self.tabview.add("Patient")
         self.tabview.add("Blade")
         self.tabview.add("Steppers")
