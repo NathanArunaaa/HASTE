@@ -185,9 +185,8 @@ def face_sample(num_sections):
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10 )
 
         for section in range(num_sections):
-
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
             step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
 
         print(section, "sections cut.")
