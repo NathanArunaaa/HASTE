@@ -565,7 +565,7 @@ class App(customtkinter.CTk):
     
     def update_temperature(self):
         temp_c = self.read_ds18b20_temp()
-        temp_c = int(self.actual_temp)
+        self.actual_temp = temp_c
         if temp_c is not None:
             self.water_temp.configure(text=f"Water Temp: {temp_c:.2f}°C")
         self.after(1000, self.update_temperature)
