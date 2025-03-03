@@ -64,6 +64,7 @@ class App(customtkinter.CTk):
 
         self.target_temp = 40
         self.actual_temp = None
+        self.heatin_active = False
         self.blade_cylce = None
         
 
@@ -77,7 +78,7 @@ class App(customtkinter.CTk):
          
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0, fg_color="white")
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(5, weight=1)
+        self.sidebar_frame.grid_rowconfigure(6, weight=1)
 
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="H . A . S . T . E", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
@@ -98,18 +99,22 @@ class App(customtkinter.CTk):
         self.sidebar_button_6.grid(row=4, column=0, padx=20, pady=10)
         self.sidebar_button_6.configure(cursor="none")
 
+        self.sidebar_button_6 = customtkinter.CTkButton(self.sidebar_frame, text="Heat To Temp", hover_color="#3b8ed0", command=self.start_heating)
+        self.sidebar_button_6.grid(row=5, column=0, padx=20, pady=10)
+        self.sidebar_button_6.configure(cursor="none")
+
         self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="System Restart", hover_color="#3b8ed0", command=self.sys_restart)
-        self.sidebar_button_4.grid(row=6, column=0, padx=20, pady=(10, 10))
+        self.sidebar_button_4.grid(row=7, column=0, padx=20, pady=(10, 10))
         self.sidebar_button_4.configure(cursor="none")
 
         self.sidebar_button_5 = customtkinter.CTkButton(self.sidebar_frame, text="Shut Down", hover_color="#3b8ed0", command=self.sys_shutdown)
-        self.sidebar_button_5.grid(row=7 , column=0, padx=20, pady=(10, 10))
+        self.sidebar_button_5.grid(row=8 , column=0, padx=20, pady=(10, 10))
         self.sidebar_button_5.configure(cursor="none")
         
 
         local_ip = get_local_ip() 
         self.local_ip_label = customtkinter.CTkLabel(self.sidebar_frame, text=f"{local_ip}:5000", anchor="w")
-        self.local_ip_label.grid(row=8, column=0, padx=20, pady=(10, 20))
+        self.local_ip_label.grid(row=9, column=0, padx=20, pady=(10, 20))
 
 
 
@@ -565,14 +570,19 @@ class App(customtkinter.CTk):
         self.after(1000, self.update_temperature)
         
     def manage_temperature(self):
-        while True:
-            if self.target_temp > self.actual_temp:
-                self.send_commands("HEATER_ON")
-            if self.target_temp == self.actual_temp:
-                self.send_commands("HEATER_OFF")
-            if self.target_temp < self.actual_temp:
-                self.send_commands("HEATER_OFF")
-            
+        while self.heatin_active == True:
+            if self.actual_temp < self.target_temp:
+                self.send_command("HEATER_ON")
+                time.sleep(10)
+            else:
+                self.send_command("HEATER_OFF")
+                time.sleep(10)
+
+
+    def start_heating(self):
+        self.heatin_active = True
+        threading.Thread(target=self.manage_temperature, daemon=True).start()
+           
     def temp_plus(self):
         self.target_temp += 1
         self.temp_entry.delete(0, "end")
