@@ -148,6 +148,8 @@ def capture_image(patient_id, section_id):
 
 # ------Motion Handlers-------
 def step_motor(dir_pin, step_pin, direction, steps):
+    GPIO.setup(dir_pin, GPIO.OUT)
+    GPIO.setup(step_pin, GPIO.OUT)
     GPIO.output(dir_pin, direction)
 
     for _ in range(steps):
