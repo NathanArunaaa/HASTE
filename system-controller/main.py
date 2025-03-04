@@ -116,10 +116,12 @@ while True:
                 elif command == "HEATER_ON":
                     print("Turning heater on...")
                     heater_on()
+                    pump_A_on()
                     
                 elif command == "HEATER_OFF":
                     print("Turning heater off...")
                     heater_off()
+                    pump_A_off()
                     
                     
                 else:
