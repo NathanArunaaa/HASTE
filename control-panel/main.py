@@ -574,10 +574,10 @@ class App(customtkinter.CTk):
         while self.heatin_active == True:
             if int(self.actual_temp )< int(self.target_temp):
                 self.send_command("HEATER_ON")
-                time.sleep(10)
+                time.sleep(5)
             else:
                 self.send_command("HEATER_OFF")
-                time.sleep(10)
+                time.sleep(5)
 
 
     def start_heating(self):
@@ -589,7 +589,8 @@ class App(customtkinter.CTk):
             threading.Thread(target=self.manage_temperature, daemon=True).start()
         else:
             self.heatin_active = False
-            self.sidebar_button_7.configure(text_color="red")
+            self.send_command("HEATER_OFF")  
+            self.sidebar_button_7.configure(text_color="white")
             self.sidebar_button_7.configure(text="Heat To Temp")
        
            
