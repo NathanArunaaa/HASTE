@@ -99,9 +99,9 @@ class App(customtkinter.CTk):
         self.sidebar_button_6.grid(row=4, column=0, padx=20, pady=10)
         self.sidebar_button_6.configure(cursor="none")
 
-        self.sidebar_button_6 = customtkinter.CTkButton(self.sidebar_frame, text="Heat To Temp", hover_color="#3b8ed0", command=self.start_heating)
-        self.sidebar_button_6.grid(row=5, column=0, padx=20, pady=10)
-        self.sidebar_button_6.configure(cursor="none")
+        self.sidebar_button_7 = customtkinter.CTkButton(self.sidebar_frame, text="Heat To Temp", hover_color="#3b8ed0", command=self.start_heating)
+        self.sidebar_button_7.grid(row=5, column=0, padx=20, pady=10)
+        self.sidebar_button_7.configure(cursor="none")
 
         self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame, text="System Restart", hover_color="#3b8ed0", command=self.sys_restart)
         self.sidebar_button_4.grid(row=7, column=0, padx=20, pady=(10, 10))
@@ -581,8 +581,17 @@ class App(customtkinter.CTk):
 
 
     def start_heating(self):
-        self.heatin_active = True
-        threading.Thread(target=self.manage_temperature, daemon=True).start()
+        if self.heatin_active == False:
+            self.sidebar_button_7.configure(text_color="red")
+            self.sidebar_button_7.configure(text="Stop Heating")
+
+            self.heatin_active = True
+            threading.Thread(target=self.manage_temperature, daemon=True).start()
+        else:
+            self.heatin_active = False
+            self.sidebar_button_7.configure(text_color="red")
+            self.sidebar_button_7.configure(text="Heat To Temp")
+       
            
     def temp_plus(self):
         self.target_temp += 1
