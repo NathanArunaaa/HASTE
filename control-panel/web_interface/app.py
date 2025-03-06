@@ -31,7 +31,7 @@ def three_d_view(patient_id):
 
 def start_flask():
     """Start the Flask server."""
-    app.run(host='192.168.1.100', port=5000)
+    app.run(host='192.168.12.100', port=5000)
 
 if __name__ == '__main__':
     start_flask()
