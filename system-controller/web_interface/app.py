@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=os.path.join('system-controller', 'web_interface', 'static'))
 
 IMAGE_FOLDER = os.path.join('system-controller', 'web_interface', 'static', 'images')
 
