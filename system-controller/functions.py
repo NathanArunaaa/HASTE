@@ -116,7 +116,7 @@ def illuminator_on():
     
 def capture_image(patient_id, section_id):
   
-    save_dir = "control-panel/web_interface/static/images/" + patient_id
+    save_dir = "system-controller/web_interface/static/images/" + patient_id
     filename = section_id + ".jpg"
     
     os.makedirs(save_dir, exist_ok=True)

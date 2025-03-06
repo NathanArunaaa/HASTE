@@ -21,6 +21,7 @@ from functions import (
     valve_open,
     heater_off,
     heater_on,
+    capture_image,
     system_shutdown
    
 )
@@ -132,6 +133,10 @@ while True:
                     print("Turning heater off...")
                     heater_off()
                     pump_A_off()
+
+                elif command == "DEBUG_CAMERA":
+                    print("Capturing image...")
+                    capture_image("123123", "1")
                     
                     
                 else:

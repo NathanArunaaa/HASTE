@@ -147,7 +147,7 @@ class App(customtkinter.CTk):
         self.tabview.grid(row=0, column=2, padx=(20, 10), pady=(20, 20), sticky="nsew")
         self.tabview.add("Patient")
         self.tabview.add("Blade")
-        self.tabview.add("Steppers")
+        self.tabview.add("Debug")
 
        
         #------Patient-------
@@ -185,23 +185,11 @@ class App(customtkinter.CTk):
             self.blade_cylce_label.configure(text="Error Reading Config")
             
         #------Steppers-------
-        self.tabview.tab("Steppers").grid_rowconfigure((0, 1, 2), weight=1)
-        self.tabview.tab("Steppers").grid_columnconfigure((0, 1, 2), weight=1)
+        self.tabview.tab("Debug").grid_rowconfigure((0, 1, 2), weight=1)
+        self.tabview.tab("Debug").grid_columnconfigure((0, 1, 2), weight=1)
 
-        self.up_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="↑", width=20)
-        self.up_button.grid(row=0, column=1, sticky="nsew")
-
-        self.left_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="←", width=20)
-        self.left_button.grid(row=1, column=0, sticky="nsew")
-
-        self.center_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="O", width=20)
-        self.center_button.grid(row=1, column=1,  sticky="nsew")
-
-        self.right_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="→", width=20)
-        self.right_button.grid(row=1, column=2, sticky="nsew")
-
-        self.down_button = customtkinter.CTkButton(self.tabview.tab("Steppers"), text="↓", width=20)
-        self.down_button.grid(row=2, column=1,  sticky="nsew")
+        self.camera_debug = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Debug Camera", width=30, command=lambda: self.send_command("DEBUG_CAMERA"))
+        self.camera_debug.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
         
        
         #------systems control-------
