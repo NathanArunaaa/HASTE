@@ -26,9 +26,7 @@ from functions import (
 )
 
 from web_interface.app import start_flask
-flask_thread = threading.Thread(target=start_flask)
-flask_thread.daemon = True
-flask_thread.start()
+
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -46,6 +44,10 @@ server_socket.listen(1)
 
 
 print("Waiting for a connection...")
+
+flask_thread = threading.Thread(target=start_flask)
+flask_thread.daemon = True
+flask_thread.start()
 
 while True:
     try:
