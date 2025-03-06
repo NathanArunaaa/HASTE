@@ -1,9 +1,9 @@
 from flask import Flask, render_template, url_for
 import os
 
-app = Flask(__name__, static_folder=os.path.join('system-controller', 'web_interface', 'static'))
+app = Flask(__name__)
 
-IMAGE_FOLDER = os.path.join('system-controller', 'web_interface', 'static', 'images')
+IMAGE_FOLDER = os.path.join('web_interface', 'static', 'images')
 
 @app.route('/')
 def home():
