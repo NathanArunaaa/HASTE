@@ -115,27 +115,33 @@ def illuminator_on():
 
     
 def capture_image(patient_id, section_id):
-  
+    # Directory to save the image
     save_dir = "system-controller/web_interface/static/images/" + patient_id
     filename = section_id + ".jpg"
     
     os.makedirs(save_dir, exist_ok=True)
     
     camera_index = 0
-    
     cap = cv2.VideoCapture(camera_index)
+    
     if not cap.isOpened():
         print("Error: Could not open the camera.")
+        return
     
+    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+    height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    print(f"Camera opened with resolution: {width}x{height}")
     
     ret, frame = cap.read()
-    
     cap.release()
     
     if not ret:
         print("Error: Could not capture an image from the camera.")
+        return
     
     save_path = os.path.join(save_dir, filename)
+    print(f"Saving image to: {save_path}")
+    
     quality_params = [cv2.IMWRITE_JPEG_QUALITY, 100]  
     if cv2.imwrite(save_path, frame, quality_params):
         print(f"Image saved successfully at {save_path}")
