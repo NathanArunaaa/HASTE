@@ -13,7 +13,6 @@ import numpy as np
 import json
 
 
-from web_interface.app import start_flask
 from functions import (
     change_scaling_event, 
     sys_shutdown, 
@@ -678,7 +677,4 @@ class App(customtkinter.CTk):
 if __name__ == "__main__":
     print(os.getcwd())
     app = App()
-    flask_thread = threading.Thread(target=start_flask)
-    flask_thread.daemon = True
-    flask_thread.start()
     app.mainloop()

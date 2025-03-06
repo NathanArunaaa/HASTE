@@ -2,6 +2,7 @@ import socket
 import RPi.GPIO as GPIO
 import json
 import threading
+import flask
 
 from functions import (
     sample_extend, 
