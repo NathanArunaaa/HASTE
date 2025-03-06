@@ -1,6 +1,8 @@
 import socket
 import RPi.GPIO as GPIO
 import json
+import threading
+
 from functions import (
     sample_extend, 
     sample_retract,
@@ -21,6 +23,11 @@ from functions import (
     system_shutdown
    
 )
+
+from web_interface.app import start_flask
+flask_thread = threading.Thread(target=start_flask)
+flask_thread.daemon = True
+flask_thread.start()
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
