@@ -3,7 +3,7 @@ import os
 
 app = Flask(__name__)
 
-IMAGE_FOLDER = os.path.join('control-panel', 'web_interface', 'static', 'images')
+IMAGE_FOLDER = os.path.join('system-controller', 'web_interface', 'static', 'images')
 
 @app.route('/')
 def home():
