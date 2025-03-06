@@ -117,8 +117,7 @@ def illuminator_on():
 
 def capture_image(patient_id, section_id):
     # Directory to save the image
-    base_dir = "HASTE/system-controller/web_interface/static/images/"
-    save_dir = os.path.join(base_dir, patient_id)  # Concatenate patient_id with the base folder
+    save_dir = os.path.join('web_interface', 'static', 'images', patient_id)
     filename = section_id + ".jpg"
     
     # Check if the patient folder exists, if not create it
