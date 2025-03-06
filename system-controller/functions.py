@@ -125,7 +125,7 @@ def capture_image(patient_id, section_id):
     
     cap = cv2.VideoCapture(camera_index)
     if not cap.isOpened():
-        return "Error: Could not open the camera."
+        print("Error: Could not open the camera.")
     
     
     ret, frame = cap.read()
@@ -133,14 +133,14 @@ def capture_image(patient_id, section_id):
     cap.release()
     
     if not ret:
-        return "Error: Could not capture an image from the camera."
+        print("Error: Could not capture an image from the camera.")
     
     save_path = os.path.join(save_dir, filename)
     quality_params = [cv2.IMWRITE_JPEG_QUALITY, 100]  
     if cv2.imwrite(save_path, frame, quality_params):
-        return f"Image saved successfully at {save_path}"
+        print(f"Image saved successfully at {save_path}")
     else:
-        return "Error: Failed to save the image."
+        print("Error: Failed to save the image.")
     
 
 
