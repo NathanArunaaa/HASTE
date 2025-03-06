@@ -116,16 +116,13 @@ def illuminator_on():
 
 
 def capture_image(patient_id, section_id):
-    # Directory to save the image
     save_dir = os.path.join('web_interface', 'static', 'images', patient_id)
     filename = section_id + ".jpg"
     
-    # Check if the patient folder exists, if not create it
     if not os.path.exists(save_dir):
         print(f"Patient folder {patient_id} does not exist. Creating folder.")
         os.makedirs(save_dir, exist_ok=True)
     
-    # Initialize the camera
     camera_index = 0
     cap = cv2.VideoCapture(camera_index)
     
@@ -144,11 +141,9 @@ def capture_image(patient_id, section_id):
         print("Error: Could not capture an image from the camera.")
         return
     
-    # Construct the full path to save the image
     save_path = os.path.join(save_dir, filename)
     print(f"Saving image to: {save_path}")
     
-    # Save the image with high quality
     quality_params = [cv2.IMWRITE_JPEG_QUALITY, 100]  
     if cv2.imwrite(save_path, frame, quality_params):
         print(f"Image saved successfully at {save_path}")
