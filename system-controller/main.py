@@ -2,7 +2,6 @@ import socket
 import RPi.GPIO as GPIO
 import json
 import threading
-import flask
 
 from functions import (
     sample_extend, 
@@ -136,7 +135,7 @@ while True:
 
                 elif command == "DEBUG_CAMERA":
                     print("Capturing image...")
-                    capture_image("123123", "1")
+                    capture_image("123123")
                     
                     
                 else:

@@ -115,17 +115,29 @@ def illuminator_on():
 
 
 
-def capture_image(patient_id, section_id):
+def capture_image(patient_id):
     save_dir = os.path.join('web_interface', 'static', 'images', patient_id)
-    filename = section_id + ".jpg"
     
     if not os.path.exists(save_dir):
         print(f"Patient folder {patient_id} does not exist. Creating folder.")
         os.makedirs(save_dir, exist_ok=True)
-    
+
+    existing_files = [f for f in os.listdir(save_dir) if f.endswith('.jpg')]
+    section_ids = []
+
+    for file in existing_files:
+        try:
+            section_id = int(file.split('.')[0])  
+            section_ids.append(section_id)
+        except ValueError:
+            continue  
+
+    next_section_id = max(section_ids, default=0) + 1  
+    filename = f"{next_section_id}.jpg"  
+
     camera_index = 0
     cap = cv2.VideoCapture(camera_index)
-    
+
     if not cap.isOpened():
         print("Error: Could not open the camera.")
         return
@@ -133,17 +145,18 @@ def capture_image(patient_id, section_id):
     width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     print(f"Camera opened with resolution: {width}x{height}")
-    
+
+    time.sleep(2)
     ret, frame = cap.read()
     cap.release()
-    
+
     if not ret:
         print("Error: Could not capture an image from the camera.")
         return
-    
+
     save_path = os.path.join(save_dir, filename)
     print(f"Saving image to: {save_path}")
-    
+
     quality_params = [cv2.IMWRITE_JPEG_QUALITY, 100]  
     if cv2.imwrite(save_path, frame, quality_params):
         print(f"Image saved successfully at {save_path}")
