@@ -145,7 +145,7 @@ def capture_image(patient_id):
     width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
     print(f"Camera opened with resolution: {width}x{height}")
-
+ 
     time.sleep(2)
     ret, frame = cap.read()
     cap.release()
