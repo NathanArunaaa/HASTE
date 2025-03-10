@@ -116,7 +116,7 @@ def illuminator_on():
 
 
 def capture_image(patient_id):
-    save_dir = os.path.join('web_interface', 'static', 'images', patient_id)
+    save_dir = ('web_interface', 'static', 'images', patient_id)
     
     if not os.path.exists(save_dir):
         print(f"Patient folder {patient_id} does not exist. Creating folder.")
