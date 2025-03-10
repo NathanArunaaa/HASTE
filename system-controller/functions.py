@@ -116,11 +116,12 @@ def illuminator_on():
 
 
 def capture_image(patient_id):
-    save_dir = os.path.join('web_interface', 'static', 'images', patient_id)
-    
+    base_dir = os.path.join('web_interface', 'static', 'images')  # Ensure base images folder
+    save_dir = os.path.join(base_dir, patient_id)  # Ensure it goes into the correct patient folder
+
     if not os.path.exists(save_dir):
         print(f"Patient folder {patient_id} does not exist. Creating folder.")
-        os.makedirs(save_dir, exist_ok=True)
+        os.makedirs(save_dir, exist_ok=True)  # Creates the patient ID folder if needed
 
     existing_files = [f for f in os.listdir(save_dir) if f.endswith('.jpg')]
     section_ids = []
@@ -134,7 +135,6 @@ def capture_image(patient_id):
 
     next_section_id = max(section_ids, default=0) + 1  
     filename = f"{next_section_id}.jpg"  
-
     camera_index = 0
     cap = cv2.VideoCapture(camera_index)
 
