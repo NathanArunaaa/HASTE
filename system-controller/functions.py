@@ -116,7 +116,7 @@ def illuminator_on():
 
 
 def capture_image(patient_id):
-    save_dir = f'web_interface/static/images {patient_id}'
+    save_dir = os.path.join('web_interface', 'static', 'images', patient_id)
     
     if not os.path.exists(save_dir):
         print(f"Patient folder {patient_id} does not exist. Creating folder.")
@@ -154,17 +154,6 @@ def capture_image(patient_id):
         print("Error: Could not capture an image from the camera.")
         return
 
-    text = f"({next_section_id})-{patient_id}"
-    font = cv2.FONT_HERSHEY_DUPLEX
-    font_scale = 0.5
-    font_thickness = 1
-    text_color = (0, 0, 0)  
-    position = (10, 30)  
-
-   
-
-    cv2.putText(frame, text, position, font, font_scale, text_color, font_thickness, cv2.LINE_AA)
-
     save_path = os.path.join(save_dir, filename)
     print(f"Saving image to: {save_path}")
 
@@ -173,6 +162,7 @@ def capture_image(patient_id):
         print(f"Image saved successfully at {save_path}")
     else:
         print("Error: Failed to save the image.")
+    
 
 
 
