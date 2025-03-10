@@ -24,7 +24,7 @@ def home():
 @app.route('/3d-view/<patient_id>')
 def three_d_view(patient_id):
     patient_folder_path = os.path.join(IMAGE_FOLDER, patient_id)
-    images = [os.path.join('web_interface/static/images', patient_id, f) for f in os.listdir(patient_folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+    images = [os.path.join('/static/images', patient_id, f) for f in os.listdir(patient_folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
 
     return render_template('3d-view.html', images=images, patient_id=patient_id)
 
