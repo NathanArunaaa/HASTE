@@ -156,8 +156,8 @@ def capture_image(patient_id):
     
     text = f"{patient_id}-#: {next_section_id}"
     font = cv2.FONT_HERSHEY_DUPLEX
-    font_scale = 0.4
-    font_thickness = 1
+    font_scale = 0.6
+    font_thickness = 0.5
     text_color = (0, 0, 0)  
     position = (10, 30)  
 
