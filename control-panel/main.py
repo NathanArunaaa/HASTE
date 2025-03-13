@@ -627,7 +627,7 @@ class App(customtkinter.CTk):
       
     def contruct_command(self):
         self.contructed_command = f"{self.selected_section_value}|{self.selected_micron_value}|{self.selected_face_value}|{self.selected_lis_number}"
-        # self.send_command(self.contructed_command)
+        self.send_command(self.contructed_command)
         print(self.contructed_command)
           
           
