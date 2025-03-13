@@ -1,7 +1,7 @@
 from flask import Flask, render_template, url_for
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'web_interface', 'static'))
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 IMAGE_FOLDER = os.path.join(BASE_DIR, 'web_interface', 'static', 'images')
@@ -29,14 +29,14 @@ def three_d_view(patient_id):
     if not os.path.exists(patient_folder_path): 
         return "Patient folder not found", 404
     
-    images = [url_for('static', filename=f'images/{patient_id}/{f}') for f in os.listdir(patient_folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+    images = [f"/static/images/{patient_id}/{f}" for f in os.listdir(patient_folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
 
     return render_template('3d-view.html', images=images, patient_id=patient_id)
 
 
 def start_flask():
     """Start the Flask server."""
-    app.run(host='0.0.0.0', port=5050)
+    app.run(host='0.0.0.0', port=5050, debug=True)
 
 if __name__ == '__main__':
     start_flask()
