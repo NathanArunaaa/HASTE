@@ -1,13 +1,19 @@
-from flask import Flask, render_template, url_for
 import os
 
-app = Flask(__name__, static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'web_interface', 'static'))
+os.chdir("/home/system-controller/HASTE/system-controller/web_interface")
+
+from flask import Flask, render_template, url_for
+
+app = Flask(__name__) 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-IMAGE_FOLDER = os.path.join(BASE_DIR, 'web_interface', 'static', 'images')
+IMAGE_FOLDER = "/home/system-controller/HASTE/system-controller/web_interface/static/images"
 
 @app.route('/')
 def home():
+    print("Flask running in directory:", os.getcwd())  # Debugging
+    print("Looking for images in:", IMAGE_FOLDER)  # Debugging
+
     patient_data = {}
 
     try:
