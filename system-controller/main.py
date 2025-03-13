@@ -86,7 +86,12 @@ while True:
                 
                 elif command == "FACE_SAMPLE":
                     print("Facing sample...")
-                    face_sample(30)
+                    config = read_config()  
+                    if config:
+                        face_value = config.get("face_value")  
+                        face_sample(face_value)
+                    else:
+                        print("Error: Could not read face_value from config.")
                 
                 elif command == "SYSTEM_CALIBRATION":
                     print("Calibrating system...")
