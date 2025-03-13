@@ -49,6 +49,15 @@ flask_thread = threading.Thread(target=start_flask)
 flask_thread.daemon = True
 flask_thread.start()
 
+def read_config():
+    try:
+        with open(file_path, 'r') as json_file:
+            config = json.load(json_file)
+        return config
+    except Exception as e:
+        print(f"Error reading config file: {e}")
+        return None
+
 while True:
     try:
         connection, address = server_socket.accept()
@@ -135,7 +144,12 @@ while True:
 
                 elif command == "DEBUG_CAMERA":
                     print("Capturing image...")
-                    capture_image("123123")
+                    config = read_config()  
+                    if config:
+                        lis_number = config.get("lis_number", "default_lis")  
+                        capture_image(lis_number)
+                    else:
+                        print("Error: Could not read lis_number from config.")
                     
                     
                 else:
