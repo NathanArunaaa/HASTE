@@ -167,7 +167,7 @@ class App(customtkinter.CTk):
         self.loaded_id.grid(row=2, column=0, padx=20, pady=20, sticky="nsew")
         
         #------Blades-------
-        self.tabview.tab("Blade").grid_rowconfigure(0, weight=1)
+        self.tabview.tab("Blade").grid_rowconfigure((0, 1, 2), weight=1)
         self.tabview.tab("Blade").grid_columnconfigure(0, weight=1)
         
         self.change_blade = customtkinter.CTkButton(self.tabview.tab("Blade"), text="Change Blade", width=30, )
@@ -185,10 +185,8 @@ class App(customtkinter.CTk):
             self.blade_cylce_label.configure(text="Error Reading Config")
             
         #------Debug-------
-        self.tabview.tab("Patient").grid_rowconfigure((0, 1, 2), weight=1)
-        self.tabview.tab("Patient").grid_columnconfigure((0, 1, 2), weight=1)
-      
-
+        self.tabview.tab("Debug").grid_rowconfigure((0, 1, 2), weight=1)
+        self.tabview.tab("Debug").grid_columnconfigure(0, weight=1)
 
         self.camera_debug = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Debug Camera", width=30, command=lambda: self.send_command("DEBUG_CAMERA"))
         self.camera_debug.grid(row=0, column=0, padx=10, pady=10,sticky="nsew")
