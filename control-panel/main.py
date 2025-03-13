@@ -159,7 +159,7 @@ class App(customtkinter.CTk):
         self.start_scan.grid(row=0, column=0, padx=10, pady=10,sticky="nsew")
         
         self.finish_scan = customtkinter.CTkButton(self.tabview.tab("Patient"), text="Complete Scan", width=30, command=self.finish_lis_scan)
-        self.finish_scan.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+        self.finish_scan.grid(row=0, column=0, padx=10, pady=10,sticky="nsew")
 
         
         
@@ -184,12 +184,15 @@ class App(customtkinter.CTk):
         except (FileNotFoundError, json.JSONDecodeError):
             self.blade_cylce_label.configure(text="Error Reading Config")
             
-        #------Steppers-------
+        #------Debug-------
         self.tabview.tab("Debug").grid_rowconfigure((0, 1, 2), weight=1)
         self.tabview.tab("Debug").grid_columnconfigure((0, 1, 2), weight=1)
 
         self.camera_debug = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Debug Camera", width=30, command=lambda: self.send_command("DEBUG_CAMERA"))
-        self.camera_debug.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        self.camera_debug.grid(row=0, column=0, padx=10, pady=10,sticky="nsew")
+
+        self.clear_database = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Clear Database", fg_color='red'  width=30, command=lambda: self.send_command("DEBUG_CAMERA"))
+        self.clear_database.grid(row=0, column=0, padx=10, pady=10,sticky="nsew")
         
        
         #------systems control-------
