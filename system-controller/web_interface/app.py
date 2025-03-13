@@ -3,7 +3,8 @@ import os
 
 app = Flask(__name__)
 
-IMAGE_FOLDER = os.path.join('web_interface','static', 'images')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+IMAGE_FOLDER = os.path.join(BASE_DIR, 'web_interface', 'static', 'images')
 
 @app.route('/')
 def home():
@@ -24,14 +25,17 @@ def home():
 @app.route('/3d-view/<patient_id>')
 def three_d_view(patient_id):
     patient_folder_path = os.path.join(IMAGE_FOLDER, patient_id)
-    images = [os.path.join('/static/images', patient_id, f) for f in os.listdir(patient_folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
+    
+    if not os.path.exists(patient_folder_path): 
+        return "Patient folder not found", 404
+    
+    images = [url_for('static', filename=f'images/{patient_id}/{f}') for f in os.listdir(patient_folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg', '.gif'))]
 
     return render_template('3d-view.html', images=images, patient_id=patient_id)
 
 
 def start_flask():
     """Start the Flask server."""
-    app.run(host='0.0.0.0', port=5050)
-
+    app.run(host='0.0.0.0', port=5050, debug=True)  
 if __name__ == '__main__':
     start_flask()
