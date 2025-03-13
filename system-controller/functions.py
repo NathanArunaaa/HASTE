@@ -116,11 +116,12 @@ def illuminator_on():
 
 
 def capture_image(patient_id):
-    base_dir = os.path.join('web_interface', 'static', 'images')  
-    save_dir = os.path.join(base_dir, patient_id)  
+    script_dir = os.path.dirname(os.path.abspath(__file__))  
+    base_dir = os.path.join(script_dir, 'web_interface', 'static', 'images')  
+    save_dir = os.path.join(base_dir, str(patient_id))  
 
     if not os.path.exists(save_dir):
-        print(f"Patient folder {patient_id} does not exist. Creating folder.")
+        print(f"Patient folder {save_dir} does not exist. Creating folder.")
         os.makedirs(save_dir, exist_ok=True)  
 
     existing_files = [f for f in os.listdir(save_dir) if f.endswith('.jpg')]
@@ -171,7 +172,6 @@ def capture_image(patient_id):
         print(f"Image saved successfully at {save_path}")
     else:
         print("Error: Failed to save the image.")
-    
 
 
 
