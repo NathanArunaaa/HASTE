@@ -634,19 +634,8 @@ class App(customtkinter.CTk):
 
         print(self.contructed_command)
         
-        self.show_saved_values_dialog()
 
-    def show_saved_values_dialog(self):
-        dialog = customtkinter.CTkToplevel(self)
-        dialog.title("Saved Values")
-        dialog.geometry("300x200")
-        dialog.attributes("-topmost", True)
-
-        saved_values = customtkinter.CTkLabel(dialog, text=f"Saved Values:\n{self.contructed_command}", font=("Arial", 14))
-        saved_values.pack(pady=20)
-
-        ok_button = customtkinter.CTkButton(dialog, text="OK", command=dialog.destroy)
-        ok_button.pack(pady=10)
+    
           
           
     #------System shutdown/restart-------   
