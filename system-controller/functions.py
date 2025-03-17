@@ -19,11 +19,11 @@ X2_LIMIT_PIN = 18
 CW = 1   
 CCW = 0  
 
-STEP_DELAY = 0.0001
+STEP_DELAY = 0.00001
 HOMING_STEP_DELAY = 0.01  
 
 BLADE_RETRACT_STEPS = 200 
-BLADE_ADVANCE_STEPS = 5
+BLADE_ADVANCE_STEPS = 1
 
 FACE_BLADE_RETRACT_STEPS = 200 
 FACE_BLADE_ADVANCE_STEPS = 230
@@ -214,7 +214,6 @@ def face_sample(num_sections):
         while GPIO.input(X2_LIMIT_PIN) == GPIO.LOW:  
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10 )
 
-      
 
         for section in range(num_sections):
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
