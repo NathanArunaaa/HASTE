@@ -2,9 +2,9 @@ import RPi.GPIO as GPIO
 import time
 import cv2
 import os
+import math
 
-
-# ------Pin Configuration-------
+# ------ Pin Configuration -------
 Y_DIR_PIN = 20  
 Y_STEP_PIN = 21 
 
@@ -15,25 +15,16 @@ Y_LIMIT_PIN = 23
 X_LIMIT_PIN = 17
 X2_LIMIT_PIN = 18
 
-# ------Inits-------
+# ------ Inits -------
 CW = 1   
 CCW = 0  
 
-STEP_DELAY = 0.0001
-HOMING_STEP_DELAY = 0.01  
-
-STEP_PULSE_DELAY = 0.0001  # 100μs (Adjust this for speed)
-ACCELERATION_DELAY = 0.0003  # Start with a higher delay for gradual acceleration
-
-BLADE_RETRACT_STEPS = 200 
-BLADE_ADVANCE_STEPS = 10
-
-FACE_BLADE_RETRACT_STEPS = 200 
-FACE_BLADE_ADVANCE_STEPS = 230
+# Step Delays (Default)
+STEP_PULSE_DELAY = 0.0002  # Adjust for speed (Lower = Faster)
+ACCELERATION_STEPS = 100  # Number of steps to accelerate/decelerate
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
-
 
 GPIO.setup(Y_DIR_PIN, GPIO.OUT)
 GPIO.setup(Y_STEP_PIN, GPIO.OUT)
@@ -179,38 +170,38 @@ def capture_image(patient_id):
 
 
 
-# ------Motion Handlers-------
+# ------ Motion Handlers -------
 def step_motor(dir_pin, step_pin, direction, steps):
-    """Move the stepper motor with gradual acceleration & deceleration"""
-
+    """Move stepper motor smoothly with sinusoidal acceleration & deceleration"""
+    
     GPIO.output(dir_pin, direction)
 
-    # Acceleration Phase (First 30% of steps)
-    for i in range(int(steps * 0.3)):
-        delay = STEP_PULSE_DELAY + (ACCELERATION_DELAY * (1 - (i / (steps * 0.3))))
+    # Acceleration Phase
+    for i in range(ACCELERATION_STEPS):
+        delay = STEP_PULSE_DELAY * (1.5 - math.cos((i / ACCELERATION_STEPS) * math.pi) * 0.5)
         GPIO.output(step_pin, GPIO.HIGH)
         time.sleep(delay)
         GPIO.output(step_pin, GPIO.LOW)
         time.sleep(delay)
 
-    # Constant Speed Phase (Middle 40% of steps)
-    for _ in range(int(steps * 0.4)):
+    # Constant Speed Phase
+    for _ in range(steps - 2 * ACCELERATION_STEPS):
         GPIO.output(step_pin, GPIO.HIGH)
         time.sleep(STEP_PULSE_DELAY)
         GPIO.output(step_pin, GPIO.LOW)
         time.sleep(STEP_PULSE_DELAY)
 
-    # Deceleration Phase (Last 30% of steps)
-    for i in range(int(steps * 0.3)):
-        delay = STEP_PULSE_DELAY + (ACCELERATION_DELAY * (i / (steps * 0.3)))
+    # Deceleration Phase
+    for i in range(ACCELERATION_STEPS, 0, -1):
+        delay = STEP_PULSE_DELAY * (1.5 - math.cos((i / ACCELERATION_STEPS) * math.pi) * 0.5)
         GPIO.output(step_pin, GPIO.HIGH)
         time.sleep(delay)
         GPIO.output(step_pin, GPIO.LOW)
         time.sleep(delay)
-
 
 
 def home_motor():
+    """Home the X and Y axes using limit switches"""
     step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
     GPIO.output(X_DIR_PIN, CW) 
 
@@ -228,9 +219,10 @@ def home_motor():
 
     step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
     print("Homing Y complete. Motor zeroed.")
-    
+
     
 def face_sample(num_sections):
+    """Perform smooth motion cutting for num_sections"""
     try:
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
         GPIO.output(X_DIR_PIN, CW) 
@@ -239,19 +231,17 @@ def face_sample(num_sections):
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10 )
 
         for section in range(num_sections):
-            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 230)  # Smooth advance
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)  
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)  
 
         print(section, "sections cut.")
     finally:
-        #remember to return status code to control panel
         print("Cutting complete.")
 
 
-
-def cut_sections(num_sections, section_thickness):
- 
+def cut_sections(num_sections):
+    """Perform smooth section cutting"""
     try:
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
         step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 11000)
@@ -260,20 +250,19 @@ def cut_sections(num_sections, section_thickness):
             print(f"Cutting section {section + 1}...")
 
             step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
-            step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS)
-            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
+            step_motor(X_DIR_PIN, X_STEP_PIN, CW, 200)  # Retract smoothly
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)   # Advance blade
             step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
 
             print(f"Section {section + 1} complete.\n")
 
         print(section, "sections cut.")
-
     finally:
-        #remember to return status code to control panel
         print("Cutting complete.")
-        
+
 
 def sample_extend():
+    """Extend sample smoothly"""
     try:
         print("Raising sample holder...")
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000)  
@@ -281,8 +270,8 @@ def sample_extend():
         print("Sample holder raised.")
 
 
-
 def sample_retract():
+    """Retract sample smoothly"""
     try:
         print("Lowering sample holder...")
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 37000)  
