@@ -2,10 +2,9 @@ import RPi.GPIO as GPIO
 import time
 import cv2
 import os
-import math
-import pigpio
 
-# ------ Pin Configuration -------
+
+# ------Pin Configuration-------
 Y_DIR_PIN = 20  
 Y_STEP_PIN = 21 
 
@@ -16,25 +15,22 @@ Y_LIMIT_PIN = 23
 X_LIMIT_PIN = 17
 X2_LIMIT_PIN = 18
 
-# ------ Inits -------
+# ------Inits-------
 CW = 1   
 CCW = 0  
 
-STEP_DELAY = 0.0002  # Adjust for speed (Lower = Faster)
-ACCEL_STEPS = 10  # Number of steps to accelerate/decelerate
+STEP_DELAY = 0.0001
+HOMING_STEP_DELAY = 0.01  
 
-pi = pigpio.pi()
+BLADE_RETRACT_STEPS = 200 
+BLADE_ADVANCE_STEPS = 10
 
-if not pi.connected:
-    print("pigpio daemon not running. Start it with 'sudo pigpiod'")
-    exit()
-
-# Set direction pins as outputs
-pi.set_mode(Y_DIR_PIN, pigpio.OUTPUT)
-pi.set_mode(X_DIR_PIN, pigpio.OUTPUT)
+FACE_BLADE_RETRACT_STEPS = 200 
+FACE_BLADE_ADVANCE_STEPS = 230
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
+
 
 GPIO.setup(Y_DIR_PIN, GPIO.OUT)
 GPIO.setup(Y_STEP_PIN, GPIO.OUT)
@@ -120,11 +116,12 @@ def illuminator_on():
 
 
 def capture_image(patient_id):
-    base_dir = os.path.join('web_interface', 'static', 'images')  
-    save_dir = os.path.join(base_dir, patient_id)  
+    script_dir = os.path.dirname(os.path.abspath(__file__))  
+    base_dir = os.path.join(script_dir, 'web_interface', 'static', 'images')  
+    save_dir = os.path.join(base_dir, str(patient_id))  
 
     if not os.path.exists(save_dir):
-        print(f"Patient folder {patient_id} does not exist. Creating folder.")
+        print(f"Patient folder {save_dir} does not exist. Creating folder.")
         os.makedirs(save_dir, exist_ok=True)  
 
     existing_files = [f for f in os.listdir(save_dir) if f.endswith('.jpg')]
@@ -175,127 +172,97 @@ def capture_image(patient_id):
         print(f"Image saved successfully at {save_path}")
     else:
         print("Error: Failed to save the image.")
-    
 
 
 
 
-
-
-# Function to send steps using waveforms (Software PWM)
+# ------Motion Handlers-------
 def step_motor(dir_pin, step_pin, direction, steps):
-    """Move stepper motor using pigpio waveforms (smooth motion)."""
-    
-    pi.write(dir_pin, direction)  # Set motor direction
+    GPIO.output(dir_pin, direction)
 
-    pulses = []
     for _ in range(steps):
-        pulses.append(pigpio.pulse(1 << step_pin, 0, int(STEP_DELAY * 1e6)))
-        pulses.append(pigpio.pulse(0, 1 << step_pin, int(STEP_DELAY * 1e6)))
-
-    pi.wave_clear()  # Clear existing waveforms
-    pi.wave_add_generic(pulses)  # Add new pulse sequence
-    wave_id = pi.wave_create()  # Create waveform
-
-    if wave_id >= 0:
-        pi.wave_send_once(wave_id)  # Send waveform
-        while pi.wave_tx_busy():  # Wait for completion
-            time.sleep(0.001)
-
-    pi.wave_delete(wave_id)  # Cleanup waveform after use
+        GPIO.output(step_pin, GPIO.HIGH)
+        time.sleep(STEP_DELAY)
+        GPIO.output(step_pin, GPIO.LOW)
+        time.sleep(STEP_DELAY)
 
 def home_motor():
-    """Home the X and Y axes using limit switches"""
-    # Move motor in X direction (counter-clockwise) until the limit switch is triggered
-    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  # Move towards limit switch
-    pi.write(X_DIR_PIN, CW)
+    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
+    GPIO.output(X_DIR_PIN, CW) 
 
-    while pi.read(X_LIMIT_PIN) == 0:  # Wait for the limit switch to be triggered
-        step_motor(X_DIR_PIN, X_STEP_PIN, CW, 10)  # Small steps for precision
+    while GPIO.input(X_LIMIT_PIN) == GPIO.LOW:  
+        step_motor(X_DIR_PIN, X_STEP_PIN, CW, 10 )
 
-    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)  # Move back slightly to ensure it’s homed
+    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
     print("Homing X complete. Motor zeroed.")
 
-    # Now do the same for Y axis
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  # Move towards limit switch
-    pi.write(Y_DIR_PIN, CW)
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  
+    GPIO.output(Y_DIR_PIN, CW) 
 
-    while pi.read(Y_LIMIT_PIN) == 0:  # Wait for the limit switch to be triggered
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10)  # Small steps for precision
+    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10)
 
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)  # Move back slightly to ensure it’s homed
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
     print("Homing Y complete. Motor zeroed.")
-
-def cut_sections(num_sections):
-    """Perform smooth section cutting"""
+    
+    
+def face_sample(num_sections):
     try:
-        # Initial Y-axis movement (advance sample holder)
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)  # Smooth advance
-        
-        # Initial X-axis movement (prepare for cutting)
-        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 11000)  # Move towards first cut
-        
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+        GPIO.output(X_DIR_PIN, CW) 
+
+        while GPIO.input(X2_LIMIT_PIN) == GPIO.LOW:  
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10 )
+
+        for section in range(num_sections):
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+
+        print(section, "sections cut.")
+    finally:
+        #remember to return status code to control panel
+        print("Cutting complete.")
+
+
+
+def cut_sections(num_sections, section_thickness):
+ 
+    try:
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 11000)
+
         for section in range(num_sections):
             print(f"Cutting section {section + 1}...")
 
-            # Perform the actual cutting process
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)  # Smooth retract after cut
-            step_motor(X_DIR_PIN, X_STEP_PIN, CW, 200)   # Retract smoothly
-            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)   # Advance blade slightly
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000) # Prepare for the next cut
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
+            step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS)
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
 
             print(f"Section {section + 1} complete.\n")
 
-        print(f"Total {num_sections} sections cut.")
+        print(section, "sections cut.")
+
     finally:
+        #remember to return status code to control panel
         print("Cutting complete.")
-        # Clean up resources if needed
-        pi.stop()  # Close pigpio connection when done
+        
 
-# Face Sample Function
-def face_sample(num_sections):
-    """Perform smooth motion cutting for num_sections using pigpio."""
-    try:
-        # Move sample to start position
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
-        pi.write(X_DIR_PIN, CW) 
-
-        # Move X axis until X2 limit switch is reached
-        while pi.read(X2_LIMIT_PIN) == 0:  
-            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
-
-        for section in range(num_sections):
-            print(f"Facing section {section + 1}...")
-
-            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 230)  # Smooth advance
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)  
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)  
-
-        print(f"{num_sections} sections faced.")
-
-    finally:
-        print("Facing complete.")
-
-# Extend Sample Holder
 def sample_extend():
-    """Extend sample smoothly."""
     try:
         print("Raising sample holder...")
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000)  
     finally:
         print("Sample holder raised.")
 
-# Retract Sample Holder
+
+
 def sample_retract():
-    """Retract sample smoothly."""
     try:
         print("Lowering sample holder...")
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 37000)  
     finally:
         print("Sample holder lowered.")
+        
 
-# Cleanup function
-def cleanup():
-    """Stops pigpio and releases GPIOs."""
-    pi.stop()
-    print("GPIO cleanup done.")
