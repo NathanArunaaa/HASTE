@@ -30,6 +30,9 @@ if not pi.connected:
     print("pigpio daemon not running. Start it with 'sudo pigpiod'")
     exit()
 
+# Set direction pins as outputs
+pi.set_mode(Y_DIR_PIN, pigpio.OUTPUT)
+pi.set_mode(X_DIR_PIN, pigpio.OUTPUT)
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -179,9 +182,7 @@ def capture_image(patient_id):
 
 
 
-# Set direction pins as outputs
-pi.set_mode(Y_DIR_PIN, pigpio.OUTPUT)
-pi.set_mode(X_DIR_PIN, pigpio.OUTPUT)
+
 
 # Function to send steps using PWM (smoother than bit-banging)
 def step_motor(dir_pin, step_pin, direction, steps, frequency=STEP_FREQ):
@@ -211,6 +212,29 @@ def home_motor():
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
 
     print("Homing Y complete. Motor zeroed.")
+
+def face_sample(num_sections):
+    """Perform smooth motion cutting for num_sections using pigpio."""
+    try:
+        # Move sample to start position
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+        pi.write(X_DIR_PIN, CW) 
+
+        # Move X axis until X2 limit switch is reached
+        while pi.read(X2_LIMIT_PIN) == 0:  
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
+
+        for section in range(num_sections):
+            print(f"Facing section {section + 1}...")
+
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 230)  # Smooth advance
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)  
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)  
+
+        print(f"{num_sections} sections faced.")
+
+    finally:
+        print("Facing complete.")
 
 # Function for smooth cutting
 def cut_sections(num_sections):
