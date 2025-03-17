@@ -21,7 +21,7 @@ CW = 1
 CCW = 0  
 
 STEP_DELAY = 0.0002  # Adjust for speed (Lower = Faster)
-ACCEL_STEPS = 100  # Number of steps to accelerate/decelerate
+ACCEL_STEPS = 10  # Number of steps to accelerate/decelerate
 
 pi = pigpio.pi()
 
@@ -225,7 +225,7 @@ def home_motor():
 
     step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)  # Move back slightly to ensure it’s homed
     print("Homing Y complete. Motor zeroed.")
-    
+
 def cut_sections(num_sections):
     """Perform smooth section cutting"""
     try:
