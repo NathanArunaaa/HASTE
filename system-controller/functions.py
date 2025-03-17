@@ -20,8 +20,7 @@ X2_LIMIT_PIN = 18
 CW = 1   
 CCW = 0  
 
-# Step Delays (Default)
-STEP_FREQ = 2000  # Frequency in Hz (Adjust for speed/smoothness)
+STEP_DELAY = 0.0002  # Adjust for speed (Lower = Faster)
 ACCEL_STEPS = 100  # Number of steps to accelerate/decelerate
 
 pi = pigpio.pi()
@@ -183,36 +182,55 @@ def capture_image(patient_id):
 
 
 
-
-# Function to send steps using PWM (smoother than bit-banging)
-def step_motor(dir_pin, step_pin, direction, steps, frequency=STEP_FREQ):
-    """Moves the stepper motor using pigpio PWM for smooth motion."""
+# Function to send steps using waveforms (Software PWM)
+def step_motor(dir_pin, step_pin, direction, steps):
+    """Move stepper motor using pigpio waveforms (smooth motion)."""
     
     pi.write(dir_pin, direction)  # Set motor direction
-    pi.hardware_PWM(step_pin, frequency, 500000)  # 50% duty cycle
 
-    time.sleep(steps / frequency)  # Wait for the required number of steps
+    pulses = []
+    for _ in range(steps):
+        pulses.append(pigpio.pulse(1 << step_pin, 0, int(STEP_DELAY * 1e6)))
+        pulses.append(pigpio.pulse(0, 1 << step_pin, int(STEP_DELAY * 1e6)))
 
-    pi.hardware_PWM(step_pin, 0, 0)  # Stop PWM after motion
+    pi.wave_clear()  # Clear existing waveforms
+    pi.wave_add_generic(pulses)  # Add new pulse sequence
+    wave_id = pi.wave_create()  # Create waveform
 
-# Homing function using pigpio
-def home_motor():
-    """Home the X and Y axes using limit switches."""
-    
-    # Move X axis to home position
-    pi.write(X_DIR_PIN, CCW)
-    while pi.read(X_LIMIT_PIN) == 0:
-        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
-    
-    print("Homing X complete. Motor zeroed.")
+    if wave_id >= 0:
+        pi.wave_send_once(wave_id)  # Send waveform
+        while pi.wave_tx_busy():  # Wait for completion
+            time.sleep(0.001)
 
-    # Move Y axis to home position
-    pi.write(Y_DIR_PIN, CCW)
-    while pi.read(Y_LIMIT_PIN) == 0:
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
+    pi.wave_delete(wave_id)  # Cleanup waveform after use
 
-    print("Homing Y complete. Motor zeroed.")
+def cut_sections(num_sections):
+    """Perform smooth section cutting"""
+    try:
+        # Initial Y-axis movement (advance sample holder)
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)  # Smooth advance
+        
+        # Initial X-axis movement (prepare for cutting)
+        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 11000)  # Move towards first cut
+        
+        for section in range(num_sections):
+            print(f"Cutting section {section + 1}...")
 
+            # Perform the actual cutting process
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)  # Smooth retract after cut
+            step_motor(X_DIR_PIN, X_STEP_PIN, CW, 200)   # Retract smoothly
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)   # Advance blade slightly
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000) # Prepare for the next cut
+
+            print(f"Section {section + 1} complete.\n")
+
+        print(f"Total {num_sections} sections cut.")
+    finally:
+        print("Cutting complete.")
+        # Clean up resources if needed
+        pi.stop()  # Close pigpio connection when done
+
+# Face Sample Function
 def face_sample(num_sections):
     """Perform smooth motion cutting for num_sections using pigpio."""
     try:
@@ -236,33 +254,12 @@ def face_sample(num_sections):
     finally:
         print("Facing complete.")
 
-# Function for smooth cutting
-def cut_sections(num_sections):
-    """Perform smooth section cutting using PWM control."""
-    try:
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)  # Move to start position
-        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 11000)
-
-        for section in range(num_sections):
-            print(f"Cutting section {section + 1}...")
-
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
-            step_motor(X_DIR_PIN, X_STEP_PIN, CW, 200)  # Retract smoothly
-            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)   # Advance blade
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
-
-            print(f"Section {section + 1} complete.\n")
-
-        print(f"{num_sections} sections cut.")
-
-    finally:
-        print("Cutting complete.")
-
+# Extend Sample Holder
 def sample_extend():
     """Extend sample smoothly."""
     try:
         print("Raising sample holder...")
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000)  # Adjust steps for height
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000)  
     finally:
         print("Sample holder raised.")
 
@@ -271,7 +268,7 @@ def sample_retract():
     """Retract sample smoothly."""
     try:
         print("Lowering sample holder...")
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 37000)  # Adjust steps for lowering
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 37000)  
     finally:
         print("Sample holder lowered.")
 
@@ -280,4 +277,3 @@ def cleanup():
     """Stops pigpio and releases GPIOs."""
     pi.stop()
     print("GPIO cleanup done.")
-
