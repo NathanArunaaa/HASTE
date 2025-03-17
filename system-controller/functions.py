@@ -208,7 +208,7 @@ def home_motor():
     
 def face_sample(num_sections):
     try:
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 8000)
         GPIO.output(X_DIR_PIN, CW) 
 
         while GPIO.input(X2_LIMIT_PIN) == GPIO.LOW:  
