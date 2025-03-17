@@ -3,6 +3,7 @@ import time
 import cv2
 import os
 import math
+import pigpio
 
 # ------ Pin Configuration -------
 Y_DIR_PIN = 20  
@@ -20,8 +21,15 @@ CW = 1
 CCW = 0  
 
 # Step Delays (Default)
-STEP_PULSE_DELAY = 0.0002  # Adjust for speed (Lower = Faster)
-ACCELERATION_STEPS = 100  # Number of steps to accelerate/decelerate
+STEP_FREQ = 2000  # Frequency in Hz (Adjust for speed/smoothness)
+ACCEL_STEPS = 100  # Number of steps to accelerate/decelerate
+
+pi = pigpio.pi()
+
+if not pi.connected:
+    print("pigpio daemon not running. Start it with 'sudo pigpiod'")
+    exit()
+
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -170,80 +178,45 @@ def capture_image(patient_id):
 
 
 
-# ------ Motion Handlers -------
-def step_motor(dir_pin, step_pin, direction, steps):
-    """Move stepper motor smoothly with sinusoidal acceleration & deceleration"""
+
+# Set direction pins as outputs
+pi.set_mode(Y_DIR_PIN, pigpio.OUTPUT)
+pi.set_mode(X_DIR_PIN, pigpio.OUTPUT)
+
+# Function to send steps using PWM (smoother than bit-banging)
+def step_motor(dir_pin, step_pin, direction, steps, frequency=STEP_FREQ):
+    """Moves the stepper motor using pigpio PWM for smooth motion."""
     
-    GPIO.output(dir_pin, direction)
+    pi.write(dir_pin, direction)  # Set motor direction
+    pi.hardware_PWM(step_pin, frequency, 500000)  # 50% duty cycle
 
-    # Acceleration Phase
-    for i in range(ACCELERATION_STEPS):
-        delay = STEP_PULSE_DELAY * (1.5 - math.cos((i / ACCELERATION_STEPS) * math.pi) * 0.5)
-        GPIO.output(step_pin, GPIO.HIGH)
-        time.sleep(delay)
-        GPIO.output(step_pin, GPIO.LOW)
-        time.sleep(delay)
+    time.sleep(steps / frequency)  # Wait for the required number of steps
 
-    # Constant Speed Phase
-    for _ in range(steps - 2 * ACCELERATION_STEPS):
-        GPIO.output(step_pin, GPIO.HIGH)
-        time.sleep(STEP_PULSE_DELAY)
-        GPIO.output(step_pin, GPIO.LOW)
-        time.sleep(STEP_PULSE_DELAY)
+    pi.hardware_PWM(step_pin, 0, 0)  # Stop PWM after motion
 
-    # Deceleration Phase
-    for i in range(ACCELERATION_STEPS, 0, -1):
-        delay = STEP_PULSE_DELAY * (1.5 - math.cos((i / ACCELERATION_STEPS) * math.pi) * 0.5)
-        GPIO.output(step_pin, GPIO.HIGH)
-        time.sleep(delay)
-        GPIO.output(step_pin, GPIO.LOW)
-        time.sleep(delay)
-
-
+# Homing function using pigpio
 def home_motor():
-    """Home the X and Y axes using limit switches"""
-    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
-    GPIO.output(X_DIR_PIN, CW) 
-
-    while GPIO.input(X_LIMIT_PIN) == GPIO.LOW:  
-        step_motor(X_DIR_PIN, X_STEP_PIN, CW, 10 )
-
-    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
+    """Home the X and Y axes using limit switches."""
+    
+    # Move X axis to home position
+    pi.write(X_DIR_PIN, CCW)
+    while pi.read(X_LIMIT_PIN) == 0:
+        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
+    
     print("Homing X complete. Motor zeroed.")
 
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  
-    GPIO.output(Y_DIR_PIN, CW) 
+    # Move Y axis to home position
+    pi.write(Y_DIR_PIN, CCW)
+    while pi.read(Y_LIMIT_PIN) == 0:
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
 
-    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10)
-
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
     print("Homing Y complete. Motor zeroed.")
 
-    
-def face_sample(num_sections):
-    """Perform smooth motion cutting for num_sections"""
-    try:
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
-        GPIO.output(X_DIR_PIN, CW) 
-
-        while GPIO.input(X2_LIMIT_PIN) == GPIO.LOW:  
-            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10 )
-
-        for section in range(num_sections):
-            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 230)  # Smooth advance
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)  
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)  
-
-        print(section, "sections cut.")
-    finally:
-        print("Cutting complete.")
-
-
+# Function for smooth cutting
 def cut_sections(num_sections):
-    """Perform smooth section cutting"""
+    """Perform smooth section cutting using PWM control."""
     try:
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)  # Move to start position
         step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 11000)
 
         for section in range(num_sections):
@@ -256,26 +229,31 @@ def cut_sections(num_sections):
 
             print(f"Section {section + 1} complete.\n")
 
-        print(section, "sections cut.")
+        print(f"{num_sections} sections cut.")
+
     finally:
         print("Cutting complete.")
 
-
 def sample_extend():
-    """Extend sample smoothly"""
+    """Extend sample smoothly."""
     try:
         print("Raising sample holder...")
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000)  
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000)  # Adjust steps for height
     finally:
         print("Sample holder raised.")
 
-
+# Retract Sample Holder
 def sample_retract():
-    """Retract sample smoothly"""
+    """Retract sample smoothly."""
     try:
         print("Lowering sample holder...")
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 37000)  
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 37000)  # Adjust steps for lowering
     finally:
         print("Sample holder lowered.")
-        
+
+# Cleanup function
+def cleanup():
+    """Stops pigpio and releases GPIOs."""
+    pi.stop()
+    print("GPIO cleanup done.")
 
