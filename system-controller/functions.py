@@ -204,6 +204,28 @@ def step_motor(dir_pin, step_pin, direction, steps):
 
     pi.wave_delete(wave_id)  # Cleanup waveform after use
 
+def home_motor():
+    """Home the X and Y axes using limit switches"""
+    # Move motor in X direction (counter-clockwise) until the limit switch is triggered
+    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  # Move towards limit switch
+    pi.write(X_DIR_PIN, CW)
+
+    while pi.read(X_LIMIT_PIN) == 0:  # Wait for the limit switch to be triggered
+        step_motor(X_DIR_PIN, X_STEP_PIN, CW, 10)  # Small steps for precision
+
+    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)  # Move back slightly to ensure it’s homed
+    print("Homing X complete. Motor zeroed.")
+
+    # Now do the same for Y axis
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  # Move towards limit switch
+    pi.write(Y_DIR_PIN, CW)
+
+    while pi.read(Y_LIMIT_PIN) == 0:  # Wait for the limit switch to be triggered
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10)  # Small steps for precision
+
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)  # Move back slightly to ensure it’s homed
+    print("Homing Y complete. Motor zeroed.")
+    
 def cut_sections(num_sections):
     """Perform smooth section cutting"""
     try:
