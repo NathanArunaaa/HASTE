@@ -4,7 +4,7 @@ import cv2
 import os
 
 
-# ------ Pin Configuration -------
+# ------Pin Configuration-------
 Y_DIR_PIN = 20  
 Y_STEP_PIN = 21 
 X_DIR_PIN = 27  
@@ -13,22 +13,14 @@ Y_LIMIT_PIN = 23
 X_LIMIT_PIN = 17
 X2_LIMIT_PIN = 18
 
-# ------ Direction Constants -------
-CW = 1   # Clockwise
-CCW = 0  # Counterclockwise
+# ------Inits-------
+CW = 1   
+CCW = 0  
 
-# ------ Motion Parameters -------
 MIN_STEP_DELAY = 0.0001  # Fastest speed
 MAX_STEP_DELAY = 0.01    # Slowest speed (for start/stop)
 ACCELERATION_STEPS = 50  # Steps to accelerate/decelerate
 
-# Blade Movement Steps
-BLADE_RETRACT_STEPS = 200
-BLADE_ADVANCE_STEPS = 10
-FACE_BLADE_RETRACT_STEPS = 200
-FACE_BLADE_ADVANCE_STEPS = 230
-
-# GPIO Setup
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -177,7 +169,6 @@ def capture_image(patient_id):
 
 
 
-# ------Motion Handlers-------
 # ------ Smooth Stepper Function -------
 def step_motor(dir_pin, step_pin, direction, steps, min_delay=MIN_STEP_DELAY, max_delay=MAX_STEP_DELAY):
     GPIO.output(dir_pin, direction)
@@ -265,13 +256,20 @@ def face_sample(num_sections):
         print(f"{num_sections} sections faced.")
     finally:
         print("Facing complete.")
+        
 
+def sample_extend():
+    try:
+        print("Raising sample holder smoothly...")
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000, min_delay=0.0005)
+    finally:
+        print("Sample holder raised.")
 
 
 def sample_retract():
     try:
-        print("Lowering sample holder...")
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 37000)  
+        print("Lowering sample holder smoothly...")
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 37000, min_delay=0.0005)
     finally:
         print("Sample holder lowered.")
         
