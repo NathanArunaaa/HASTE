@@ -22,8 +22,8 @@ CCW = 0
 STEP_DELAY = 0.0001
 HOMING_STEP_DELAY = 0.01  
 
-STEP_PULSE_DELAY = 0.00001  # 10μs (Minimum pulse width for TB6600 is 5μs)
-
+STEP_PULSE_DELAY = 0.0001  # 100μs (Adjust this for speed)
+ACCELERATION_DELAY = 0.0003  # Start with a higher delay for gradual acceleration
 
 BLADE_RETRACT_STEPS = 200 
 BLADE_ADVANCE_STEPS = 10
@@ -181,30 +181,33 @@ def capture_image(patient_id):
 
 # ------Motion Handlers-------
 def step_motor(dir_pin, step_pin, direction, steps):
-    """Move the stepper motor with smooth acceleration & deceleration"""
-    
+    """Move the stepper motor with gradual acceleration & deceleration"""
+
     GPIO.output(dir_pin, direction)
 
-    # Acceleration Phase
-    for i in range(steps // 3):  
+    # Acceleration Phase (First 30% of steps)
+    for i in range(int(steps * 0.3)):
+        delay = STEP_PULSE_DELAY + (ACCELERATION_DELAY * (1 - (i / (steps * 0.3))))
         GPIO.output(step_pin, GPIO.HIGH)
-        time.sleep(STEP_PULSE_DELAY * (1.5 - (i / (steps // 3))))  # Decreasing delay
+        time.sleep(delay)
         GPIO.output(step_pin, GPIO.LOW)
-        time.sleep(STEP_PULSE_DELAY * (1.5 - (i / (steps // 3))))  
+        time.sleep(delay)
 
-    # Constant Speed Phase
-    for _ in range(steps // 3, 2 * steps // 3):
+    # Constant Speed Phase (Middle 40% of steps)
+    for _ in range(int(steps * 0.4)):
         GPIO.output(step_pin, GPIO.HIGH)
         time.sleep(STEP_PULSE_DELAY)
         GPIO.output(step_pin, GPIO.LOW)
         time.sleep(STEP_PULSE_DELAY)
 
-    # Deceleration Phase
-    for i in range(steps // 3):
+    # Deceleration Phase (Last 30% of steps)
+    for i in range(int(steps * 0.3)):
+        delay = STEP_PULSE_DELAY + (ACCELERATION_DELAY * (i / (steps * 0.3)))
         GPIO.output(step_pin, GPIO.HIGH)
-        time.sleep(STEP_PULSE_DELAY * (0.5 + (i / (steps // 3))))  # Increasing delay
+        time.sleep(delay)
         GPIO.output(step_pin, GPIO.LOW)
-        time.sleep(STEP_PULSE_DELAY * (0.5 + (i / (steps // 3))))  
+        time.sleep(delay)
+
 
 
 def home_motor():
