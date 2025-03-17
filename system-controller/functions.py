@@ -4,7 +4,7 @@ import cv2
 import os
 
 
-# ------Pin Configuration-------
+# ------ Pin Configuration -------
 Y_DIR_PIN = 20  
 Y_STEP_PIN = 21 
 X_DIR_PIN = 27  
@@ -13,14 +13,22 @@ Y_LIMIT_PIN = 23
 X_LIMIT_PIN = 17
 X2_LIMIT_PIN = 18
 
-# ------Inits-------
-CW = 1   
-CCW = 0  
+# ------ Direction Constants -------
+CW = 1   # Clockwise
+CCW = 0  # Counterclockwise
 
+# ------ Motion Parameters -------
 MIN_STEP_DELAY = 0.0001  # Fastest speed
 MAX_STEP_DELAY = 0.01    # Slowest speed (for start/stop)
 ACCELERATION_STEPS = 50  # Steps to accelerate/decelerate
 
+# Blade Movement Steps
+BLADE_RETRACT_STEPS = 200
+BLADE_ADVANCE_STEPS = 10
+FACE_BLADE_RETRACT_STEPS = 200
+FACE_BLADE_ADVANCE_STEPS = 230
+
+# GPIO Setup
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -170,9 +178,10 @@ def capture_image(patient_id):
 
 
 # ------Motion Handlers-------
+# ------ Smooth Stepper Function -------
 def step_motor(dir_pin, step_pin, direction, steps, min_delay=MIN_STEP_DELAY, max_delay=MAX_STEP_DELAY):
     GPIO.output(dir_pin, direction)
-    
+
     # **Acceleration Phase**
     for i in range(ACCELERATION_STEPS):
         step_delay = max_delay - (i / ACCELERATION_STEPS) * (max_delay - min_delay)
@@ -196,10 +205,10 @@ def step_motor(dir_pin, step_pin, direction, steps, min_delay=MIN_STEP_DELAY, ma
         GPIO.output(step_pin, GPIO.LOW)
         time.sleep(step_delay)
 
-# ------Homing Function-------
+# ------ Homing Function -------
 def home_motor():
     print("Homing X-axis...")
-    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000, max_delay=0.008)  # Slow approach
+    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000, max_delay=0.008)
     GPIO.output(X_DIR_PIN, CW)
 
     while GPIO.input(X_LIMIT_PIN) == GPIO.LOW:
@@ -209,7 +218,7 @@ def home_motor():
     print("Homing X complete.")
 
     print("Homing Y-axis...")
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000, max_delay=0.008)  # Slow approach
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000, max_delay=0.008)
     GPIO.output(Y_DIR_PIN, CW)
 
     while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:
@@ -218,7 +227,7 @@ def home_motor():
     step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10, min_delay=0.002)
     print("Homing Y complete.")
 
-# ------Cutting Function-------
+# ------ Cutting Function -------
 def cut_sections(num_sections):
     print("Starting cutting process...")
     step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000, min_delay=0.0005)
@@ -227,19 +236,35 @@ def cut_sections(num_sections):
     for section in range(num_sections):
         print(f"Cutting section {section + 1}...")
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000, min_delay=0.0005)
-        step_motor(X_DIR_PIN, X_STEP_PIN, CW, 200, min_delay=0.0005)  # Blade retract
-        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10, min_delay=0.0005)  # Blade advance
+        step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS, min_delay=0.0005)
+        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS, min_delay=0.0005)
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000, min_delay=0.0005)
 
     print("Cutting complete.")
-        
 
-def sample_extend():
+# ------ Facing Function (Smooth) -------
+def face_sample(num_sections):
     try:
-        print("Raising sample holder...")
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000)  
+        print("Starting face sample process...")
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000, min_delay=0.0005)
+        GPIO.output(X_DIR_PIN, CW)
+
+        while GPIO.input(X2_LIMIT_PIN) == GPIO.LOW:
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10, min_delay=0.0005)
+
+        for section in range(num_sections):
+            print(f"Facing section {section + 1}...")
+
+            # Blade advances for facing
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, FACE_BLADE_ADVANCE_STEPS, min_delay=0.0005)
+
+            # Y-axis moves back and forth to cut
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000, min_delay=0.0005)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000, min_delay=0.0005)
+
+        print(f"{num_sections} sections faced.")
     finally:
-        print("Sample holder raised.")
+        print("Facing complete.")
 
 
 
