@@ -7,8 +7,10 @@ import os
 # ------Pin Configuration-------
 Y_DIR_PIN = 20  
 Y_STEP_PIN = 21 
+
 X_DIR_PIN = 27  
 X_STEP_PIN = 4
+
 Y_LIMIT_PIN = 23  
 X_LIMIT_PIN = 17
 X2_LIMIT_PIN = 18
@@ -17,12 +19,21 @@ X2_LIMIT_PIN = 18
 CW = 1   
 CCW = 0  
 
-MIN_STEP_DELAY = 0.0001  # Fastest speed
-MAX_STEP_DELAY = 0.01    # Slowest speed (for start/stop)
-ACCELERATION_STEPS = 50  # Steps to accelerate/decelerate
+STEP_DELAY = 0.0001
+HOMING_STEP_DELAY = 0.01  
+
+STEP_PULSE_DELAY = 0.00001  # 10μs (Minimum pulse width for TB6600 is 5μs)
+
+
+BLADE_RETRACT_STEPS = 200 
+BLADE_ADVANCE_STEPS = 10
+
+FACE_BLADE_RETRACT_STEPS = 200 
+FACE_BLADE_ADVANCE_STEPS = 230
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
+
 
 GPIO.setup(Y_DIR_PIN, GPIO.OUT)
 GPIO.setup(Y_STEP_PIN, GPIO.OUT)
@@ -32,7 +43,6 @@ GPIO.setup(X_STEP_PIN, GPIO.OUT)
 GPIO.setup(Y_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
 GPIO.setup(X_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
 GPIO.setup(X2_LIMIT_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
 
 
 
@@ -109,12 +119,11 @@ def illuminator_on():
 
 
 def capture_image(patient_id):
-    script_dir = os.path.dirname(os.path.abspath(__file__))  
-    base_dir = os.path.join(script_dir, 'web_interface', 'static', 'images')  
-    save_dir = os.path.join(base_dir, str(patient_id))  
+    base_dir = os.path.join('web_interface', 'static', 'images')  
+    save_dir = os.path.join(base_dir, patient_id)  
 
     if not os.path.exists(save_dir):
-        print(f"Patient folder {save_dir} does not exist. Creating folder.")
+        print(f"Patient folder {patient_id} does not exist. Creating folder.")
         os.makedirs(save_dir, exist_ok=True)  
 
     existing_files = [f for f in os.listdir(save_dir) if f.endswith('.jpg')]
@@ -165,111 +174,115 @@ def capture_image(patient_id):
         print(f"Image saved successfully at {save_path}")
     else:
         print("Error: Failed to save the image.")
+    
 
 
 
 
-# ------ Smooth Stepper Function -------
-def step_motor(dir_pin, step_pin, direction, steps, min_delay=MIN_STEP_DELAY, max_delay=MAX_STEP_DELAY):
+# ------Motion Handlers-------
+def step_motor(dir_pin, step_pin, direction, steps):
+    """Move the stepper motor with smooth acceleration & deceleration"""
+    
     GPIO.output(dir_pin, direction)
 
-    # **Acceleration Phase**
-    for i in range(ACCELERATION_STEPS):
-        step_delay = max_delay - (i / ACCELERATION_STEPS) * (max_delay - min_delay)
+    # Acceleration Phase
+    for i in range(steps // 3):  
         GPIO.output(step_pin, GPIO.HIGH)
-        time.sleep(step_delay)
+        time.sleep(STEP_PULSE_DELAY * (1.5 - (i / (steps // 3))))  # Decreasing delay
         GPIO.output(step_pin, GPIO.LOW)
-        time.sleep(step_delay)
+        time.sleep(STEP_PULSE_DELAY * (1.5 - (i / (steps // 3))))  
 
-    # **Constant Speed Phase**
-    for _ in range(steps - 2 * ACCELERATION_STEPS):
+    # Constant Speed Phase
+    for _ in range(steps // 3, 2 * steps // 3):
         GPIO.output(step_pin, GPIO.HIGH)
-        time.sleep(min_delay)
+        time.sleep(STEP_PULSE_DELAY)
         GPIO.output(step_pin, GPIO.LOW)
-        time.sleep(min_delay)
+        time.sleep(STEP_PULSE_DELAY)
 
-    # **Deceleration Phase**
-    for i in range(ACCELERATION_STEPS, 0, -1):
-        step_delay = max_delay - (i / ACCELERATION_STEPS) * (max_delay - min_delay)
+    # Deceleration Phase
+    for i in range(steps // 3):
         GPIO.output(step_pin, GPIO.HIGH)
-        time.sleep(step_delay)
+        time.sleep(STEP_PULSE_DELAY * (0.5 + (i / (steps // 3))))  # Increasing delay
         GPIO.output(step_pin, GPIO.LOW)
-        time.sleep(step_delay)
+        time.sleep(STEP_PULSE_DELAY * (0.5 + (i / (steps // 3))))  
 
-# ------ Homing Function -------
+
 def home_motor():
-    print("Homing X-axis...")
-    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000, max_delay=0.008)
-    GPIO.output(X_DIR_PIN, CW)
+    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
+    GPIO.output(X_DIR_PIN, CW) 
 
-    while GPIO.input(X_LIMIT_PIN) == GPIO.LOW:
-        step_motor(X_DIR_PIN, X_STEP_PIN, CW, 10, min_delay=0.002)
+    while GPIO.input(X_LIMIT_PIN) == GPIO.LOW:  
+        step_motor(X_DIR_PIN, X_STEP_PIN, CW, 10 )
 
-    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10, min_delay=0.002)
-    print("Homing X complete.")
+    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
+    print("Homing X complete. Motor zeroed.")
 
-    print("Homing Y-axis...")
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000, max_delay=0.008)
-    GPIO.output(Y_DIR_PIN, CW)
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  
+    GPIO.output(Y_DIR_PIN, CW) 
 
-    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10, min_delay=0.002)
+    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10)
 
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10, min_delay=0.002)
-    print("Homing Y complete.")
-
-# ------ Cutting Function -------
-def cut_sections(num_sections):
-    print("Starting cutting process...")
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000, min_delay=0.0005)
-    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 11000, min_delay=0.0005)
-
-    for section in range(num_sections):
-        print(f"Cutting section {section + 1}...")
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000, min_delay=0.0005)
-        step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS, min_delay=0.0005)
-        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS, min_delay=0.0005)
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000, min_delay=0.0005)
-
-    print("Cutting complete.")
-
-# ------ Facing Function (Smooth) -------
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
+    print("Homing Y complete. Motor zeroed.")
+    
+    
 def face_sample(num_sections):
     try:
-        print("Starting face sample process...")
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000, min_delay=0.0005)
-        GPIO.output(X_DIR_PIN, CW)
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+        GPIO.output(X_DIR_PIN, CW) 
 
-        while GPIO.input(X2_LIMIT_PIN) == GPIO.LOW:
-            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10, min_delay=0.0005)
+        while GPIO.input(X2_LIMIT_PIN) == GPIO.LOW:  
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10 )
 
         for section in range(num_sections):
-            print(f"Facing section {section + 1}...")
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
 
-            # Blade advances for facing
-            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, FACE_BLADE_ADVANCE_STEPS, min_delay=0.0005)
-
-            # Y-axis moves back and forth to cut
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000, min_delay=0.0005)
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000, min_delay=0.0005)
-
-        print(f"{num_sections} sections faced.")
+        print(section, "sections cut.")
     finally:
-        print("Facing complete.")
+        #remember to return status code to control panel
+        print("Cutting complete.")
+
+
+
+def cut_sections(num_sections, section_thickness):
+ 
+    try:
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 11000)
+
+        for section in range(num_sections):
+            print(f"Cutting section {section + 1}...")
+
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
+            step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS)
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+
+            print(f"Section {section + 1} complete.\n")
+
+        print(section, "sections cut.")
+
+    finally:
+        #remember to return status code to control panel
+        print("Cutting complete.")
         
 
 def sample_extend():
     try:
-        print("Raising sample holder smoothly...")
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000, min_delay=0.0005)
+        print("Raising sample holder...")
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000)  
     finally:
         print("Sample holder raised.")
 
 
+
 def sample_retract():
     try:
-        print("Lowering sample holder smoothly...")
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 37000, min_delay=0.0005)
+        print("Lowering sample holder...")
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 37000)  
     finally:
         print("Sample holder lowered.")
         
