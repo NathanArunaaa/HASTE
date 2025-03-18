@@ -351,8 +351,11 @@ class App(customtkinter.CTk):
                 print("Applying custom settings...")
 
         
-        label = customtkinter.CTkLabel(config_window, text="Loaded LIS:" + (self.selected_lis_number), font=("Arial", 14))
-        label.grid(row=0, column=2, padx=20, pady=10 )
+        lis_value = customtkinter.CTkLabel(config_window, text="Registered LIS:" + (self.selected_lis_number), font=("Arial", 14))
+        lis_value.grid(row=0, column=2, padx=20, pady=10 )
+        
+        self.config_success = customtkinter.CTkLabel(config_window, text="" , text_color="green")
+        self.config_success.grid(row=1, column=2, padx=20, pady=10 )
 
         
     
@@ -631,7 +634,7 @@ class App(customtkinter.CTk):
     def contruct_command(self):
         self.contructed_command = f"{self.selected_section_value}|{self.selected_micron_value}|{self.selected_face_value}|{self.selected_lis_number}"
         self.send_command(self.contructed_command)
-
+        self.config_success.configure(text="Config Saved With Values:" + self.contructed_command, text_color="green")
         print(self.contructed_command)
         
 
