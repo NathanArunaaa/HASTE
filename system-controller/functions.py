@@ -116,6 +116,8 @@ def illuminator_on():
 
 
 def capture_image(patient_id):
+    illuminator_on()
+    time.sleep(1)
     script_dir = os.path.dirname(os.path.abspath(__file__))  
     base_dir = os.path.join(script_dir, 'web_interface', 'static', 'images')  
     save_dir = os.path.join(base_dir, str(patient_id))  
@@ -172,6 +174,8 @@ def capture_image(patient_id):
         print(f"Image saved successfully at {save_path}")
     else:
         print("Error: Failed to save the image.")
+
+    illuminator_off()
 
 
 
@@ -230,27 +234,27 @@ def face_sample(num_sections):
 
 
 
-def cut_sections(num_sections, section_thickness):
+def cut_sections(num_sections, section_thickness, patient_id):
  
     try:
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
-        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 11000)
-
         for section in range(num_sections):
             print(f"Cutting section {section + 1}...")
 
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 4000)
-            step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_RETRACT_STEPS)
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
-            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 4000)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 6000)
+            step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_ADVANCE_STEPS)
+            step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 6000)
+            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
+
+            capture_image(patient_id)
 
             print(f"Section {section + 1} complete.\n")
 
         print(section, "sections cut.")
-
+        
     finally:
-        #remember to return status code to control panel
         print("Cutting complete.")
+        home_motor()
         
 
 def sample_extend():
