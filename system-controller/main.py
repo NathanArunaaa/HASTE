@@ -81,8 +81,14 @@ while True:
                     sample_retract()
                     
                 elif command == "SECTION_SAMPLE":
-                    print("Retracting sample...")
-                    cut_sections(3)
+                    print("Cutting sections...")
+                    config = read_config()
+                    if config:
+                        section_value = config.get("section_value")  
+                        micron_value = config.get("micron_value")  
+                        cut_sections(section_value, micron_value)
+                    else:
+                        print("Error: Could not read section_value and micron_value from config.")
                 
                 elif command == "FACE_SAMPLE":
                     print("Facing sample...")
