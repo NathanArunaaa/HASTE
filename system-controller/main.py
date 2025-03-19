@@ -21,7 +21,8 @@ from functions import (
     heater_off,
     heater_on,
     capture_image,
-    system_shutdown
+    system_shutdown,
+    clear_database
    
 )
 
@@ -164,6 +165,11 @@ while True:
                         capture_image(lis_number)
                     else:
                         print("Error: Could not read lis_number from config.")
+
+                elif command == "CLEAR_DATABASE":
+                    print("Clearing database...")
+                    clear_database()
+                    
                     
                     
                 else:

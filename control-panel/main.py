@@ -191,7 +191,7 @@ class App(customtkinter.CTk):
         self.camera_debug = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Debug Camera", width=30, command=lambda: self.send_command("DEBUG_CAMERA"))
         self.camera_debug.grid(row=0, column=0, padx=10, pady=10,sticky="nsew")
 
-        self.clear_database = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Clear Database", text_color='red', width=30, command=lambda: self.send_command("DEBUG_CAMERA"))
+        self.clear_database = customtkinter.CTkButton(self.tabview.tab("Debug"), text="Clear Database", text_color='red', width=30, command=lambda: self.send_command("CLEAR_DATABASE"))
         self.clear_database.grid(row=1, column=0, padx=10, pady=10,sticky="nsew")
         
        

@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 import cv2
 import os
-
+import shutil
 
 # ------Pin Configuration-------
 Y_DIR_PIN = 20  
@@ -177,6 +177,24 @@ def capture_image(patient_id):
 
     illuminator_off()
 
+
+def clear_database():
+    script_dir = os.path.dirname(os.path.abspath(__file__))  
+    base_dir = os.path.join(script_dir, 'web_interface', 'static', 'images')  
+
+    if not os.path.exists(base_dir):
+        print(f"Image directory {base_dir} does not exist.")
+        return
+    
+    for folder in os.listdir(base_dir):
+        folder_path = os.path.join(base_dir, folder)
+        if os.path.isdir(folder_path):
+            print(f"Deleting contents of {folder_path}...")
+            shutil.rmtree(folder_path)
+            os.makedirs(folder_path, exist_ok=True)  
+            print(f"Folder {folder_path} cleared.")
+
+    print("All image folders have been cleared.")
 
 
 
