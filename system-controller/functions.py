@@ -189,12 +189,10 @@ def clear_database():
     for folder in os.listdir(base_dir):
         folder_path = os.path.join(base_dir, folder)
         if os.path.isdir(folder_path):
-            print(f"Deleting contents of {folder_path}...")
-            shutil.rmtree(folder_path)
-            os.makedirs(folder_path, exist_ok=True)  
-            print(f"Folder {folder_path} cleared.")
+            print(f"Deleting folder {folder_path}...")
+            shutil.rmtree(folder_path)  
 
-    print("All image folders have been cleared.")
+    print("All image folders have been deleted.")
 
 
 
