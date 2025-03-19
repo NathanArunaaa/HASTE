@@ -326,7 +326,7 @@ class App(customtkinter.CTk):
         self.preset_combobox.set("Select a Preset")  
         self.preset_combobox.grid(row=2, column=0, padx=20, pady=10)
 
-        start_button = customtkinter.CTkButton(config_window, text_color="red", text="Start",command=lambda: self.send_command(self.contructed_command))
+        start_button = customtkinter.CTkButton(config_window, text_color="red", text="Start", command=lambda: self.send_command("SECTION_SAMPLE"))
         start_button.grid(row=3, column=0, padx=20, pady=10)
         
         save_button = customtkinter.CTkButton(config_window,  text="Save Config", command=self.contruct_command)
