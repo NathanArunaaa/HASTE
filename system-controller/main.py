@@ -85,8 +85,11 @@ while True:
                     config = read_config()
                     if config:
                         section_value = config.get("section_value")  
-                        micron_value = config.get("micron_value")  
-                        cut_sections(section_value, micron_value)
+                        micron_value = config.get("micron_value")
+                        lis_number = config.get("lis_number")  
+  
+
+                        cut_sections(section_value, micron_value, lis_number)
                     else:
                         print("Error: Could not read section_value and micron_value from config.")
                 
