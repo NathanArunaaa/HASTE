@@ -333,7 +333,7 @@ class App(customtkinter.CTk):
         save_button = customtkinter.CTkButton(config_window,  text="Save Config", command=self.contruct_command)
         save_button.grid(row=4, column=0, padx=20, pady=10)
         
-        face_button = customtkinter.CTkButton(config_window,  text="Face Sample", command=lambda: self.send_command("FACE_SAMPLE"))
+        face_button = customtkinter.CTkButton(config_window,  text="Face Sample", command=self.face_sample())
         face_button.grid(row=5, column=0, padx=20, pady=10)
 
         close_button = customtkinter.CTkButton(config_window, text="Cancel", command=config_window.destroy)
@@ -472,7 +472,7 @@ class App(customtkinter.CTk):
 
 
 
-    #------Sample Loading & Blade-------
+    #------Sample Handling-------
     def handle_sample_loading(self):
         if not self.sample_loaded:
             self.open_loading_menu()
@@ -499,6 +499,18 @@ class App(customtkinter.CTk):
                 json.dump(data, file, indent=4)
         except (FileNotFoundError, json.JSONDecodeError):
             self.blade_cylce_label.configure(text="Error Writing Config")
+
+    def face_sample(self):
+        config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+        try:
+            with open(config_path, 'r') as file:
+                data = json.loads(file.read())
+            data['blade_cycles'] = (self.selected_face_value +  self.blade_cylce)
+            with open(config_path, 'w') as file:
+                json.dump(data, file, indent=4)
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.blade_cylce_label.configure(text="Error Writing Config")
+        self.send_command("FACE_SAMPLE")
     
         
         
