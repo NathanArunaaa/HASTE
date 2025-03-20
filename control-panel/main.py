@@ -489,6 +489,7 @@ class App(customtkinter.CTk):
     def change_blade(self):
         self.blade_cylce = 0
         self.blade_cylce_label.configure(text=f"Blade Cycles: {self.blade_cylce}")
+
         config_path = os.path.join(os.path.dirname(__file__), 'config.json')
         try:
             with open(config_path, 'r') as file:
@@ -496,6 +497,7 @@ class App(customtkinter.CTk):
             data['blade_cycles'] = self.blade_cylce
             with open(config_path, 'w') as file:
                 json.dump(data, file, indent=4)
+
         except (FileNotFoundError, json.JSONDecodeError):
             self.blade_cylce_label.configure(text="Error Writing Config")
 
@@ -507,8 +509,11 @@ class App(customtkinter.CTk):
             data['blade_cycles'] = (self.selected_face_value +  self.blade_cylce)
             with open(config_path, 'w') as file:
                 json.dump(data, file, indent=4)
+
         except (FileNotFoundError, json.JSONDecodeError):
             self.blade_cylce_label.configure(text="Error Writing Config")
+
+        self.blade_cylce_label.configure(text=f"Blade Cycles: {self.selected_face_value +  self.blade_cylce}")
         self.send_command("FACE_SAMPLE")
     
         
