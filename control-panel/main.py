@@ -327,7 +327,7 @@ class App(customtkinter.CTk):
         self.preset_combobox.set("Select a Preset")  
         self.preset_combobox.grid(row=2, column=0, padx=20, pady=10)
 
-        start_button = customtkinter.CTkButton(config_window, text_color="red", text="Start", command=lambda: self.send_command("SECTION_SAMPLE"))
+        start_button = customtkinter.CTkButton(config_window, text_color="red", text="Start", command=self.cut_sample)
         start_button.grid(row=3, column=0, padx=20, pady=10)
         
         save_button = customtkinter.CTkButton(config_window,  text="Save Config", command=self.contruct_command)
@@ -515,6 +515,21 @@ class App(customtkinter.CTk):
 
         self.blade_cylce_label.configure(text=f"Blade Cycles: {self.selected_face_value +  self.blade_cylce}")
         self.send_command("FACE_SAMPLE")
+
+    def cut_sample(self):
+        config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+        try:
+            with open(config_path, 'r') as file:
+                data = json.loads(file.read())
+            data['blade_cycles'] = (self.selected_section_value +  self.blade_cylce)
+            with open(config_path, 'w') as file:
+                json.dump(data, file, indent=4)
+
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.blade_cylce_label.configure(text="Error Writing Config")
+
+        self.blade_cylce_label.configure(text=f"Blade Cycles: {self.selected_section_value  +  self.blade_cylce}")
+        self.send_command("SECTION_SAMPLE")
     
         
         
