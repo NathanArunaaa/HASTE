@@ -333,7 +333,7 @@ class App(customtkinter.CTk):
         save_button = customtkinter.CTkButton(config_window,  text="Save Config", command=self.contruct_command)
         save_button.grid(row=4, column=0, padx=20, pady=10)
         
-        face_button = customtkinter.CTkButton(config_window,  text="Face Sample", command=self.face_sample())
+        face_button = customtkinter.CTkButton(config_window,  text="Face Sample")
         face_button.grid(row=5, column=0, padx=20, pady=10)
 
         close_button = customtkinter.CTkButton(config_window, text="Cancel", command=config_window.destroy)
@@ -415,7 +415,6 @@ class App(customtkinter.CTk):
         timer_thread.start()
 
        
-        
         
     def open_flush_menu(self):
         command_thread = threading.Thread(target=lambda: self.send_command("SYSTEM_FLUSH"))
