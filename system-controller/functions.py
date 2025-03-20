@@ -25,7 +25,7 @@ STEP_DELAY_LOADING = 0.000001
 HOMING_STEP_DELAY = 0.01  
 
 BLADE_RETRACT_STEPS = 200 
-BLADE_ADVANCE_STEPS = 50
+BLADE_ADVANCE_STEPS = 10
 
 FACE_BLADE_RETRACT_STEPS = 200 
 FACE_BLADE_ADVANCE_STEPS = 230
@@ -247,9 +247,7 @@ def face_sample(num_sections):
 
 
         for section in range(num_sections):
-            step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
             step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 6000)
-            step_motor(X_DIR_PIN, X_STEP_PIN, CW, BLADE_ADVANCE_STEPS)
             step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 6000)
             step_motor(X_DIR_PIN, X_STEP_PIN, CCW, BLADE_ADVANCE_STEPS)
 
