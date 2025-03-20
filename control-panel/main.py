@@ -547,7 +547,7 @@ class App(customtkinter.CTk):
         print("Please place the patient document under the main display.")
         self.video_label.grid(row=0, column=0)
         self.scanning_done = False  
-        threading.Thread(target=self.scan_bardcode, daemon=True).start()
+        threading.Thread(target=self.scan_barcode, daemon=True).start()
 
 
     def finish_lis_scan(self):
