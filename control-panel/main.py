@@ -170,8 +170,8 @@ class App(customtkinter.CTk):
         self.tabview.tab("Blade").grid_rowconfigure((0, 1, 2), weight=1)
         self.tabview.tab("Blade").grid_columnconfigure(0, weight=1)
         
-        self.change_blade = customtkinter.CTkButton(self.tabview.tab("Blade"), text="Change Blade", width=30, )
-        self.change_blade.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        self.change_blade_button = customtkinter.CTkButton(self.tabview.tab("Blade"), text="Change Blade", width=30, command=self.change_blade)
+        self.change_blade_button.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
 
         self.blade_cylce_label = customtkinter.CTkLabel(self.tabview.tab("Blade"), text="Blade Cycles: ")
         self.blade_cylce_label.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
@@ -472,7 +472,7 @@ class App(customtkinter.CTk):
 
 
 
-    #------Sample Loading-------
+    #------Sample Loading & Blade-------
     def handle_sample_loading(self):
         if not self.sample_loaded:
             self.open_loading_menu()
@@ -486,6 +486,20 @@ class App(customtkinter.CTk):
         loading_window.destroy()  
         self.sidebar_button_3.configure(text="Unload Sample") 
         self.sample_loaded = True 
+
+    def change_blade(self):
+        self.blade_cylce = 0
+        self.blade_cylce_label.configure(text=f"Blade Cycles: {self.blade_cylce}")
+        config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+        try:
+            with open(config_path, 'r') as file:
+                data = json.loads(file.read())
+            data['blade_cycles'] = self.blade_cylce
+            with open(config_path, 'w') as file:
+                json.dump(data, file, indent=4)
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.blade_cylce_label.configure(text="Error Writing Config")
+    
         
         
     #------Patient Registration-------
