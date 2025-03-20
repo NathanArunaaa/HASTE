@@ -177,7 +177,8 @@ class App(customtkinter.CTk):
         self.blade_cylce_label.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
         
         try:
-            with open('control-panel/config.json', 'r') as file:
+            config_path = os.path.join(os.path.dirname(__file__), 'config.json')
+            with open(config_path, 'r') as file:
                 data = json.loads(file.read())
                 self.blade_cylce = data.get('blade_cycles', 0)
                 self.blade_cylce_label.configure(text=f"Blade Cycles: {self.blade_cylce}")
