@@ -8,7 +8,7 @@ from tkinter import messagebox
 import os
 import time
 import glob
-from pyzbar.pyzbar import decode, ZBarSymbol
+from pyzbar.pyzbar import decode
 import numpy as np
 import json
 
@@ -489,32 +489,15 @@ class App(customtkinter.CTk):
         
     #------Patient Registration-------
    
-    def scan_barcode(self):
+    def scan_bardcode(self):
         self.scanning_done = False  
-        self.loaded_id.configure(text="Loaded ID: Searching...")
-
-    # Open camera and set high resolution
-        self.cap = cv2.VideoCapture(0)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-
+        self.loaded_id.configure(text="Loaded ID: Searching....")
+        
         while not self.scanning_done:
             ret, frame = self.cap.read()
             if ret:
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-                gray = cv2.GaussianBlur(gray, (3, 3), 0)
-
-                gray = cv2.adaptiveThreshold(
-                    gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
-                )
-
-                edges = cv2.Canny(gray, 100, 200)
-
-                barcodes = decode(edges, symbols=[ZBarSymbol.CODE39, ZBarSymbol.CODE128, ZBarSymbol.EAN13])
-
-                if not barcodes:
-                    print("No barcode detected.")  
+                barcodes = decode(gray)
 
                 for barcode in barcodes:
                     barcode_data = barcode.data.decode("utf-8")
@@ -528,7 +511,7 @@ class App(customtkinter.CTk):
 
                     pts = np.array([barcode.polygon], np.int32)
                     pts = pts.reshape((-1, 1, 2))
-                    cv2.polylines(frame, [pts], True, (0, 255, 0), 3)
+                    cv2.polylines(frame, [pts], True, (0, 255, 0), 3)  
 
                     x, y = pts[0].ravel()
                     cv2.putText(frame, barcode_data, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
@@ -538,16 +521,14 @@ class App(customtkinter.CTk):
                 self.video_label.configure(image=frame_image)
                 self.video_label.image = frame_image
             else:
-                print("Error: Camera frame not captured, retrying...")
                 self.cap = cv2.VideoCapture(0)
-
-            time.sleep(0.01) 
+            time.sleep(0.01)
             
     def start_lis_scan(self):
         print("Please place the patient document under the main display.")
         self.video_label.grid(row=0, column=0)
         self.scanning_done = False  
-        threading.Thread(target=self.scan_barcode, daemon=True).start()
+        threading.Thread(target=self.scan_bardcode, daemon=True).start()
 
 
     def finish_lis_scan(self):
