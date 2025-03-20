@@ -19,7 +19,9 @@ X2_LIMIT_PIN = 18
 CW = 1   
 CCW = 0  
 
-STEP_DELAY = 0.0002
+STEP_DELAY = 0.0001
+STEP_DELAY_LOADING = 0.000001
+
 HOMING_STEP_DELAY = 0.01  
 
 BLADE_RETRACT_STEPS = 200 
@@ -206,6 +208,15 @@ def step_motor(dir_pin, step_pin, direction, steps):
         GPIO.output(step_pin, GPIO.LOW)
         time.sleep(STEP_DELAY)
 
+def step_motor_loading(dir_pin, step_pin, direction, steps):
+    GPIO.output(dir_pin, direction)
+
+    for _ in range(steps):
+        GPIO.output(step_pin, GPIO.HIGH)
+        time.sleep(STEP_DELAY_LOADING)
+        GPIO.output(step_pin, GPIO.LOW)
+        time.sleep(STEP_DELAY_LOADING)
+
 def home_motor():
     step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
     GPIO.output(X_DIR_PIN, CW) 
@@ -276,7 +287,7 @@ def cut_sections(num_sections, section_thickness, patient_id):
 def sample_extend():
     try:
         print("Raising sample holder...")
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000)  
+        step_motor_loading(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000)  
     finally:
         print("Sample holder raised.")
 
