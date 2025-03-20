@@ -488,7 +488,6 @@ class App(customtkinter.CTk):
         
         
     #------Patient Registration-------
-   
     def scan_bardcode(self):
         self.scanning_done = False  
         self.loaded_id.configure(text="Loaded ID: Searching....")

@@ -171,7 +171,6 @@ while True:
                     clear_database()
                     
                     
-                    
                 else:
                     print(command)
                     section_value, micron_value, face_value, lis_number = command.split("|")
