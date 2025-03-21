@@ -236,23 +236,23 @@ def step_motor_loading(dir_pin, step_pin, direction, steps):
         time.sleep(STEP_DELAY_LOADING)
 
 def home_motor():
-    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
-    GPIO.output(X_DIR_PIN, CW) 
+    print("Homing X axis...")
 
-    while GPIO.input(X_LIMIT_PIN) == GPIO.LOW:  
-        step_motor(X_DIR_PIN, X_STEP_PIN, CW, 10 )
+    GPIO.output(X_DIR_PIN, CCW)
+    while GPIO.input(X_LIMIT_PIN) == GPIO.HIGH:  
+        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
 
-    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
-    print("Homing X complete. Motor zeroed.")
+    step_motor(X_DIR_PIN, X_STEP_PIN, CW, 50)
+    print("Homing X complete.")
 
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  
-    GPIO.output(Y_DIR_PIN, CW) 
+    print("Homing Y axis...")
 
-    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10)
+    GPIO.output(Y_DIR_PIN, CCW)
+    while GPIO.input(Y_LIMIT_PIN) == GPIO.HIGH: 
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
 
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
-    print("Homing Y complete. Motor zeroed.")
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 50)
+    print("Homing Y complete.")
     
     
 def face_sample(num_sections):
