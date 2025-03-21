@@ -239,7 +239,7 @@ def home_motor():
     print("Homing X axis...")
 
     GPIO.output(X_DIR_PIN, CCW)
-    while GPIO.input(X_LIMIT_PIN) == GPIO.HIGH:  
+    while GPIO.input(X_LIMIT_PIN) == GPIO.LOW:  
         step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
 
     step_motor(X_DIR_PIN, X_STEP_PIN, CW, 50)
@@ -248,7 +248,7 @@ def home_motor():
     print("Homing Y axis...")
 
     GPIO.output(Y_DIR_PIN, CCW)
-    while GPIO.input(Y_LIMIT_PIN) == GPIO.HIGH: 
+    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW: 
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
 
     step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 50)
