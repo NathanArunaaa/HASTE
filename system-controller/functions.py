@@ -22,6 +22,10 @@ CCW = 0
 STEP_DELAY = 0.00001
 STEP_DELAY_LOADING = 0.000001
 
+MIN_STEP_DELAY = 0.0001  
+MAX_STEP_DELAY = 0.005   
+ACCEL_STEPS = 50   
+
 HOMING_STEP_DELAY = 0.01  
 
 BLADE_RETRACT_STEPS = 200 
@@ -202,11 +206,25 @@ def clear_database():
 def step_motor(dir_pin, step_pin, direction, steps):
     GPIO.output(dir_pin, direction)
 
-    for _ in range(steps):
+    for i in range(ACCEL_STEPS):
+        step_delay = MAX_STEP_DELAY - (MAX_STEP_DELAY - MIN_STEP_DELAY) * (i / ACCEL_STEPS)
         GPIO.output(step_pin, GPIO.HIGH)
-        time.sleep(STEP_DELAY)
+        time.sleep(step_delay)
         GPIO.output(step_pin, GPIO.LOW)
-        time.sleep(STEP_DELAY)
+        time.sleep(step_delay)
+
+    for _ in range(steps - 2 * ACCEL_STEPS):
+        GPIO.output(step_pin, GPIO.HIGH)
+        time.sleep(MIN_STEP_DELAY)
+        GPIO.output(step_pin, GPIO.LOW)
+        time.sleep(MIN_STEP_DELAY)
+
+    for i in range(ACCEL_STEPS, 0, -1):
+        step_delay = MAX_STEP_DELAY - (MAX_STEP_DELAY - MIN_STEP_DELAY) * (i / ACCEL_STEPS)
+        GPIO.output(step_pin, GPIO.HIGH)
+        time.sleep(step_delay)
+        GPIO.output(step_pin, GPIO.LOW)
+        time.sleep(step_delay)
 
 def step_motor_loading(dir_pin, step_pin, direction, steps):
     GPIO.output(dir_pin, direction)
