@@ -23,7 +23,7 @@ STEP_DELAY = 0.0001
 STEP_DELAY_LOADING = 0.000001
 
 DEFAULT_MIN_DELAY = 0.00005  # Fastest speed
-DEFAULT_MAX_DELAY = 0.01     # Slowest speed (start/stop)
+DEFAULT_MAX_DELAY = 0.0001     # Slowest speed (start/stop)
 DEFAULT_ACCEL_STEPS = 500  
 HOMING_STEP_DELAY = 0.01  
 
