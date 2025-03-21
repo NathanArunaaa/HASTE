@@ -21,9 +21,9 @@ CCW = 0
 
 STEP_DELAY = 0.00001
 
-DEFAULT_MIN_DELAY = 0.000001 
-DEFAULT_MAX_DELAY = 0.0001     
-DEFAULT_ACCEL_STEPS = 250  
+DEFAULT_MIN_DELAY = 0.000005 
+DEFAULT_MAX_DELAY = 0.0005     
+DEFAULT_ACCEL_STEPS = 1000  
 HOMING_STEP_DELAY = 0.01  
 
 BLADE_RETRACT_STEPS = 200 
@@ -209,11 +209,11 @@ def step_motor(dir_pin, step_pin, direction, steps,
 
     def get_step_delay(i):
         """ Compute delay dynamically based on acceleration profile """
-        if i < accel_steps:  # Acceleration phase
+        if i < accel_steps: 
             return max_delay - (i / accel_steps) * (max_delay - min_delay)
-        elif i > steps - accel_steps:  # Deceleration phase
+        elif i > steps - accel_steps:  
             return min_delay + ((i - (steps - accel_steps)) / accel_steps) * (max_delay - min_delay)
-        return min_delay  # Constant speed phase
+        return min_delay 
 
     for i in range(steps):
         step_delay = get_step_delay(i)
@@ -268,7 +268,6 @@ def face_sample(num_sections):
 
         print(section, "sections cut.")
     finally:
-        #remember to return status code to control panel
         print("Cutting complete.")
 
 
