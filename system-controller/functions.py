@@ -19,11 +19,10 @@ X2_LIMIT_PIN = 18
 CW = 1   
 CCW = 0  
 
-STEP_DELAY = 0.0001
-STEP_DELAY_LOADING = 0.000001
+STEP_DELAY = 0.00001
 
-DEFAULT_MIN_DELAY = 0.0000001  # Fastest speed
-DEFAULT_MAX_DELAY = 0.0001     # Slowest speed (start/stop)
+DEFAULT_MIN_DELAY = 0.000001 
+DEFAULT_MAX_DELAY = 0.0001     
 DEFAULT_ACCEL_STEPS = 500  
 HOMING_STEP_DELAY = 0.01  
 
@@ -223,7 +222,7 @@ def step_motor(dir_pin, step_pin, direction, steps,
         GPIO.output(step_pin, GPIO.LOW)
         time.sleep(step_delay)
         
-def step_motor_loading(dir_pin, step_pin, direction, steps):
+def step_motor_no_accel(dir_pin, step_pin, direction, steps):
     GPIO.output(dir_pin, direction)
 
     for _ in range(steps):
@@ -233,22 +232,22 @@ def step_motor_loading(dir_pin, step_pin, direction, steps):
         time.sleep(STEP_DELAY_LOADING)
 
 def home_motor():
-    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
+    step_motor_no_accel(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
     GPIO.output(X_DIR_PIN, CW) 
 
     while GPIO.input(X_LIMIT_PIN) == GPIO.LOW:  
-        step_motor(X_DIR_PIN, X_STEP_PIN, CW, 10 )
+        step_motor_no_accel(X_DIR_PIN, X_STEP_PIN, CW, 10 )
 
-    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
+    step_motor_no_accel(X_DIR_PIN, X_STEP_PIN, CCW, 10)
     print("Homing X complete. Motor zeroed.")
 
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  
+    step_motor_no_accel(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  
     GPIO.output(Y_DIR_PIN, CW) 
 
     while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  
         step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10)
 
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
+    step_motor_no_accel(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
     print("Homing Y complete. Motor zeroed.")
     
     
@@ -300,7 +299,7 @@ def cut_sections(num_sections, section_thickness, patient_id):
 def sample_extend():
     try:
         print("Raising sample holder...")
-        step_motor_loading(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000)  
+        step_motor_no_accel(Y_DIR_PIN, Y_STEP_PIN, CCW, 33000)  
     finally:
         print("Sample holder raised.")
 
