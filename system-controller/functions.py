@@ -23,7 +23,7 @@ STEP_DELAY = 0.00001
 
 DEFAULT_MIN_DELAY = 0.000001 
 DEFAULT_MAX_DELAY = 0.0001     
-DEFAULT_ACCEL_STEPS = 500  
+DEFAULT_ACCEL_STEPS = 250  
 HOMING_STEP_DELAY = 0.01  
 
 BLADE_RETRACT_STEPS = 200 
@@ -227,9 +227,9 @@ def step_motor_no_accel(dir_pin, step_pin, direction, steps):
 
     for _ in range(steps):
         GPIO.output(step_pin, GPIO.HIGH)
-        time.sleep(STEP_DELAY_LOADING)
+        time.sleep(STEP_DELAY)
         GPIO.output(step_pin, GPIO.LOW)
-        time.sleep(STEP_DELAY_LOADING)
+        time.sleep(STEP_DELAY)
 
 def home_motor():
     step_motor_no_accel(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
