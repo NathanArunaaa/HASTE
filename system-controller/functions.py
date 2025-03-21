@@ -19,17 +19,16 @@ X2_LIMIT_PIN = 18
 CW = 1   
 CCW = 0  
 
-STEP_DELAY = 0.00001
+STEP_DELAY = 0.0001
 STEP_DELAY_LOADING = 0.000001
 
-MIN_STEP_DELAY = 0.0001  
-MAX_STEP_DELAY = 0.005   
-ACCEL_STEPS = 50   
-
+DEFAULT_MIN_DELAY = 0.00005  # Fastest speed
+DEFAULT_MAX_DELAY = 0.01     # Slowest speed (start/stop)
+DEFAULT_ACCEL_STEPS = 500  
 HOMING_STEP_DELAY = 0.01  
 
 BLADE_RETRACT_STEPS = 200 
-BLADE_ADVANCE_STEPS = 10
+BLADE_ADVANCE_STEPS = 20
 
 FACE_BLADE_RETRACT_STEPS = 200 
 FACE_BLADE_ADVANCE_STEPS = 230
@@ -203,29 +202,27 @@ def clear_database():
 
 
 # ------Motion Handlers-------
-def step_motor(dir_pin, step_pin, direction, steps):
+def step_motor(dir_pin, step_pin, direction, steps, 
+               min_delay=DEFAULT_MIN_DELAY, 
+               max_delay=DEFAULT_MAX_DELAY, 
+               accel_steps=DEFAULT_ACCEL_STEPS):
     GPIO.output(dir_pin, direction)
 
-    for i in range(ACCEL_STEPS):
-        step_delay = MAX_STEP_DELAY - (MAX_STEP_DELAY - MIN_STEP_DELAY) * (i / ACCEL_STEPS)
+    def get_step_delay(i):
+        """ Compute delay dynamically based on acceleration profile """
+        if i < accel_steps:  # Acceleration phase
+            return max_delay - (i / accel_steps) * (max_delay - min_delay)
+        elif i > steps - accel_steps:  # Deceleration phase
+            return min_delay + ((i - (steps - accel_steps)) / accel_steps) * (max_delay - min_delay)
+        return min_delay  # Constant speed phase
+
+    for i in range(steps):
+        step_delay = get_step_delay(i)
         GPIO.output(step_pin, GPIO.HIGH)
         time.sleep(step_delay)
         GPIO.output(step_pin, GPIO.LOW)
         time.sleep(step_delay)
-
-    for _ in range(steps - 2 * ACCEL_STEPS):
-        GPIO.output(step_pin, GPIO.HIGH)
-        time.sleep(MIN_STEP_DELAY)
-        GPIO.output(step_pin, GPIO.LOW)
-        time.sleep(MIN_STEP_DELAY)
-
-    for i in range(ACCEL_STEPS, 0, -1):
-        step_delay = MAX_STEP_DELAY - (MAX_STEP_DELAY - MIN_STEP_DELAY) * (i / ACCEL_STEPS)
-        GPIO.output(step_pin, GPIO.HIGH)
-        time.sleep(step_delay)
-        GPIO.output(step_pin, GPIO.LOW)
-        time.sleep(step_delay)
-
+        
 def step_motor_loading(dir_pin, step_pin, direction, steps):
     GPIO.output(dir_pin, direction)
 
@@ -236,25 +233,23 @@ def step_motor_loading(dir_pin, step_pin, direction, steps):
         time.sleep(STEP_DELAY_LOADING)
 
 def home_motor():
-    print("Homing X axis...")
+    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 1000)  
+    GPIO.output(X_DIR_PIN, CW) 
 
-    GPIO.output(X_DIR_PIN, CCW)
     while GPIO.input(X_LIMIT_PIN) == GPIO.LOW:  
-        step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
-        time.sleep(0.005)
+        step_motor(X_DIR_PIN, X_STEP_PIN, CW, 10 )
 
-    step_motor(X_DIR_PIN, X_STEP_PIN, CW, 50)
-    print("Homing X complete.")
+    step_motor(X_DIR_PIN, X_STEP_PIN, CCW, 10)
+    print("Homing X complete. Motor zeroed.")
 
-    print("Homing Y axis...")
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 1000)  
+    GPIO.output(Y_DIR_PIN, CW) 
 
-    GPIO.output(Y_DIR_PIN, CCW)
-    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW: 
-        step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
-        time.sleep(0.005)
+    while GPIO.input(Y_LIMIT_PIN) == GPIO.LOW:  
+        step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 10)
 
-    step_motor(Y_DIR_PIN, Y_STEP_PIN, CW, 50)
-    print("Homing Y complete.")
+    step_motor(Y_DIR_PIN, Y_STEP_PIN, CCW, 10)
+    print("Homing Y complete. Motor zeroed.")
     
     
 def face_sample(num_sections):
